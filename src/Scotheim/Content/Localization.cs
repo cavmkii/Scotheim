@@ -25,6 +25,16 @@ namespace Scotheim.Content
             { "Scot_WashersShroud", new[] { "Washer's shroud", "Linen she was washing at the ford. You don't ask whose." } },
             { "Scot_GiantHeartstone", new[] { "Giant's heartstone", "Warm, and heavier than its size." } },
             { "Scot_TartanCloth", new[] { "Tartan cloth", "Wool woven in a sett and dyed with blaeberry." } },
+            { "Scot_Claymore", new[] { "Claymore", "Claidheamh mòr, the great sword. Two hands and a long reach." } },
+            { "Scot_Dirk", new[] { "Dirk", "A long, single-edged knife, worn at the belt and drawn close in." } },
+            { "Scot_LochaberAxe", new[] { "Lochaber axe", "A cleaver of a blade on a long shaft, with a hook for pulling riders down." } },
+            { "Scot_Targe", new[] { "Targe", "Wood faced with hide and studded with iron. Small enough to fight behind." } },
+            { "Scot_Knapskull", new[] { "Knapskull", "A plain steel cap." } },
+            { "Scot_Acton", new[] { "Acton", "A quilted jack of wool and tartan. Light, and it doesn't slow you." } },
+            { "Scot_Brigandine", new[] { "Brigandine", "Steel plates riveted inside a cloth coat." } },
+            { "Scot_GaeBulg", new[] { "Gáe Bulg", "Cú Chulainn's barbed spear, taught to him by Scáthach on Skye. The wound festers." } },
+            { "Scot_ClaiomhSolais", new[] { "Claíomh Solais", "The Sword of Light, won from a giant. It burns the dead." } },
+            { "Scot_WallaceSword", new[] { "Wallace sword", "Longer than a man is tall, and slow. Nothing stands up after it lands." } },
         };
 
         static readonly Dictionary<string, string> CreatureText = new Dictionary<string, string>

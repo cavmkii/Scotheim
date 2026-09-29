@@ -58,12 +58,34 @@ Items, also Jötunn clones. Each keeps its base item's model and icon for now:
 | Raw / roast mutton | Sheep; cooking station | Food: 55 health, 18 stamina, 4 regen, 30 min |
 | Raw / roast Highland beef | Highland cow; cooking station | Food: 65 health, 22 stamina, 5 regen, 30 min |
 | Blaeberries | Blaeberry bushes in the Caledonian Forest | Food: 15 health, 45 stamina, 15 min; dye for tartan |
-| Tartan cloth | Workbench: 4 wool + 2 blaeberries | Nothing yet (armour set planned) |
-| Highland hide, pine marten pelt, Sìth pelt, kelpie mane, washer's shroud, giant's heartstone | Drops | Nothing yet (gear planned) |
+| Tartan cloth | Workbench: 4 wool + 2 blaeberries | Gear |
+| Highland hide, pine marten pelt, Sìth pelt, kelpie mane, giant's heartstone | Drops | Gear |
+| Washer's shroud | Bean-nighe | Nothing yet |
 
 The food values are my estimate of Mistlands-tier food, not copied from the game. Valheim's "blueberries" already look like bilberries (*Vaccinium myrtillus*), which is what a blaeberry is, so the blaeberry bush is a copy of the blueberry bush that yields the Scots-named item.
 
 Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tamed like boars. Being boars underneath, they also charge when provoked.
+
+### Weapons and armour
+
+All are made at the black forge. Each is a clone of a vanilla item that **looks** right, with its numbers copied at load time from a Mistlands item (the **stat donor**) and scaled. Balance therefore follows the game's own Mistlands values. Attacks and animations stay the look item's, so the dirk swings like a knife and the Lochaber axe like an atgeir.
+
+| Piece | Looks like | Stats from | Changes | Recipe (quality 1) |
+|---|---|---|---|---|
+| Claymore | Krom | Krom | — | 20 black metal, 10 iron, 3 Highland hide, 2 tartan |
+| Dirk | Black metal knife | Skoll and Hati | — | 8 black metal, 4 Yggdrasil wood, 2 marten pelt |
+| Lochaber axe | Black metal atgeir | Himminafl | lightning damage becomes slash | 10 Yggdrasil wood, 20 black metal, 10 iron, 2 Highland hide |
+| Targe | Banded shield | Carapace shield | — | 10 fine wood, 4 iron, 4 Highland hide, 1 tartan |
+| Knapskull | Padded helmet | Carapace helmet | — | 10 iron, 6 black metal, 2 marten pelt |
+| Acton | Padded cuirass | Carapace breastplate | 80 % armour, 60 % weight, no movement penalty | 6 tartan, 10 wool, 4 Highland hide |
+| Brigandine | Iron scale mail | Carapace breastplate | 115 % armour, 130 % weight | 20 black metal, 10 iron, 4 tartan, 4 Highland hide |
+| Gáe Bulg | Carapace spear | Carapace spear | 130 % damage, +30 poison | 6 kelpie mane, 20 black metal, 8 Yggdrasil wood |
+| Claíomh Solais | Mistwalker | Mistwalker | 120 % damage, frost becomes spirit | 3 giant's heartstone, 4 Sìth pelt, 20 black metal, 10 eitr |
+| Wallace sword | Krom | Krom | 130 % damage, 150 % weight and durability, −5 % movement | 2 giant's heartstone, 30 black metal, 15 iron, 4 tartan, 4 Highland hide |
+
+Upgrades cost roughly half the base materials per level. The pieces don't give set bonuses.
+
+On the sources: the Gáe Bulg and Claíomh Solais come from the shared Gaelic (mostly Irish-recorded) tradition. The Gáe Bulg is tied to Scotland through Scáthach's school on Skye. The Wallace sword is the two-hander at the Wallace Monument; its link to Wallace himself is traditional rather than established.
 
 ## How it fits into the world
 
@@ -96,7 +118,7 @@ What has been verified:
 
 Still unverified:
 
-- that it builds against the real game. In particular, five game fields the content code sets were written from memory: `Character.m_health`, `Pickable.m_itemPrefab`, `Procreation.m_offspring`, `Growup.m_grownPrefab` and the `m_food*` fields on items. A wrong name shows up as a compile error;
+- that it builds against the real game. In particular, the gear code uses item stat fields and `HitData.DamageTypes.Modify` written from memory (`tests/Content/ValheimStub.cs` lists them). A wrong name shows up as a compile error. The five fields the creature code sets compiled and loaded in the game;
 - creature balance, and spawn rates in play;
 - how deep real Valheim ocean is around the chosen site. This decides how fully the island rises; the log reports the fraction of open ocean;
 - how the vegetation densities look in game;
@@ -105,7 +127,8 @@ Still unverified:
 ## Known limitations
 
 - **New worlds only.** Every player and the server need the mod with identical settings; the log prints a `signature` to compare. EWD syncs its YAML from the server.
-- **No ores yet**, and the folklore materials have no recipes yet.
+- **No ores yet.** The washer's shroud has no use yet.
+- **Gear looks vanilla.** Each piece keeps its look item's model and icon; in particular, the Wallace sword is no bigger than Krom.
 - **Stand-in creatures.** Clones look, move and attack exactly like their base, and a scaled creature's ragdoll drops back to normal size when it dies. Clones also carry the base's trophy drop.
 - **Clients and server must match.** Jötunn enforces this: everyone needs Scotheim with the same minor version.
 - **Map forest dots on the moor.** EWD shades a custom biome's map with its terrain biome (Meadows for the moor), so the map draws forest dots there even where there are no trees.

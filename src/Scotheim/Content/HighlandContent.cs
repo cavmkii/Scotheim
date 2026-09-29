@@ -115,6 +115,8 @@ namespace Scotheim.Content
                 AddCooking(station, "Scot_Beef", "Scot_CookedBeef", 35f);
             }
 
+            Gear.Add();
+
             CustomItem berries;
             if (added.TryGetValue("Scot_Blaeberries", out berries)) AddBlaeberryBush(berries.ItemPrefab);
         }
