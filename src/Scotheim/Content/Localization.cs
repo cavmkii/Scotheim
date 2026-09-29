@@ -35,12 +35,22 @@ namespace Scotheim.Content
             { "Scot_BruceAxe", new[] { "Bruce's axe", "At Bannockburn the Bruce split Henry de Bohun's helm with one blow and broke the shaft doing it. Or so Barbour wrote sixty years on." } },
             { "Scot_ClaidheamhSoluis", new[] { "Claidheamh Soluis", "The Sword of Light of the West Highland tales, won from a giant. It burns the dead." } },
             { "Scot_WallaceSword", new[] { "Wallace sword", "Longer than a man is tall, and slow. Nothing stands up after it lands." } },
-            { "Scot_FairyFlag", new[] { "Fairy Flag", "Faded silk from the Sìth, kept by the MacLeods. Unfurled, it is said to turn a battle." } },
+            { "Scot_FairyFlag", new[] { "Fairy Flag", "Faded silk from the Sìth, kept by the MacLeods. Unfurled, it is said to turn a battle. It falls as softly as it flies." } },
             { "Scot_PictishSpear", new[] { "Pictish spear", "The weapon the symbol stones show most." } },
             { "Scot_PictishShield", new[] { "Pictish shield", "A small shield with a silver boss, like those carved at Aberlemno." } },
             { "Scot_PictishChain", new[] { "Pictish silver chain", "Heavy silver links. Nobody knows quite how they were worn; here, on the head." } },
             { "Scot_PictishJerkin", new[] { "Pictish jerkin", "Hide and silver. No Pictish clothing survives, so this is a guess." } },
             { "Scot_PictishTrews", new[] { "Pictish trews", "Wool and hide, cut for running. A guess, like the jerkin." } },
+            { "Scot_PictishCloak", new[] { "Pictish cloak", "Marten fur pinned with a silver brooch. The Romans said the Picts painted themselves; nobody has proved it either way." } },
+            { "Scot_BlueBonnet", new[] { "Blue bonnet", "A knitted wool bonnet dyed with blaeberry. Two centuries too late for Wallace, but that never stopped the films." } },
+            { "Scot_Leine", new[] { "Léine", "A long saffron shirt, belted, with hide over the shoulders." } },
+            { "Scot_Kilt", new[] { "Kilt", "The little kilt is an 18th-century garment. It's warm, it's quick, and it's here anyway." } },
+            { "Scot_BeltedPlaid", new[] { "Belted plaid", "Féileadh mòr: yards of tartan, pleated and belted, the rest thrown over the shoulder." } },
+            { "Scot_Chausses", new[] { "Chausses", "Mail leggings over quilted hose, the Wars of Independence way." } },
+            { "Scot_SaltireCape", new[] { "Saltire cape", "White cross on blue. The Guardians put St Andrew on their seal in 1286." } },
+            { "Scot_SithCrown", new[] { "Crown of the Sìth", "Flowers that never wilt, woven by hands you didn't see." } },
+            { "Scot_SithRobe", new[] { "Sìth robe", "Green that shifts when you look away. It's always wet at the hem." } },
+            { "Scot_SithLeggings", new[] { "Sìth leggings", "Light as mist and as hard to keep hold of." } },
         };
 
         static readonly Dictionary<string, string> CreatureText = new Dictionary<string, string>
@@ -63,11 +73,8 @@ namespace Scotheim.Content
 
         internal static void Register()
         {
-            var english = new Dictionary<string, string>
-            {
-                // Pictish set bonus. "Picti", the painted ones, is a Roman name; whether they painted or tattooed is disputed.
-                { "se_scot_woad", "Woad" },
-            };
+            var english = new Dictionary<string, string>();
+            foreach (var entry in Sets.English()) english[entry.Key] = entry.Value;
             foreach (var entry in ItemText)
             {
                 english[ItemName(entry.Key).Substring(1)] = entry.Value[0];
