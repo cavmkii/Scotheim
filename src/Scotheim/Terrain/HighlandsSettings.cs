@@ -11,15 +11,19 @@ namespace Scotheim.Terrain
     public sealed class HighlandsSettings
     {
         // Landmass: raised out of open ocean, so no vanilla land is reshaped.
-        /// <summary>Pick the site automatically from the seed. Otherwise use LandmassX/Y.</summary>
+        /// <summary>How many islands to place (fewer if the distance band runs out of open water).</summary>
+        public int LandmassCount = 4;
+        /// <summary>The smallest island's size relative to the largest; sizes shrink evenly between.</summary>
+        public float LandmassMinScale = 0.65f;
+        /// <summary>Pick sites automatically from the seed. Otherwise place a single island at LandmassX/Y.</summary>
         public bool LandmassAuto = true;
         public float LandmassX = 0f;
         public float LandmassY = 0f;
         /// <summary>Auto placement searches this distance band from the world centre (late game by default).</summary>
-        public float LandmassMinRadius = 5000f;
+        public float LandmassMinRadius = 4500f;
         public float LandmassMaxRadius = 8500f;
         public float LandmassPreferredRadius = 7000f;
-        /// <summary>Semi-axes of the landmass ellipse: along the grain, and across it.</summary>
+        /// <summary>Semi-axes of the largest island's ellipse: along the grain, and across it.</summary>
         public float LandmassLength = 2000f;
         public float LandmassWidth = 1150f;
         /// <summary>Base altitude of the interior before glens; above 50 becomes Munros.</summary>

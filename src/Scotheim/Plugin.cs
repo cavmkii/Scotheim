@@ -35,17 +35,23 @@ namespace Scotheim
                 "Add the Highlands landmass. Every player and the server must use identical settings, and it only " +
                 "looks right on a NEW world: explored zones keep their saved objects at the old ground height.");
 
+            var count = Config.Bind("2 - Landmass", "Count", defaults.LandmassCount,
+                new ConfigDescription("How many Highland islands to place. Fewer are placed if the distance band runs out of open water.",
+                    new AcceptableValueRange<int>(1, 8)));
+            readers.Add(s => s.LandmassCount = count.Value);
+            BindFloat("2 - Landmass", "MinScale", 0.3f, 1f, s => s.LandmassMinScale, (s, v) => s.LandmassMinScale = v,
+                "Size of the smallest island relative to the largest; the others shrink evenly between.");
             var auto = Config.Bind("2 - Landmass", "AutoPlace", defaults.LandmassAuto,
-                "Pick the site from the world seed: the most open stretch of ocean in the distance band below. " +
-                "Turn off to use X/Y.");
+                "Pick sites from the world seed: the most open stretches of ocean in the distance band below. " +
+                "Turn off to place a single island at X/Y.");
             readers.Add(s => s.LandmassAuto = auto.Value);
             BindFloat("2 - Landmass", "X", -10000f, 10000f, s => s.LandmassX, (s, v) => s.LandmassX = v, "Centre, east-west (m). Used when AutoPlace is off.");
             BindFloat("2 - Landmass", "Y", -10000f, 10000f, s => s.LandmassY, (s, v) => s.LandmassY = v, "Centre, north-south (m). Used when AutoPlace is off.");
             BindFloat("2 - Landmass", "MinRadius", 1000f, 9500f, s => s.LandmassMinRadius, (s, v) => s.LandmassMinRadius = v, "AutoPlace searches from this distance from the world centre...");
             BindFloat("2 - Landmass", "MaxRadius", 1000f, 9500f, s => s.LandmassMaxRadius, (s, v) => s.LandmassMaxRadius = v, "...to this one. Default 5-8.5 km: past the Plains, alongside the Mistlands.");
             BindFloat("2 - Landmass", "PreferredRadius", 1000f, 9500f, s => s.LandmassPreferredRadius, (s, v) => s.LandmassPreferredRadius = v, "Among equally open sites, prefer this distance.");
-            BindFloat("2 - Landmass", "Length", 500f, 5000f, s => s.LandmassLength, (s, v) => s.LandmassLength = v, "Half-length along the grain (m).");
-            BindFloat("2 - Landmass", "Width", 500f, 5000f, s => s.LandmassWidth, (s, v) => s.LandmassWidth = v, "Half-width across the grain (m).");
+            BindFloat("2 - Landmass", "Length", 500f, 5000f, s => s.LandmassLength, (s, v) => s.LandmassLength = v, "Half-length of the largest island along the grain (m).");
+            BindFloat("2 - Landmass", "Width", 500f, 5000f, s => s.LandmassWidth, (s, v) => s.LandmassWidth = v, "Half-width of the largest island across the grain (m).");
             BindFloat("2 - Landmass", "CoreHeight", 60f, 250f, s => s.LandmassCoreHeight, (s, v) => s.LandmassCoreHeight = v, "Interior height before glens (m above sea). Above 50 becomes Munros.");
             BindFloat("2 - Landmass", "MassifThreshold", -0.5f, 0.5f, s => s.MassifThreshold, (s, v) => s.MassifThreshold = v, "Higher = fewer, smaller hill massifs (Munros) and more open moor.");
             BindFloat("2 - Landmass", "MunroMinHeight", 20f, 100f, s => s.MunroMinHeight, (s, v) => s.MunroMinHeight = v, "Base height (m) where the Munros begin. Lower = more bare hill.");

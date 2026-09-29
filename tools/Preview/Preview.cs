@@ -9,7 +9,7 @@
 // Build & run (Mono):
 //   mcs -out:preview.exe tools/Preview/Preview.cs src/Scotheim/Terrain/*.cs
 //   mono preview.exe out_dir [seed] [size_m] [px] [centre_x centre_y]
-// With no centre given, the window is centred on the landmass.
+// With no centre given, the window covers the whole world.
 // Then: python3 tools/Preview/render.py out_dir
 using System;
 using System.IO;
@@ -110,19 +110,20 @@ static class Preview
     {
         string outDir = args.Length > 0 ? args[0] : "preview_out";
         seed = args.Length > 1 ? int.Parse(args[1]) : 12345;
-        float size = args.Length > 2 ? float.Parse(args[2]) : 8000f;
-        int px = args.Length > 3 ? int.Parse(args[3]) : 800;
+        float size = args.Length > 2 ? float.Parse(args[2]) : 20000f;
+        int px = args.Length > 3 ? int.Parse(args[3]) : 1000;
         Directory.CreateDirectory(outDir);
 
         var settings = new HighlandsSettings();
-        float sx, sy;
-        float open = HighlandsTerrain.FindSite(settings, VanillaBase, out sx, out sy);
-        hl = new HighlandsTerrain(settings, seed, sx, sy);
-        Console.WriteLine(string.Format("site ({0:F0}, {1:F0}), {2:F0} m from centre, {3:P0} open ocean",
-            sx, sy, Math.Sqrt(sx * sx + sy * sy), open));
+        var sites = HighlandsTerrain.FindSites(settings, VanillaBase);
+        hl = new HighlandsTerrain(settings, seed, sites);
+        foreach (var site in sites)
+            Console.WriteLine(string.Format("island at ({0:F0}, {1:F0}), {2:F0} m from centre, size {3:P0}, axis {4:F0} deg, {5:P0} open water",
+                site.X, site.Y, Math.Sqrt(site.X * site.X + site.Y * site.Y), site.Scale, site.Azimuth, site.OpenWater));
 
-        float cx = args.Length > 5 ? float.Parse(args[4]) : sx;
-        float cy = args.Length > 5 ? float.Parse(args[5]) : sy;
+        // Default: the whole world. With a centre given, a window around it.
+        float cx = args.Length > 5 ? float.Parse(args[4]) : 0f;
+        float cy = args.Length > 5 ? float.Parse(args[5]) : 0f;
         float ox = cx - size / 2f, oy = cy - size / 2f;
         foreach (bool mod in new[] { false, true })
         {

@@ -39,9 +39,15 @@ static class Harness
         var world = new World { m_seed = 12345 };
         var wg = new WorldGenerator(world);
         var settings = new HighlandsSettings();
-        float sx, sy;
-        HighlandsTerrain.FindSite(settings, (x, y) => Alt(OriginalBaseHeight.Call(wg, x, y, false)), out sx, out sy);
-        var hl = new HighlandsTerrain(settings, 12345, sx, sy);
+        var sites = HighlandsTerrain.FindSites(settings, (x, y) => Alt(OriginalBaseHeight.Call(wg, x, y, false)));
+        Check(sites.Count == settings.LandmassCount, "placed " + sites.Count + " of " + settings.LandmassCount + " islands");
+        bool apart = true;
+        for (int i = 0; i < sites.Count; i++) for (int j = i + 1; j < sites.Count; j++)
+            if (Math.Sqrt(Math.Pow(sites[i].X - sites[j].X, 2) + Math.Pow(sites[i].Y - sites[j].Y, 2)) < 1.25 * settings.LandmassLength * (sites[i].Scale + sites[j].Scale)) apart = false;
+        Check(apart && sites[0].Scale == 1f && sites[sites.Count - 1].Scale < 0.7f, "islands keep clear of each other and shrink in size");
+        var hl = new HighlandsTerrain(settings, 12345, sites);
+        var site = sites[0];
+        float sx = site.X, sy = site.Y;
         Console.WriteLine("     site " + sx.ToString("F0") + ", " + sy.ToString("F0"));
 
         // Sample a grid over the site and the vanilla strip.
