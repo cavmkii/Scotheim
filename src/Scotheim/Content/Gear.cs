@@ -12,6 +12,8 @@ namespace Scotheim.Content
     /// (model, icon, animations and attacks), with its numbers copied from an Ashlands item (the
     /// "donor") and scaled. Balance therefore follows the game's own Ashlands tier instead of figures
     /// typed in here; where Ashlands has no such weapon, a Mistlands donor is scaled up.
+    /// Recipes use only what the Highlands yield: their own drops and raw materials (bog iron, bog oak,
+    /// hacksilver, cairngorm, rowan) plus vanilla items Highland creatures and trees drop.
     /// </summary>
     static class Gear
     {
@@ -48,112 +50,113 @@ namespace Scotheim.Content
         {
             // --- Clansman weapons (Freedom: swords, axes, clubs)
             new GearSpec { Name = "Scot_Claymore", Look = "THSwordKrom", Donor = "THSwordSlayer",
-                Recipe = new[] { Req("FlametalNew", 10, 5), Req("BlackMetal", 10, 5), Req("Scot_HighlandHide", 3, 1), Req("Scot_TartanCloth", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogIron", 24, 12), Req("Scot_HighlandHide", 5, 3), Req("Scot_TartanCloth", 2, 1), Req("WolfFang", 2, 1) } },
             // After the 1.63 m two-hander at the Wallace Monument, Stirling (its attribution is traditional).
             new GearSpec { Name = "Scot_WallaceSword", Look = "THSwordKrom", Donor = "THSwordSlayer", Damage = 1.2f, Weight = 1.5f, Durability = 1.5f,
                 Tweak = s => s.m_movementModifier -= 0.05f,
-                Recipe = new[] { Req("Scot_GiantHeartstone", 2, 1), Req("FlametalNew", 20, 10), Req("Iron", 15, 5), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
+                Recipe = new[] { Req("Scot_BogIron", 32, 16), Req("Scot_GiantHeartstone", 2, 1), Req("Scot_Cairngorm", 1, 0), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 5, 3) } },
             // The claidheamh soluis of J. F. Campbell's Popular Tales of the West Highlands (1860-62), usually won
             // from a giant. All the donor's elemental damage becomes spirit.
             new GearSpec { Name = "Scot_ClaidheamhSoluis", Look = "SwordMistwalker", Donor = "SwordNiedhogg", Damage = 1.1f, Tweak = ToSpirit,
-                Recipe = new[] { Req("Scot_GiantHeartstone", 3, 1), Req("Scot_SithPelt", 4, 2), Req("FlametalNew", 15, 8), Req("Eitr", 10, 5) } },
+                Recipe = new[] { Req("Scot_BogIron", 16, 8), Req("Scot_GiantHeartstone", 3, 1), Req("Scot_Cairngorm", 1, 0), Req("Scot_SithPelt", 4, 2) } },
             // Robert the Bruce's axe at Bannockburn (1314): one blow killed Henry de Bohun and broke the shaft
             // (Barbour, The Brus, 1370s). Plain steel: elemental damage becomes slash.
             new GearSpec { Name = "Scot_BruceAxe", Look = "AxeJotunBane", Donor = "AxeBerzerkr", Damage = 1.15f, Tweak = ToSlash,
-                Recipe = new[] { Req("Scot_GiantHeartstone", 2, 1), Req("FlametalNew", 15, 8), Req("Blackwood", 6, 3), Req("Scot_HighlandHide", 2, 1) } },
-            // The long-hafted axe of the Hebridean galloglass.
-            new GearSpec { Name = "Scot_Sparth", Look = "BattleaxeBlackmetal", Donor = "BattleaxeSkullSplittur", Tweak = ToSlash,
-                Recipe = new[] { Req("FlametalNew", 12, 6), Req("Blackwood", 8, 4), Req("Scot_HighlandHide", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogIron", 20, 10), Req("Scot_GiantHeartstone", 2, 1), Req("Scot_Cairngorm", 1, 0), Req("Scot_BogOak", 4, 2), Req("Scot_HighlandHide", 3, 1) } },
+            // The long-hafted axe of the Hebridean galloglass. Ashlands has no two-handed axe, so Skullsplittur
+            // (Mistlands) is scaled up, as is Demolisher for the caber.
+            new GearSpec { Name = "Scot_Sparth", Look = "BattleaxeBlackmetal", Donor = "BattleaxeSkullSplittur", Damage = 1.3f, Tweak = ToSlash,
+                Recipe = new[] { Req("Scot_BogIron", 18, 9), Req("Scot_BogOak", 8, 4), Req("Scot_HighlandHide", 3, 1) } },
             // Highland Games, not war. It knocks things a long way.
-            new GearSpec { Name = "Scot_Caber", Look = "SledgeStagbreaker", Donor = "SledgeDemolisher", Force = 1.5f,
-                Recipe = new[] { Req("Blackwood", 25, 12), Req("Scot_HighlandHide", 2, 1) } },
+            new GearSpec { Name = "Scot_Caber", Look = "SledgeStagbreaker", Donor = "SledgeDemolisher", Damage = 1.3f, Force = 1.5f,
+                Recipe = new[] { Req("Scot_BogOak", 30, 15), Req("Scot_BogIron", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
 
             // --- Man-at-arms weapons (Schiltron: blocking, polearms, bows)
             // No Ashlands atgeir exists, so Himminafl is scaled up; its lightning becomes slash.
             new GearSpec { Name = "Scot_LochaberAxe", Look = "AtgeirBlackmetal", Donor = "AtgeirHimminAfl", Damage = 1.3f, Tweak = ToSlash,
-                Recipe = new[] { Req("Blackwood", 10, 5), Req("FlametalNew", 12, 6), Req("Scot_HighlandHide", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 18, 9), Req("Scot_HighlandHide", 2, 1) } },
             // Ettrick Forest's archers fought at Falkirk (1298).
             new GearSpec { Name = "Scot_EttrickBow", Look = "BowHuntsman", Donor = "BowAshlands", Tweak = ToSlash,
-                Recipe = new[] { Req("Blackwood", 10, 5), Req("MorgenSinew", 1, 1), Req("Scot_HighlandHide", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogOak", 12, 6), Req("Scot_KelpieMane", 2, 1), Req("DeerHide", 4, 2) } },
             new GearSpec { Name = "Scot_Targe", Look = "ShieldBanded", Donor = "ShieldFlametal",
-                Recipe = new[] { Req("Blackwood", 8, 4), Req("FlametalNew", 6, 3), Req("Scot_HighlandHide", 4, 2), Req("Scot_TartanCloth", 1, 1) } },
+                Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 8, 4), Req("Scot_HighlandHide", 4, 2), Req("Scot_TartanCloth", 1, 1) } },
             // No Ashlands buckler exists, so the Carapace buckler's block is scaled up.
             new GearSpec { Name = "Scot_PictishShield", Look = "ShieldBronzeBuckler", Donor = "ShieldCarapaceBuckler", Block = 1.3f,
-                Recipe = new[] { Req("Blackwood", 6, 3), Req("Scot_HighlandHide", 3, 1), Req("Silver", 4, 2) } },
+                Recipe = new[] { Req("Scot_BogOak", 8, 4), Req("Scot_Hacksilver", 6, 3), Req("Scot_HighlandHide", 3, 1) } },
 
             // --- Pictish weapons (Woad: spears, knives, crossbows). Crossbows are carved on Pictish stones
             // (St Vigeans, Shandwick, Glenferness).
             new GearSpec { Name = "Scot_PictishSpear", Look = "SpearBronze", Donor = "SpearSplitner", Tweak = ToSlash,
-                Recipe = new[] { Req("Blackwood", 8, 4), Req("FlametalNew", 8, 4), Req("Silver", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 6, 3), Req("Scot_Hacksilver", 4, 2) } },
             new GearSpec { Name = "Scot_PictishCrossbow", Look = "CrossbowArbalest", Donor = "CrossbowRipper", Tweak = ToSlash,
-                Recipe = new[] { Req("Blackwood", 10, 5), Req("FlametalNew", 6, 3), Req("Scot_MartenPelt", 2, 1), Req("Silver", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 8, 4), Req("Scot_KelpieMane", 1, 1), Req("Scot_MartenPelt", 2, 1), Req("Scot_Hacksilver", 2, 1) } },
             // No Ashlands knife exists, so Skoll and Hati is scaled up.
             new GearSpec { Name = "Scot_Dirk", Look = "KnifeBlackMetal", Donor = "KnifeSkollAndHati", Damage = 1.4f,
-                Recipe = new[] { Req("FlametalNew", 6, 3), Req("Blackwood", 2, 1), Req("Scot_MartenPelt", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogIron", 10, 5), Req("Scot_BogOak", 2, 1), Req("Scot_MartenPelt", 2, 1) } },
 
             // --- Sìth staves (Glamour: elemental and blood magic). Made at the galdr table.
             // The Cailleach Bheur, the winter hag who shaped the hills. No Ashlands frost staff exists.
             new GearSpec { Name = "Scot_CailleachStaff", Look = "StaffIceShards", Donor = "StaffIceShards", Damage = 1.4f, Station = Galdr,
-                Recipe = new[] { Req("Blackwood", 10, 5), Req("Scot_SithPelt", 3, 1), Req("Eitr", 16, 8), Req("GemstoneBlue", 1, 1) } },
+                Recipe = new[] { Req("Scot_RowanWood", 15, 8), Req("Scot_SithPelt", 3, 1), Req("Scot_Cairngorm", 1, 1), Req("Crystal", 6, 3) } },
             // After the Brahan Seer's stone. A protective ward; its strength comes from Blood magic skill.
             new GearSpec { Name = "Scot_SeerStone", Look = "StaffShield", Donor = "StaffShield", Station = Galdr,
-                Recipe = new[] { Req("Blackwood", 10, 5), Req("Scot_WashersShroud", 3, 1), Req("Eitr", 16, 8), Req("GemstoneRed", 1, 1) } },
+                Recipe = new[] { Req("Scot_RowanWood", 15, 8), Req("Scot_WashersShroud", 3, 1), Req("Scot_Cairngorm", 1, 1) } },
 
             // --- Pictish set: light and quick. Each piece also takes the matching Fenris (werewolf) piece's movement speed.
             new GearSpec { Name = "Scot_PictishChain", Look = "HelmetDverger", Donor = "HelmetAshlandsMediumHood", Armor = 0.75f, Weight = 0.5f, Set = "pictish", MovementFrom = "HelmetFenring",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Silver", 20, 10), Req("FlametalNew", 4, 2), Req("Scot_GiantHeartstone", 1, 0) } },
+                Recipe = new[] { Req("Scot_Hacksilver", 16, 8), Req("Scot_GiantHeartstone", 1, 0) } },
             new GearSpec { Name = "Scot_PictishJerkin", Look = "ArmorLeatherChest", Donor = "ArmorAshlandsMediumChest", Armor = 0.75f, Weight = 0.5f, Set = "pictish", MovementFrom = "ArmorFenringChest",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_HighlandHide", 6, 3), Req("AskHide", 4, 2), Req("Silver", 4, 2) } },
+                Recipe = new[] { Req("Scot_HighlandHide", 10, 5), Req("Scot_Hacksilver", 4, 2), Req("Scot_MartenPelt", 2, 1) } },
             new GearSpec { Name = "Scot_PictishTrews", Look = "ArmorLeatherLegs", Donor = "ArmorAshlandsMediumlegs", Armor = 0.75f, Weight = 0.5f, Set = "pictish", MovementFrom = "ArmorFenringLegs",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_Wool", 10, 5), Req("AskHide", 4, 2), Req("Silver", 2, 1) } },
+                Recipe = new[] { Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 6, 3), Req("Scot_Hacksilver", 2, 1) } },
 
             // --- Clansman set ("Braveheart"): the film's look, not the 1290s.
             new GearSpec { Name = "Scot_BlueBonnet", Look = "HelmetLeather", Donor = "HelmetAshlandsMediumHood", Armor = 0.9f, Weight = 0.6f, Set = "clansman",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_Wool", 6, 3), Req("Scot_Blaeberries", 4, 2), Req("AskHide", 2, 1) } },
+                Recipe = new[] { Req("Scot_Wool", 10, 5), Req("Scot_Blaeberries", 4, 2), Req("Scot_HighlandHide", 2, 1) } },
             new GearSpec { Name = "Scot_Leine", Look = "ArmorRagsChest", Donor = "ArmorAshlandsMediumChest", Armor = 0.9f, Weight = 0.6f, Set = "clansman",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("LinenThread", 10, 5), Req("AskHide", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
+                Recipe = new[] { Req("Scot_Wool", 12, 6), Req("Scot_HighlandHide", 8, 4) } },
             new GearSpec { Name = "Scot_Kilt", Look = "ArmorRagsLegs", Donor = "ArmorAshlandsMediumlegs", Armor = 0.9f, Weight = 0.6f, Set = "clansman",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_TartanCloth", 6, 3), Req("AskHide", 2, 1), Req("Scot_HighlandHide", 2, 1) } },
+                Recipe = new[] { Req("Scot_TartanCloth", 8, 4), Req("Scot_HighlandHide", 6, 3) } },
 
             // --- Man-at-arms set: Wars of Independence steel. Either chest piece counts.
             new GearSpec { Name = "Scot_Knapskull", Look = "HelmetPadded", Donor = "HelmetFlametal", Set = "manatarms",
-                Recipe = new[] { Req("FlametalNew", 10, 5), Req("Iron", 6, 3), Req("Scot_MartenPelt", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogIron", 16, 8), Req("Scot_MartenPelt", 2, 1), Req("Scot_HighlandHide", 2, 1) } },
             new GearSpec { Name = "Scot_Brigandine", Look = "ArmorIronChest", Donor = "ArmorFlametalChest", Set = "manatarms",
-                Recipe = new[] { Req("FlametalNew", 20, 10), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
+                Recipe = new[] { Req("Scot_BogIron", 20, 10), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2), Req("TrollHide", 3, 1) } },
             // Quilted and light: the Ask chest's numbers, no movement penalty.
             new GearSpec { Name = "Scot_Acton", Look = "ArmorPaddedCuirass", Donor = "ArmorAshlandsMediumChest", Set = "manatarms",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_TartanCloth", 6, 3), Req("Scot_Wool", 10, 5), Req("AskHide", 4, 2) } },
+                Recipe = new[] { Req("Scot_TartanCloth", 10, 5), Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 6, 3) } },
             new GearSpec { Name = "Scot_Chausses", Look = "ArmorIronLegs", Donor = "ArmorFlametalLegs", Set = "manatarms",
-                Recipe = new[] { Req("FlametalNew", 14, 7), Req("Iron", 6, 3), Req("Scot_HighlandHide", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogIron", 20, 10), Req("Scot_HighlandHide", 4, 2), Req("Chain", 2, 1) } },
 
             // --- Sìth set: faerie glamour, for eitr magic. Made at the galdr table.
             new GearSpec { Name = "Scot_SithCrown", Look = "HelmetMidsummerCrown", Donor = "HelmetMage_Ashlands", Set = "sith", Station = Galdr,
-                Recipe = new[] { Req("Scot_SithPelt", 2, 1), Req("Scot_Blaeberries", 6, 3), Req("Eitr", 10, 5) } },
+                Recipe = new[] { Req("Scot_RowanWood", 8, 4), Req("Scot_Blaeberries", 6, 3), Req("Scot_SithPelt", 2, 1), Req("Scot_Cairngorm", 1, 0) } },
             new GearSpec { Name = "Scot_SithRobe", Look = "ArmorMageChest", Donor = "ArmorMageChest_Ashlands", Set = "sith", Station = Galdr,
-                Recipe = new[] { Req("Scot_SithPelt", 4, 2), Req("Scot_KelpieMane", 4, 2), Req("JuteBlue", 6, 3), Req("Eitr", 20, 10) } },
+                Recipe = new[] { Req("Scot_SithPelt", 4, 2), Req("Scot_KelpieMane", 4, 2), Req("Scot_WashersShroud", 2, 1), Req("Scot_Wool", 10, 5) } },
             new GearSpec { Name = "Scot_SithLeggings", Look = "ArmorMageLegs", Donor = "ArmorMageLegs_Ashlands", Set = "sith", Station = Galdr,
-                Recipe = new[] { Req("Scot_SithPelt", 3, 1), Req("Scot_KelpieMane", 2, 1), Req("JuteBlue", 4, 2), Req("Eitr", 15, 5) } },
+                Recipe = new[] { Req("Scot_SithPelt", 3, 1), Req("Scot_KelpieMane", 2, 1), Req("Scot_Wool", 8, 4) } },
 
             // --- Capes: Ashlands (Ash cape) numbers, each with its own twist.
             new GearSpec { Name = "Scot_PictishCloak", Look = "CapeDeerHide", Donor = "CapeAsh",
                 Tweak = s => s.m_movementModifier += 0.05f,
-                Recipe = new[] { Req("Scot_MartenPelt", 6, 3), Req("AskHide", 2, 1), Req("Silver", 2, 1) } },
+                Recipe = new[] { Req("Scot_MartenPelt", 8, 4), Req("Scot_Hacksilver", 2, 1) } },
             new GearSpec { Name = "Scot_BeltedPlaid", Look = "CapeTrollHide", Donor = "CapeAsh", EquipEffect = "plaid",
-                Recipe = new[] { Req("Scot_TartanCloth", 8, 4), Req("Scot_Wool", 4, 2), Req("AskHide", 2, 1) } },
+                Recipe = new[] { Req("Scot_TartanCloth", 10, 5), Req("Scot_Wool", 4, 2) } },
             new GearSpec { Name = "Scot_SaltireCape", Look = "CapeLinen", Donor = "CapeAsh",
-                Recipe = new[] { Req("LinenThread", 10, 5), Req("JuteBlue", 4, 2), Req("Scot_TartanCloth", 2, 1), Req("AskHide", 2, 1) } },
+                Recipe = new[] { Req("Scot_Wool", 10, 5), Req("Scot_TartanCloth", 2, 1), Req("Scot_Blaeberries", 4, 2) } },
             // The Bratach Sìth of the MacLeods, kept at Dunvegan; said to bring victory when unfurled.
             // Keeps the feather cape's look, numbers and slow fall; adds resistance to pierce.
             new GearSpec { Name = "Scot_FairyFlag", Look = "CapeFeather", Donor = "CapeFeather", Station = Galdr,
                 Tweak = s => s.m_damageModifiers.Add(new HitData.DamageModPair { m_type = HitData.DamageType.Pierce, m_modifier = HitData.DamageModifier.Resistant }),
-                Recipe = new[] { Req("Scot_WashersShroud", 3, 1), Req("Scot_SithPelt", 2, 1), Req("LinenThread", 10, 5), Req("JuteRed", 4, 2) } },
+                Recipe = new[] { Req("Scot_WashersShroud", 3, 1), Req("Scot_SithPelt", 2, 1), Req("Scot_Wool", 10, 5), Req("Scot_Blaeberries", 4, 2) } },
         };
 
         internal static void Add()

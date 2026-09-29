@@ -59,7 +59,8 @@ vegetation = yaml.safe_load((data / "expand_vegetation_scotheim.yaml").read_text
 items = dict(re.findall(r'Name = "(Scot_\w+)", Base = "(\w+)"', content.split("ItemSpec[] Items")[1].split("static void AddItems")[0]))
 creatures = dict(re.findall(r'Name = "(Scot_\w+)", Base = "(\w+)"', content.split("CreatureSpec[] Creatures")[1]))
 gear = {n: (look, donor) for n, look, donor in re.findall(r'Name = "(Scot_\w+)", Look = "(\w+)", Donor = "(\w+)"', gear_src)}
-prefabs = {"Scot_BlaeberryBush"} if 'CreateClonedPrefab("Scot_BlaeberryBush", "BlueberryBush")' in content else set()
+pickables = re.findall(r'AddPickable\(added, "(Scot_\w+)", "(\w+)", "(Scot_\w+)"\)', content)
+prefabs = {p for p, _, _ in pickables}
 
 # --- spawns
 bad_keys = sorted({k for s in spawns for k in s} - SPAWN_FIELDS)
@@ -85,6 +86,11 @@ check(not veg_custom, "vegetation Scot_ prefabs are defined in Content" + (": " 
 veg_vanilla = sorted({v["prefab"] for v in vegetation if not v["prefab"].startswith("Scot_")} - vanilla_prefabs)
 check(not veg_vanilla, "vegetation vanilla prefabs exist" + (": " + ", ".join(veg_vanilla) if veg_vanilla else ""))
 
+bad = sorted({b for _, b, _ in pickables} - vanilla_prefabs) + sorted({i for _, _, i in pickables} - set(items))
+check(not bad, "%d pickables copy real prefabs and yield Scotheim items" % len(pickables) + (": " + ", ".join(bad) if bad else ""))
+unplaced = sorted(prefabs - {v["prefab"] for v in vegetation})
+check(not unplaced, "every pickable is placed in the vegetation file" + (": " + ", ".join(unplaced) if unplaced else ""))
+
 # --- content
 bad = sorted(b for b in items.values() if b not in vanilla_items)
 check(not bad, "item bases are vanilla items" + (": " + ", ".join(bad) if bad else ""))
@@ -104,6 +110,12 @@ check(stations <= vanilla_prefabs, "crafting stations exist (" + ", ".join(sorte
 bad = sorted({v for pair in gear.values() for v in pair} - vanilla_items)
 check(len(gear) == 32 and not bad, "%d gear pieces; looks and stat donors are vanilla items" % len(gear) + (": " + ", ".join(bad) if bad else ""))
 needed = set(re.findall(r'Req\("(\w+)"', gear_src))
+# Only what the Highlands yield: Scotheim items, plus vanilla items Highland trees, rocks and creatures drop
+# (hill wolves: wolf fang and pelt; fuath: troll hide; hill giants: crystal; bean-nighe: chain; red deer: deer hide).
+HIGHLAND_VANILLA = {"Wood", "FineWood", "RoundLog", "Resin", "Stone", "Flint", "DeerHide", "WolfPelt", "WolfFang",
+                    "TrollHide", "Crystal", "Chain", "Coins"}
+foreign = sorted(n for n in needed if not n.startswith("Scot_") and n not in HIGHLAND_VANILLA)
+check(not foreign, "gear recipes use only Highland materials" + (": foreign " + ", ".join(foreign) if foreign else ""))
 bad = sorted(n for n in needed if n not in items and n not in vanilla_items)
 check(not bad, "gear recipes name real items (" + ", ".join(sorted(needed)) + ")" + (": missing " + ", ".join(bad) if bad else ""))
 stations = set(re.findall(r'const string \w+ = "((?:piece_|blackforge)\w*)"', gear_src)) | set(re.findall(r'Station = "(\w+)"', gear_src))
@@ -128,6 +140,25 @@ check(icons <= effects, "set bonus icons come from vanilla status effects (" + "
 for kind, defined in (("item", items), ("creature", creatures), ("gear piece", gear)):
     missing = sorted(n for n in defined if '{ "%s", ' % n not in localization)
     check(not missing, "every %s has English text" % kind + (": " + ", ".join(missing) if missing else ""))
+
+# --- data file upgrades: every version a release wrote must be listed in ExpandWorld.Shipped, or players
+# holding that version get the new default only as a .new file.
+import hashlib, subprocess
+ew = (root / "src/Scotheim/Patches/ExpandWorld.cs").read_text(encoding="utf-8")
+shipped = {k: set(v.split('", "')) for k, v in re.findall(r'\{ (?:FileName|"(expand_\w+\.yaml)"), new\[\] \{ "([^}]*)" \} \}', ew) if k} 
+shipped["expand_biomes_scotheim.yaml"] = set(re.search(r'\{ FileName, new\[\] \{ "([^}]*)" \} \}', ew).group(1).split('", "'))
+def fingerprint(text):
+    return hashlib.sha256(text.replace("\r", "").encode("utf-8")).hexdigest()[:16]
+try:
+    for f in sorted((data).glob("expand_*.yaml")):
+        rel = "src/Scotheim/Data/" + f.name
+        current = fingerprint(f.read_text(encoding="utf-8"))
+        commits = subprocess.run(["git", "log", "--format=%H", "--", rel], cwd=root, capture_output=True, text=True).stdout.split()
+        past = {fingerprint(subprocess.run(["git", "show", c + ":" + rel], cwd=root, capture_output=True, text=True).stdout) for c in commits}
+        missing = sorted(past - {current} - shipped.get(f.name, set()))
+        check(not missing, "every released version of %s is upgradable" % f.name + (": missing " + ", ".join(missing) if missing else ""))
+except FileNotFoundError:
+    print("SKIP data file upgrade check (no git)")
 
 print("ALL PASS" if fails == 0 else "%d FAILED" % fails)
 sys.exit(1 if fails else 0)
