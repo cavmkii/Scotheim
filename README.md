@@ -84,16 +84,18 @@ Each piece is a clone of a vanilla item that **looks** right, with its numbers c
 | Claidheamh Soluis | Mistwalker | Mistwalker | 120 % damage, frost becomes spirit |
 | Wallace sword | Krom | Krom | 130 % damage, 150 % weight and durability, −5 % movement |
 
-**Armour sets.** Four pieces each (head, chest, legs and cape). Wearing all four gives the set bonus. Each bonus is a new status effect; only its icon is borrowed from a vanilla set bonus.
+**Armour sets.** Head, chest and legs make a set, and wearing all three gives the bonus. Capes stand alone, as in vanilla. Each bonus is a new status effect; only its icon is borrowed from a vanilla set bonus.
 
 | Set | Pieces (looks like) | Armour | Set bonus |
 |---|---|---|---|
-| **Pictish** | Silver chain (Dverger circlet), jerkin (leather tunic), trews (leather pants), cloak (deer hide cape) | 60–70 % of Carapace, half weight, no movement penalty | **Woad**: +15 Sneak, +15 Spears, −15 % run stamina drain |
-| **Clansman** | Blue bonnet (leather helmet), léine (rag tunic), kilt (rag pants), belted plaid (troll hide cape) | 80–85 % of Carapace, 60 % weight, no movement penalty | **Freedom**: +15 Swords, +15 Axes, +25 % stamina regen |
-| **Man-at-arms** | Knapskull (padded helmet), brigandine (iron scale) *or* acton (padded cuirass), chausses (iron greaves), saltire cape (linen cape) | Brigandine and chausses 115 % of Carapace and heavier; acton 80 % and light | **Schiltron**: +15 Blocking, +15 Polearms, resistant to pierce |
-| **Sìth** | Crown of the Sìth (Midsummer crown), robe and leggings (Eitr-weave), Fairy Flag (feather cape) | Eitr-weave's numbers and eitr regen | **Glamour**: +15 Elemental magic, +15 Sneak, +50 % eitr regen |
+| **Pictish** | Silver chain (Dverger circlet), jerkin (leather tunic), trews (leather pants) | 60–70 % of Carapace, half weight; each piece also gets the matching Fenris piece's movement speed | **Woad**: +15 Sneak, +15 Spears, −15 % run stamina drain, plus the Fenris set bonus's running effects |
+| **Clansman** | Blue bonnet (leather helmet), léine (rag tunic), kilt (rag pants) | 80–85 % of Carapace, 60 % weight, no movement penalty | **Freedom**: +15 Swords, +15 Axes, +25 % stamina regen |
+| **Man-at-arms** | Knapskull (padded helmet), brigandine (iron scale) *or* acton (padded cuirass), chausses (iron greaves) | Brigandine and chausses 115 % of Carapace and heavier; acton 80 % and light | **Schiltron**: +15 Blocking, +15 Polearms, resistant to pierce |
+| **Sìth** | Crown of the Sìth (Midsummer crown), robe and leggings (Eitr-weave) | Eitr-weave's numbers and eitr regen | **Glamour**: +15 Elemental magic, +15 Sneak, +50 % eitr regen |
 
-Capes take their numbers from the feather cape. The Fairy Flag also resists pierce and keeps the feather cape's slow fall. Upgrades cost roughly half the base materials per level.
+The Fenris borrowing happens at load time: Woad adds whatever Run skill bonus, run stamina change and speed the Fenris set bonus has, and the log prints exactly what was taken.
+
+**Capes**, one to match each set: Pictish cloak (deer hide cape), belted plaid (troll hide cape), saltire cape (linen cape) and the Fairy Flag (feather cape). All take their numbers from the feather cape. The Fairy Flag, made at the galdr table, also resists pierce and keeps the feather cape's slow fall. Upgrades cost roughly half the base materials per level.
 
 On the sources:
 

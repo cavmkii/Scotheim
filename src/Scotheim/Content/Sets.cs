@@ -8,16 +8,17 @@ namespace Scotheim.Content
 {
     /// <summary>
     /// Set bonuses for the four Highland armour sets. Each is a fresh SE_Stats (no inherited effects),
-    /// borrowing only its icon from a vanilla set bonus. Four pieces make a set: head, chest, legs, cape.
+    /// borrowing only its icon from a vanilla set bonus. Three pieces make a set: head, chest and legs.
+    /// Capes stand alone, as in vanilla.
     /// </summary>
     static class Sets
     {
-        internal const int Size = 4;
+        internal const int Size = 3;
 
         sealed class SetSpec
         {
             public string Id, Name, Tooltip, Icon;
-            public Action<SE_Stats> Configure;
+            public Action<SE_ScotSet> Configure;
         }
 
         // Skill bonuses follow vanilla's +15 per set skill; regen and drain changes stay near vanilla sets too.
@@ -72,6 +73,41 @@ namespace Scotheim.Content
             },
         };
 
+        /// <summary>
+        /// Adds the Fenris (werewolf) set bonus's running effects to Woad, on top of its own: any Run skill
+        /// bonus, run stamina change and movement speed. Read from the game, so it tracks vanilla's values.
+        /// </summary>
+        static void BorrowFenrisRun(SE_ScotSet woad)
+        {
+            var fenris = PrefabManager.Cache.GetPrefab<StatusEffect>("SetEffect_FenringArmor") as SE_Stats;
+            if (fenris == null)
+            {
+                Plugin.Log.LogWarning("Woad: SetEffect_FenringArmor not found, so no Fenris run bonus.");
+                return;
+            }
+            var taken = new List<string>();
+            foreach (var skill in new[] { new KeyValuePair<Skills.SkillType, float>(fenris.m_skillLevel, fenris.m_skillLevelModifier),
+                                          new KeyValuePair<Skills.SkillType, float>(fenris.m_skillLevel2, fenris.m_skillLevelModifier2) })
+            {
+                if (skill.Key != Skills.SkillType.Run || skill.Value == 0f) continue;
+                woad.m_extraSkills.Add(skill);
+                woad.m_tooltip += "\nRun +" + skill.Value;
+                taken.Add("Run +" + skill.Value);
+            }
+            if (fenris.m_runStaminaDrainModifier != 0f)
+            {
+                woad.m_runStaminaDrainModifier += fenris.m_runStaminaDrainModifier;
+                taken.Add("run stamina " + fenris.m_runStaminaDrainModifier.ToString("+0%;-0%"));
+            }
+            if (fenris.m_speedModifier != 0f)
+            {
+                woad.m_speedModifier += fenris.m_speedModifier;
+                taken.Add("speed " + fenris.m_speedModifier.ToString("+0%;-0%"));
+            }
+            if (taken.Count == 0) Plugin.Log.LogWarning("Woad: the Fenris set bonus has no running effect to borrow.");
+            else Plugin.Log.LogInfo("Woad: added from the Fenris set bonus: " + string.Join(", ", taken.ToArray()) + ".");
+        }
+
         internal static string NameToken(string id) => "$se_scot_" + id;
         internal static string TooltipToken(string id) => "$se_scot_" + id + "_tooltip";
 
@@ -92,7 +128,7 @@ namespace Scotheim.Content
             {
                 try
                 {
-                    var se = ScriptableObject.CreateInstance<SE_Stats>();
+                    var se = ScriptableObject.CreateInstance<SE_ScotSet>();
                     se.name = "SetEffect_Scot_" + spec.Id;
                     se.m_name = NameToken(spec.Id);
                     se.m_tooltip = TooltipToken(spec.Id);
@@ -100,6 +136,7 @@ namespace Scotheim.Content
                     if (icon != null) se.m_icon = icon.m_icon;
                     else Plugin.Log.LogWarning("Set bonus " + spec.Name + " has no icon: " + spec.Icon + " not found.");
                     spec.Configure(se);
+                    if (spec.Id == "pictish") BorrowFenrisRun(se);
                     ItemManager.Instance.AddStatusEffect(new CustomStatusEffect(se, false));
                     added[spec.Id] = se;
                 }
@@ -109,6 +146,19 @@ namespace Scotheim.Content
                 }
             }
             return added;
+        }
+    }
+
+    /// <summary>SE_Stats has two skill slots; this carries more (Woad's third, from the Fenris set).</summary>
+    public class SE_ScotSet : SE_Stats
+    {
+        public List<KeyValuePair<Skills.SkillType, float>> m_extraSkills = new List<KeyValuePair<Skills.SkillType, float>>();
+
+        public override void ModifySkillLevel(Skills.SkillType skill, ref float value)
+        {
+            base.ModifySkillLevel(skill, ref value);
+            foreach (var extra in m_extraSkills)
+                if (extra.Key == skill) value += extra.Value;
         }
     }
 }

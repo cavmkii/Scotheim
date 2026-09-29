@@ -20,6 +20,7 @@ namespace Scotheim.Content
             public string Name, Look, Donor;
             public float Damage = 1f, Armor = 1f, Weight = 1f, Durability = 1f;
             public string Set; // id of the armour set this piece belongs to (see Sets)
+            public string MovementFrom; // take this vanilla item's movement bonus, if it has one
             public Action<ItemDrop.ItemData.SharedData> Tweak;
             public RequirementConfig[] Recipe;
             public string Station = Forge;
@@ -70,15 +71,16 @@ namespace Scotheim.Content
                 Recipe = new[] { Req("FineWood", 8, 4), Req("Scot_HighlandHide", 3, 1), Req("Silver", 2, 1) } },
 
             // --- Pictish set: light and quick. Only the silver chain has evidence behind it.
-            new GearSpec { Name = "Scot_PictishChain", Look = "HelmetDverger", Donor = "HelmetCarapace", Armor = 0.6f, Weight = 0.5f, Set = "pictish",
+            // Each piece also takes the matching Fenris (werewolf) piece's movement speed.
+            new GearSpec { Name = "Scot_PictishChain", Look = "HelmetDverger", Donor = "HelmetCarapace", Armor = 0.6f, Weight = 0.5f, Set = "pictish", MovementFrom = "HelmetFenring",
                 Recipe = new[] { Req("Silver", 20, 10), Req("Scot_GiantHeartstone", 1, 0) } },
-            new GearSpec { Name = "Scot_PictishJerkin", Look = "ArmorLeatherChest", Donor = "ArmorCarapaceChest", Armor = 0.7f, Weight = 0.5f, Set = "pictish",
+            new GearSpec { Name = "Scot_PictishJerkin", Look = "ArmorLeatherChest", Donor = "ArmorCarapaceChest", Armor = 0.7f, Weight = 0.5f, Set = "pictish", MovementFrom = "ArmorFenringChest",
                 Tweak = s => s.m_movementModifier = 0f,
                 Recipe = new[] { Req("Scot_HighlandHide", 6, 3), Req("ScaleHide", 6, 3), Req("Silver", 4, 2) } },
-            new GearSpec { Name = "Scot_PictishTrews", Look = "ArmorLeatherLegs", Donor = "ArmorCarapaceLegs", Armor = 0.7f, Weight = 0.5f, Set = "pictish",
+            new GearSpec { Name = "Scot_PictishTrews", Look = "ArmorLeatherLegs", Donor = "ArmorCarapaceLegs", Armor = 0.7f, Weight = 0.5f, Set = "pictish", MovementFrom = "ArmorFenringLegs",
                 Tweak = s => s.m_movementModifier = 0f,
                 Recipe = new[] { Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 4, 2), Req("Silver", 2, 1) } },
-            new GearSpec { Name = "Scot_PictishCloak", Look = "CapeDeerHide", Donor = "CapeFeather", Set = "pictish",
+            new GearSpec { Name = "Scot_PictishCloak", Look = "CapeDeerHide", Donor = "CapeFeather",
                 Recipe = new[] { Req("Scot_MartenPelt", 6, 3), Req("Scot_HighlandHide", 2, 1), Req("Silver", 2, 1) } },
 
             // --- Clansman set ("Braveheart"): the film's look, not the 1290s. Light, for two-handers.
@@ -90,7 +92,7 @@ namespace Scotheim.Content
             new GearSpec { Name = "Scot_Kilt", Look = "ArmorRagsLegs", Donor = "ArmorCarapaceLegs", Armor = 0.85f, Weight = 0.6f, Set = "clansman",
                 Tweak = s => s.m_movementModifier = 0f,
                 Recipe = new[] { Req("Scot_TartanCloth", 6, 3), Req("Scot_HighlandHide", 2, 1) } },
-            new GearSpec { Name = "Scot_BeltedPlaid", Look = "CapeTrollHide", Donor = "CapeFeather", Set = "clansman",
+            new GearSpec { Name = "Scot_BeltedPlaid", Look = "CapeTrollHide", Donor = "CapeFeather",
                 Recipe = new[] { Req("Scot_TartanCloth", 8, 4), Req("Scot_Wool", 4, 2) } },
 
             // --- Man-at-arms set: Wars of Independence steel. Heavy; either chest piece counts.
@@ -104,7 +106,7 @@ namespace Scotheim.Content
                 Recipe = new[] { Req("BlackMetal", 20, 10), Req("Iron", 10, 5), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
             new GearSpec { Name = "Scot_Chausses", Look = "ArmorIronLegs", Donor = "ArmorCarapaceLegs", Armor = 1.15f, Weight = 1.3f, Set = "manatarms",
                 Recipe = new[] { Req("BlackMetal", 14, 7), Req("Iron", 10, 5), Req("Scot_HighlandHide", 2, 1) } },
-            new GearSpec { Name = "Scot_SaltireCape", Look = "CapeLinen", Donor = "CapeFeather", Set = "manatarms",
+            new GearSpec { Name = "Scot_SaltireCape", Look = "CapeLinen", Donor = "CapeFeather",
                 Recipe = new[] { Req("LinenThread", 10, 5), Req("JuteBlue", 4, 2), Req("Scot_TartanCloth", 2, 1) } },
 
             // --- Sìth set: faerie glamour, for eitr magic. Made at the galdr table.
@@ -116,7 +118,7 @@ namespace Scotheim.Content
                 Recipe = new[] { Req("Scot_SithPelt", 3, 1), Req("Scot_KelpieMane", 2, 1), Req("JuteBlue", 4, 2), Req("Eitr", 10, 5) } },
             // The Bratach Sìth of the MacLeods, kept at Dunvegan; said to bring victory when unfurled.
             // Keeps the feather cape's look and its slow fall; adds resistance to pierce.
-            new GearSpec { Name = "Scot_FairyFlag", Look = "CapeFeather", Donor = "CapeFeather", Set = "sith", Station = "piece_magetable",
+            new GearSpec { Name = "Scot_FairyFlag", Look = "CapeFeather", Donor = "CapeFeather", Station = "piece_magetable",
                 Tweak = s => s.m_damageModifiers.Add(new HitData.DamageModPair { m_type = HitData.DamageType.Pierce, m_modifier = HitData.DamageModifier.Resistant }),
                 Recipe = new[] { Req("Scot_WashersShroud", 3, 1), Req("Scot_SithPelt", 2, 1), Req("LinenThread", 10, 5), Req("JuteRed", 4, 2) } },
         };
@@ -150,6 +152,7 @@ namespace Scotheim.Content
                     var s = item.ItemDrop.m_itemData.m_shared;
                     CopyStats(donor.m_itemData.m_shared, s, spec);
                     if (spec.Tweak != null) spec.Tweak(s);
+                    if (spec.MovementFrom != null) BorrowMovement(spec, s);
                     StatusEffect bonus;
                     if (spec.Set != null && bonuses.TryGetValue(spec.Set, out bonus))
                     {
@@ -164,6 +167,21 @@ namespace Scotheim.Content
                     Plugin.Log.LogError("Couldn't add " + spec.Name + ": " + e);
                 }
             }
+        }
+
+        static void BorrowMovement(GearSpec spec, ItemDrop.ItemData.SharedData to)
+        {
+            var source = PrefabManager.Cache.GetPrefab<GameObject>(spec.MovementFrom);
+            var item = source != null ? source.GetComponent<ItemDrop>() : null;
+            if (item == null)
+            {
+                Plugin.Log.LogWarning(spec.Name + ": " + spec.MovementFrom + " not found; no movement bonus.");
+                return;
+            }
+            var bonus = item.m_itemData.m_shared.m_movementModifier;
+            if (bonus > 0f) to.m_movementModifier += bonus;
+            Plugin.Log.LogInfo(spec.Name + ": movement " + to.m_movementModifier.ToString("+0%;-0%;0%") +
+                " (" + spec.MovementFrom + " gives " + bonus.ToString("+0%;-0%;0%") + ").");
         }
 
         // Numbers only. Attacks, animations and item type stay the look's, so a knife still swings like a knife.
