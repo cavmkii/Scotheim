@@ -10,9 +10,6 @@
     <RootNamespace>Scotheim</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <!-- JotunnLib ships only a net462 build; like assembly_valheim, it loads fine under the game's Mono. -->
-    <AssetTargetFallback>$(AssetTargetFallback);net462</AssetTargetFallback>
-    <NoWarn>$(NoWarn);NU1701</NoWarn>
     <ValheimDir Condition="'$(ValheimDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</ValheimDir>
     <ManagedDir>$(ValheimDir)\valheim_Data\Managed</ManagedDir>
     <BepInExDir>$(ValheimDir)\BepInEx\core</BepInExDir>
@@ -32,10 +29,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Only the compile-time Jotunn.dll: the package's build props would add references to publicized
-         game assemblies that exist only after Jötunn's own prebuild step. Players install Jötunn separately. -->
-    <PackageReference Include="JotunnLib" Version="2.30.2" ExcludeAssets="build;buildTransitive" PrivateAssets="all" />
+    <!-- NuGet only downloads JotunnLib; nothing from it is applied automatically (its build props would add
+         references to publicized game assemblies). Jotunn.dll is referenced by path below instead: it targets
+         net462, which NuGet won't hand to a netstandard2.1 project. Players install Jötunn separately.
+         Override with -p:JotunnDll="...\Jotunn.dll" to build against another copy. -->
+    <PackageReference Include="JotunnLib" Version="2.30.2" GeneratePathProperty="true" ExcludeAssets="all" PrivateAssets="all" />
   </ItemGroup>
+
+  <PropertyGroup>
+    <JotunnDll Condition="'$(JotunnDll)' == ''">$(PkgJotunnLib)\lib\net462\Jotunn.dll</JotunnDll>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Jotunn"><HintPath>$(JotunnDll)</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <Target Name="CheckJotunn" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(JotunnDll)')" Text="Jotunn.dll not found at '$(JotunnDll)'. Run the build again so NuGet restores JotunnLib, or pass -p:JotunnDll=&quot;path\to\Jotunn.dll&quot;." />
+  </Target>
 
   <!-- Also produce bin\<Config>\Scotheim.zip (just the DLL) for mod managers such as Vortex. -->
   <Target Name="PackageForModManagers" AfterTargets="Build">
