@@ -3,10 +3,12 @@ using System.Collections.Generic;
 
 namespace Scotheim.Terrain
 {
-    /// <summary>Where the landmass goes: centre, ellipse orientation, and how open the water there was.</summary>
+    /// <summary>Where one island goes: centre, size, ellipse orientation, and how open the water there was.</summary>
     public sealed class LandmassSite
     {
         public float X, Y;
+        /// <summary>Size relative to LandmassLength/LandmassWidth.</summary>
+        public float Scale = 1f;
         /// <summary>Direction of the ellipse's long axis, degrees clockwise from north.</summary>
         public float Azimuth;
         /// <summary>Fraction of the footprint that was open water in the vanilla world (1 = no vanilla land touched).</summary>
@@ -17,11 +19,12 @@ namespace Scotheim.Terrain
     public enum HighlandBiome { None, Moor, Forest, Munros }
 
     /// <summary>
-    /// The Highlands landmass: a new island raised out of open ocean, holding three biomes.
+    /// The Highlands: new islands raised out of open ocean, holding three biomes.
     ///
     /// Stage A (<see cref="LandBase"/>, <see cref="CarveBase"/>) edits Valheim's base height field:
-    /// the island is blended in over the sea floor, then glens are carved into it. Nothing changes
-    /// outside the island, so vanilla land is untouched. <see cref="Classify"/> then assigns the
+    /// each island is blended in over the sea floor (where islands meet, the higher ground wins, so
+    /// shelves merge smoothly), then glens are carved in. Nothing changes outside the islands, so
+    /// vanilla land is untouched. <see cref="Classify"/> then assigns the
     /// biomes from that carved base: Munros above 50 m, Caledonian Forest in glens and patches on
     /// the lower ground, Moor elsewhere.
     ///
@@ -75,23 +78,38 @@ namespace Scotheim.Terrain
         /// <summary>Vanilla ground below this counts as open water when scoring sites.</summary>
         const float OpenWater = -8f;
 
-        readonly float centerX, centerY;
-        // The landmass ellipse's own axes. Usually the grain, but the site search may turn it a little
-        // to fit open water; glens, ridges and drumlins always follow the grain.
-        readonly float landAlongX, landAlongY, landAcrossX, landAcrossY;
+        /// <summary>One island: its centre, size and the axes of its ellipse.</summary>
+        sealed class Island
+        {
+            public float X, Y, Length, Width;
+            // The island's own axes. Usually the grain, but the site search may turn an island a little
+            // to fit open water; glens, ridges and drumlins always follow the grain.
+            public float AlongX, AlongY, AcrossX, AcrossY;
+            // Beyond this ellipse distance the island can't reach, whatever the coast noise does.
+            public float Reach;
+        }
+
+        readonly Island[] islands;
         readonly float forestThreshold;
 
-        public HighlandsTerrain(HighlandsSettings settings, int worldSeed, LandmassSite site)
+        public HighlandsTerrain(HighlandsSettings settings, int worldSeed, IList<LandmassSite> sites)
         {
             s = settings;
             seed = worldSeed;
-            centerX = site.X;
-            centerY = site.Y;
-            double la = site.Azimuth * Math.PI / 180.0;
-            landAlongX = (float)Math.Sin(la);
-            landAlongY = (float)Math.Cos(la);
-            landAcrossX = landAlongY;
-            landAcrossY = -landAlongX;
+            islands = new Island[sites.Count];
+            for (int i = 0; i < sites.Count; i++)
+            {
+                double la = sites[i].Azimuth * Math.PI / 180.0;
+                float ax = (float)Math.Sin(la), ay = (float)Math.Cos(la);
+                islands[i] = new Island
+                {
+                    X = sites[i].X, Y = sites[i].Y,
+                    Length = settings.LandmassLength * sites[i].Scale,
+                    Width = settings.LandmassWidth * sites[i].Scale,
+                    AlongX = ax, AlongY = ay, AcrossX = ay, AcrossY = -ax,
+                    Reach = 1.6f + 1.4f * settings.CoastRoughness,
+                };
+            }
             forestThreshold = Quantile(Fbm2Quantiles, 1f - settings.ForestCover);
             double g = settings.GrainAzimuth * Math.PI / 180.0;
             alongX = (float)Math.Sin(g);
@@ -105,20 +123,18 @@ namespace Scotheim.Terrain
         }
 
         public HighlandsSettings Settings { get { return s; } }
-        public float CenterX { get { return centerX; } }
-        public float CenterY { get { return centerY; } }
 
         // ---------------------------------------------------------------- landmass
 
         /// <summary>
-        /// Distance from the landmass centre in ellipse units (1 = the nominal coast), elongated
-        /// roughly along the grain like the real Highlands. No noise; cheap enough for early-outs.
+        /// Distance from an island's centre in ellipse units (1 = the nominal coast), elongated roughly
+        /// along the grain like the real Highlands. No noise; cheap enough for early-outs.
         /// </summary>
-        float EllipseDistance(float x, float y)
+        static float EllipseDistance(Island island, float x, float y)
         {
-            float dx = x - centerX, dy = y - centerY;
-            float u = (dx * landAlongX + dy * landAlongY) / s.LandmassLength;
-            float v = (dx * landAcrossX + dy * landAcrossY) / s.LandmassWidth;
+            float dx = x - island.X, dy = y - island.Y;
+            float u = (dx * island.AlongX + dy * island.AlongY) / island.Length;
+            float v = (dx * island.AcrossX + dy * island.AcrossY) / island.Width;
             return (float)Math.Sqrt(u * u + v * v);
         }
 
@@ -131,50 +147,72 @@ namespace Scotheim.Terrain
         }
 
         /// <summary>
+        /// The island a point belongs to (the one whose coast it is deepest inside), and its coast
+        /// distance there. Null when no island reaches the point.
+        /// </summary>
+        Island Dominant(float x, float y, out float coastDistance)
+        {
+            Island best = null;
+            coastDistance = float.MaxValue;
+            foreach (var island in islands)
+            {
+                float plain = EllipseDistance(island, x, y);
+                if (plain > island.Reach) continue;
+                float d = CoastDistance(x, y, plain);
+                if (d < coastDistance) { coastDistance = d; best = island; }
+            }
+            return best;
+        }
+
+        /// <summary>
         /// Glen floor height at a point: the along-glen floor noise, dropping below sea level near
         /// the coast so glens that reach the shore flood as sea lochs.
         /// </summary>
         float EffectiveFloor(float x, float y, float floorNoise)
         {
             float floor = GlenFloor(floorNoise);
-            float coast = SmoothStep(0.5f, 0.95f, CoastDistance(x, y, EllipseDistance(x, y)));
-            return Lerp(floor, -s.LochDepth - 3f, coast);
+            float d;
+            if (Dominant(x, y, out d) == null) return floor;
+            return Lerp(floor, -s.LochDepth - 3f, SmoothStep(0.5f, 0.95f, d));
         }
 
-        /// <summary>1 on the landmass and its shelf, fading to 0 in open ocean. Stage B only runs where this is above 0.5.</summary>
+        /// <summary>1 on an island and its shelf, fading to 0 in open ocean. Stage B only runs where this is above 0.5.</summary>
         public float LandWeight(float x, float y)
         {
-            float plain = EllipseDistance(x, y);
-            if (plain > 1.6f + 1.4f * s.CoastRoughness) return 0f;
-            return SmoothStep(1.6f, 1.25f, CoastDistance(x, y, plain));
+            float d;
+            if (Dominant(x, y, out d) == null) return 0f;
+            return SmoothStep(1.6f, 1.25f, d);
         }
 
         /// <summary>
-        /// Stage A, first half: raise the landmass. Takes the vanilla base altitude and returns the
-        /// pre-glen altitude. Only rises out of deep water: where vanilla already has land or
+        /// Stage A, first half: raise the islands. Takes the vanilla base altitude and returns the
+        /// pre-glen altitude. Only rises out of open water: where vanilla already has land or
         /// shallows, it is left alone, so the Highlands add to the world without replacing anything.
+        /// Where two islands' shelves meet, the higher ground wins, which keeps heights continuous.
         /// </summary>
         public float LandBase(float x, float y, float vanillaAltitude)
         {
-            float plain = EllipseDistance(x, y);
-            if (plain > 1.6f + 1.4f * s.CoastRoughness) return vanillaAltitude;
-            float d = CoastDistance(x, y, plain);
+            float result = vanillaAltitude;
             // Full lift below ~-14 m. Real Valheim sea floor near land sits around -20 to -35 m (measured
-            // in game), so a deeper cut-off would leave the island half-risen in ordinary open water.
-            float weight = SmoothStep(1.6f, 1.25f, d) * SmoothStep(VanillaShore, VanillaShore - 12f, vanillaAltitude);
-            if (weight <= 0f) return vanillaAltitude;
+            // in game), so a deeper cut-off would leave an island half-risen in ordinary open water.
+            float depthWeight = SmoothStep(VanillaShore, VanillaShore - 12f, vanillaAltitude);
+            if (depthWeight <= 0f) return result;
+            foreach (var island in islands)
+            {
+                float plain = EllipseDistance(island, x, y);
+                if (plain > island.Reach) continue;
+                float d = CoastDistance(x, y, plain);
+                float weight = SmoothStep(1.6f, 1.25f, d) * depthWeight;
+                if (weight <= 0f) continue;
 
-            // Lowland interior at ~28 m, falling to the coast around d = 1, with massifs rising out
-            // of it in ridges along the grain. Massifs fade out towards the coast so it doesn't
-            // break into cliffs.
-            // Long, gentle coastal ramp up to a flat lowland shelf (~14 m) that covers most of the interior.
-            float shelf = SmoothStep(1.2f, 0.5f, d);
-            float lowland = -34f + (LowlandHeight + 34f) * shelf;
-            // Massifs: separate NE-SW ridges standing out of the lowland, kept off the coast.
-            float massif = MassifWeight(x, y, d);
-            float island = lowland + (s.LandmassCoreHeight - LowlandHeight) * massif;
-            float blended = Lerp(vanillaAltitude, island, weight);
-            return Math.Max(vanillaAltitude, blended);
+                // Long, gentle coastal ramp up to a flat lowland shelf (~14 m) covering most of the
+                // interior, with separate NE-SW hill massifs standing out of it, kept off the coast.
+                float shelf = SmoothStep(1.2f, 0.5f, d);
+                float lowland = -34f + (LowlandHeight + 34f) * shelf;
+                float height = lowland + (s.LandmassCoreHeight - LowlandHeight) * MassifWeight(x, y, d);
+                result = Math.Max(result, Lerp(vanillaAltitude, height, weight));
+            }
+            return result;
         }
 
         /// <summary>0 on the lowland shelf, rising to 1 on the body of a hill massif.</summary>
@@ -188,19 +226,19 @@ namespace Scotheim.Terrain
         }
 
         /// <summary>
-        /// Which Highland biome a point belongs to, from its carved base altitude. None outside the
-        /// landmass, under the sea, or where vanilla already had land (that keeps its vanilla biome).
+        /// Which Highland biome a point belongs to, from its carved base altitude. None off the
+        /// islands, under the sea, or where vanilla already had land (that keeps its vanilla biome).
         /// </summary>
         public HighlandBiome Classify(float x, float y, float carvedBaseAltitude, float vanillaAltitude)
         {
             if (carvedBaseAltitude <= OceanThreshold || vanillaAltitude > VanillaShore) return HighlandBiome.None;
-            if (LandWeight(x, y) <= 0.5f) return HighlandBiome.None;
+            float d;
+            if (Dominant(x, y, out d) == null || SmoothStep(1.6f, 1.25f, d) <= 0.5f) return HighlandBiome.None;
             if (carvedBaseAltitude > s.MunroMinHeight) return HighlandBiome.Munros;
 
             // Moor is the open lowland shelf. Caledonian pinewood clothes the lower hill slopes below
             // the Munros, fills the glens, and survives in a few patches out on the moor.
-            float plain = EllipseDistance(x, y);
-            float hills = MassifWeight(x, y, CoastDistance(x, y, plain));
+            float hills = MassifWeight(x, y, d);
             if (hills > 0.2f) return HighlandBiome.Forest;
             // Glens only count as sheltered where they cut through hills: out on the flat moor a
             // glen line is barely carved and shouldn't grow a band of forest.
@@ -211,23 +249,34 @@ namespace Scotheim.Terrain
             return patch + shelter > forestThreshold ? HighlandBiome.Forest : HighlandBiome.Moor;
         }
 
-        /// <summary>
-        /// Picks a landmass centre and orientation in open water. Candidates lie on rings in the
-        /// configured distance band, turned up to 30 degrees either way from the grain; each is scored
-        /// by the fraction of its footprint that is open water rather than vanilla land or beach.
-        /// Near-ties go to the orientation closest to the grain, then the preferred radius.
-        /// Deterministic for a given seed and settings, so every peer finds the same site.
-        /// </summary>
-        public static LandmassSite FindSite(HighlandsSettings s, Func<float, float, float> vanillaAltitude)
+        /// <summary>Size of the k-th island (0 = largest), shrinking evenly to LandmassMinScale.</summary>
+        public static float IslandScale(HighlandsSettings s, int k)
         {
+            if (s.LandmassCount <= 1) return 1f;
+            return 1f - (1f - s.LandmassMinScale) * k / (s.LandmassCount - 1f);
+        }
+
+        /// <summary>
+        /// Picks island sites in open water, largest first. Candidates lie on rings in the configured
+        /// distance band, turned up to 30 degrees either way from the grain; each is scored by the
+        /// fraction of its footprint that is open water rather than vanilla land or beach. Each island
+        /// takes the best site that keeps clear of the ones already placed. Near-ties go to the
+        /// orientation closest to the grain, then the preferred radius.
+        /// Deterministic for a given seed and settings, so every peer finds the same sites.
+        /// May return fewer than LandmassCount if the band runs out of room.
+        /// </summary>
+        public static List<LandmassSite> FindSites(HighlandsSettings s, Func<float, float, float> vanillaAltitude)
+        {
+            var chosen = new List<LandmassSite>();
             if (!s.LandmassAuto)
             {
                 var manual = new LandmassSite { X = s.LandmassX, Y = s.LandmassY, Azimuth = s.GrainAzimuth };
                 manual.OpenWater = Footprint(s, vanillaAltitude, manual, 14);
-                return manual;
+                chosen.Add(manual);
+                return chosen;
             }
 
-            // Coarse pass over every candidate, then re-score the best few properly.
+            // Coarse pass over every candidate at full size (conservative for smaller islands).
             var candidates = new List<LandmassSite>();
             float margin = 1.3f * s.LandmassLength;
             for (float r = s.LandmassMinRadius; r <= s.LandmassMaxRadius + 1f; r += 500f)
@@ -249,18 +298,38 @@ namespace Scotheim.Terrain
                     }
                 }
             }
-            if (candidates.Count == 0)
-                return new LandmassSite { X = s.LandmassX, Y = s.LandmassY, Azimuth = s.GrainAzimuth };
-
             candidates.Sort((p, q) => q.OpenWater.CompareTo(p.OpenWater));
-            LandmassSite best = null;
-            for (int i = 0; i < Math.Min(20, candidates.Count); i++)
+
+            for (int k = 0; k < s.LandmassCount; k++)
             {
-                var c = candidates[i];
-                c.OpenWater = Footprint(s, vanillaAltitude, c, 14);
-                if (best == null || Better(c, best, s)) best = c;
+                float scale = IslandScale(s, k);
+                LandmassSite best = null;
+                int considered = 0;
+                foreach (var c in candidates)
+                {
+                    if (considered >= 20) break;
+                    if (Crowds(s, c, scale, chosen)) continue;
+                    considered++;
+                    var sized = new LandmassSite { X = c.X, Y = c.Y, Azimuth = c.Azimuth, Radius = c.Radius, Turn = c.Turn, Scale = scale };
+                    sized.OpenWater = Footprint(s, vanillaAltitude, sized, 14);
+                    if (best == null || Better(sized, best, s)) best = sized;
+                }
+                if (best == null) break;
+                chosen.Add(best);
             }
-            return best;
+            return chosen;
+        }
+
+        /// <summary>True if an island of this size at this candidate would sit too close to one already placed.</summary>
+        static bool Crowds(HighlandsSettings s, LandmassSite candidate, float scale, List<LandmassSite> chosen)
+        {
+            foreach (var other in chosen)
+            {
+                // Long axes plus a channel: footprints (1.2x the coast ellipse) never overlap.
+                float gap = 1.25f * s.LandmassLength * (scale + other.Scale);
+                if (Dist(candidate.X, candidate.Y, other.X, other.Y) < gap) return true;
+            }
+            return false;
         }
 
         static bool Better(LandmassSite a, LandmassSite b, HighlandsSettings s)
@@ -294,7 +363,7 @@ namespace Scotheim.Terrain
                 {
                     float u = i / (float)n, v = j / (float)n;
                     if (u * u + v * v > 1f) continue;
-                    float along = u * 1.2f * s.LandmassLength, across = v * 1.2f * s.LandmassWidth;
+                    float along = u * 1.2f * s.LandmassLength * site.Scale, across = v * 1.2f * s.LandmassWidth * site.Scale;
                     visit(site.X + along * ax + across * ay, site.Y + along * ay - across * ax);
                 }
             }

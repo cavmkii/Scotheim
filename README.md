@@ -1,6 +1,8 @@
 # Scotheim
 
-A BepInEx mod for Valheim that adds a Scottish Highlands landmass: a new island raised out of open ocean, with three biomes of its own. Vanilla land isn't touched.
+A BepInEx mod for Valheim that adds Scottish Highlands islands: new land raised out of open ocean (four islands by default), with three biomes of their own. Vanilla land isn't touched.
+
+![whole world, synthetic](docs/preview-world.png)
 
 ![before/after, synthetic world](docs/preview.png)
 
@@ -27,7 +29,7 @@ The landscape between them:
 
 ## How it fits into the world
 
-- **Placement.** The site is chosen from the world seed: the most open deep-ocean spot 5–8.5 km from the centre, clear of the Ashlands and Deep North. Every peer computes the same site. You can also set the position by hand.
+- **Placement.** Sites are chosen from the world seed, largest island first: each takes the most open stretch of water 4.5–8.5 km from the centre that keeps clear of the islands already placed and of the Ashlands and Deep North. An island may turn up to 30° from the grain to fit. Sizes shrink evenly from 100% to `MinScale` (65%). Every peer computes the same sites. `Count` sets how many; with `AutoPlace` off, a single island goes at X/Y.
 - **Additive.** The island only rises out of water deeper than a few metres. Vanilla land and the water just off its beaches keep their vanilla biome and terrain. If a vanilla islet sits inside the footprint, the Highlands wrap around it.
 - **Biomes.** Custom biomes come from [Expand World Data](https://thunderstore.io/c/valheim/p/JereKuusela/Expand_World_Data/), a soft dependency. On first run Scotheim writes `expand_biomes_scotheim.yaml`, `expand_vegetation_scotheim.yaml` and `expand_clutter_scotheim.yaml` into `BepInEx/config/expand_world/`, and never overwrites them afterwards, so edits stick. The sources are in `src/Scotheim/Data/`. Scotheim finds the biomes by their identifiers (`highland_moor`, `caledonian_forest`, `munros`). Without EWD, the island uses vanilla Meadows, Black Forest and Mountain, with their vanilla vegetation and creatures.
 

@@ -60,24 +60,32 @@ namespace Scotheim.Patches
             // Snapshot config now: live edits mid-session would change ground under existing zones.
             var settings = Plugin.Instance.SnapshotSettings();
             Func<float, float, float> vanilla = (wx, wy) => ToAltitude(OriginalBaseHeight.Call(generator, wx, wy, false));
-            var site = HighlandsTerrain.FindSite(settings, vanilla);
-            Plugin.Log.LogInfo(string.Format("Highlands at ({0:F0}, {1:F0}), {2:F0} m from centre, long axis {3:F0} deg; {4:P0} of the site was open water. Seed {5}, signature {6}.",
-                site.X, site.Y, Math.Sqrt(site.X * site.X + site.Y * site.Y), site.Azimuth, site.OpenWater, seed, Plugin.Signature(settings)));
-            var depths = HighlandsTerrain.FootprintAltitudes(settings, vanilla, site);
-            if (depths.Length > 0)
+            var sites = HighlandsTerrain.FindSites(settings, vanilla);
+            for (int i = 0; i < sites.Count; i++)
             {
-                Func<float, float> pct = p => depths[Math.Min(depths.Length - 1, (int)(p * depths.Length))];
-                int land = 0;
-                foreach (var d in depths) if (d > HighlandsTerrain.VanillaShore) land++;
-                Plugin.Log.LogInfo(string.Format("Site vanilla base altitude (m): min {0:F0}, p10 {1:F0}, p50 {2:F0}, p90 {3:F0}, max {4:F0}; {5:P0} already land or shore.",
-                    depths[0], pct(0.1f), pct(0.5f), pct(0.9f), depths[depths.Length - 1], land / (float)depths.Length));
+                var site = sites[i];
+                Plugin.Log.LogInfo(string.Format("Highlands island {0}/{1} at ({2:F0}, {3:F0}), {4:F0} m from centre, size {5:P0}, long axis {6:F0} deg; {7:P0} of the site was open water.",
+                    i + 1, sites.Count, site.X, site.Y, Math.Sqrt(site.X * site.X + site.Y * site.Y), site.Scale, site.Azimuth, site.OpenWater));
+                var depths = HighlandsTerrain.FootprintAltitudes(settings, vanilla, site);
+                if (depths.Length > 0)
+                {
+                    Func<float, float> pct = p => depths[Math.Min(depths.Length - 1, (int)(p * depths.Length))];
+                    int land = 0;
+                    foreach (var d in depths) if (d > HighlandsTerrain.VanillaShore) land++;
+                    Plugin.Log.LogInfo(string.Format("  site vanilla base altitude (m): min {0:F0}, p10 {1:F0}, p50 {2:F0}, p90 {3:F0}, max {4:F0}; {5:P0} already land or shore.",
+                        depths[0], pct(0.1f), pct(0.5f), pct(0.9f), depths[depths.Length - 1], land / (float)depths.Length));
+                }
+                if (site.OpenWater < 0.9f)
+                    Plugin.Log.LogWarning("  Less than 90% of this site was open water. Vanilla land and shallows there are left as they are, " +
+                        "so this island will be smaller or broken up.");
             }
-            if (site.OpenWater < 0.9f)
-                Plugin.Log.LogWarning("Less than 90% of the Highlands site was open water. Vanilla land and shallows there are left as they are, " +
-                    "so the Highlands will be smaller or broken up. Try a different distance band, a smaller landmass, or set the position by hand.");
+            Plugin.Log.LogInfo(string.Format("Placed {0} of {1} Highland islands. Seed {2}, signature {3}.",
+                sites.Count, settings.LandmassCount, seed, Plugin.Signature(settings)));
+            if (sites.Count < settings.LandmassCount)
+                Plugin.Log.LogWarning("Not enough open water for every island: try a smaller Length/Width, a lower MinScale, or a wider distance band.");
             if (!ExpandWorld.Present)
                 Plugin.Log.LogWarning("Expand World Data not found: the Highlands use vanilla Meadows, Black Forest and Mountain.");
-            return new HighlandsTerrain(settings, seed, site);
+            return new HighlandsTerrain(settings, seed, sites);
         }
 
         internal static float ToAltitude(float baseHeight) { return baseHeight * 200f - WaterLevel; }
