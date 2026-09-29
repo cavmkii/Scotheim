@@ -111,15 +111,16 @@ check(stations <= vanilla_prefabs, "gear crafting stations exist (" + ", ".join(
 sets_src = (root / "src/Scotheim/Content/Sets.cs").read_text(encoding="utf-8")
 set_ids = set(re.findall(r'Id = "(\w+)"', sets_src))
 by_set = {}
+capes_in_sets = [n for n, sid in re.findall(r'Name = "(Scot_\w+)"[^\n]*Set = "(\w+)"', gear_src) if gear[n][0].startswith("Cape")]
+check(not capes_in_sets, "capes stand outside the sets" + (": " + ", ".join(capes_in_sets) if capes_in_sets else ""))
 for n, sid in re.findall(r'Name = "(Scot_\w+)"[^\n]*Set = "(\w+)"', gear_src):
     by_set.setdefault(sid, []).append(n)
 check(set(by_set) == set_ids, "every set has pieces and a bonus (" + ", ".join(sorted(set_ids)) + ")")
 for sid, names in sorted(by_set.items()):
     check(any(l.startswith("Helm") for l in (gear[n][0] for n in names)) and
-          any(l.startswith("Cape") for l in (gear[n][0] for n in names)) and
           any(l.endswith("Legs") for l in (gear[n][0] for n in names)) and
           any(l.endswith(("Chest", "Cuirass")) for l in (gear[n][0] for n in names)),
-          "set %s covers head, chest, legs and cape (%s)" % (sid, ", ".join(names)))
+          "set %s covers head, chest and legs (%s)" % (sid, ", ".join(names)))
 icons = set(re.findall(r'Icon = "(\w+)"', sets_src))
 effects = {l.split("|")[1] for l in (root / "reference/jotunn-valheim-1.0.7/status-effects.txt").read_text(encoding="utf-8").splitlines() if "|" in l} if (root / "reference/jotunn-valheim-1.0.7/status-effects.txt").exists() else set()
 check(icons <= effects, "set bonus icons come from vanilla status effects (" + ", ".join(sorted(icons)) + ")")
