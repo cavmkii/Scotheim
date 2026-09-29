@@ -96,14 +96,15 @@ for entry in veg:
     for k, c in enumerate(counts):
         per[k] += c
 
-# Demand: all gear to quality 4, plus tartan cloth to cover it (4 wool + 2 blaeberries each).
+# Demand: all gear to quality 4, plus tartan cloth to cover it (4 wool + 2 blaeberries make 2 cloth).
 demand = {}
 for name, reqs in re.findall(r'Name = "(Scot_\w+)"[^\n]*(?:\n[^\n]*?)*?Recipe = new\[\] \{([^}]*)\}', gear):
     for item, amount, per in re.findall(r'Req\("(\w+)", (\d+), (\d+)\)', reqs):
         demand[item] = demand.get(item, 0) + int(amount) + 3 * int(per)
 tartan = demand.get("Scot_TartanCloth", 0)
-demand["Scot_Wool"] = demand.get("Scot_Wool", 0) + 4 * tartan
-demand["Scot_Blaeberries"] = demand.get("Scot_Blaeberries", 0) + 2 * tartan
+crafts = math.ceil(tartan / 2)
+demand["Scot_Wool"] = demand.get("Scot_Wool", 0) + 4 * crafts
+demand["Scot_Blaeberries"] = demand.get("Scot_Blaeberries", 0) + 2 * crafts
 demand["Scot_BogIronOre"] = demand.pop("Scot_BogIron", 0)
 
 print("Islands (by land area): " + ", ".join("#%d at (%.0f, %.0f)" % (k + 1, cx, cy) for k, (cx, cy) in enumerate(centres)))

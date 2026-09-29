@@ -32,9 +32,9 @@
 - prefab: Scot_HighlandCow
   name: Scotheim highland cattle
   biome: highland_moor
-  spawnChance: 10
+  spawnChance: 25
   maxSpawned: 3
-  spawnInterval: 800
+  spawnInterval: 400
   maxLevel: 2
   minAltitude: 1
   spawnDistance: 100
@@ -89,9 +89,9 @@
 - prefab: Scot_EachUisge
   name: Scotheim each-uisge
   biome: highland_moor
-  spawnChance: 8
+  spawnChance: 15
   maxSpawned: 1
-  spawnInterval: 3000
+  spawnInterval: 1200
   minAltitude: -2
   maxAltitude: 2
   spawnDistance: 60

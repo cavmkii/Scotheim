@@ -47,6 +47,7 @@ namespace Scotheim.Content
             public string Name, Base;
             public Food? Food;
             public RequirementConfig[] Recipe;
+            public int Amount = 1; // items made per craft
             public string Station;
         }
 
@@ -75,7 +76,7 @@ namespace Scotheim.Content
             new ItemSpec { Name = "Scot_RowanWood", Base = "FineWood" },
             new ItemSpec
             {
-                Name = "Scot_TartanCloth", Base = "JuteRed", Station = "piece_workbench",
+                Name = "Scot_TartanCloth", Base = "JuteRed", Station = "piece_workbench", Amount = 2,
                 Recipe = new[] { new RequirementConfig("Scot_Wool", 4), new RequirementConfig("Scot_Blaeberries", 2) },
             },
         };
@@ -93,6 +94,7 @@ namespace Scotheim.Content
                     {
                         config.CraftingStation = spec.Station;
                         config.Requirements = spec.Recipe;
+                        config.Amount = spec.Amount;
                     }
                     var item = new CustomItem(spec.Name, spec.Base, config);
                     if (item.ItemDrop == null)
@@ -205,7 +207,7 @@ namespace Scotheim.Content
             new CreatureSpec { Name = "Scot_CatSith", Base = "Ulv", Health = 450,
                 Drops = new[] { Drop("Scot_SithPelt", 1, 1) } },
             new CreatureSpec { Name = "Scot_EachUisge", Base = "Abomination", Health = 2200, Scale = 0.9f,
-                Drops = new[] { Drop("Scot_KelpieMane", 1, 2) } },
+                Drops = new[] { Drop("Scot_KelpieMane", 2, 3) } },
             new CreatureSpec { Name = "Scot_BeanNighe", Base = "Wraith", Health = 450, Scale = 0.85f,
                 Drops = new[] { Drop("Scot_WashersShroud", 1, 1), Drop("Chain", 1, 1) } },
             new CreatureSpec { Name = "Scot_Fuath", Base = "Troll", Health = 1500 },
