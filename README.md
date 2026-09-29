@@ -13,23 +13,23 @@ A BepInEx mod for Valheim that adds a Scottish Highlands landmass: a new island 
 | Biome | Where | Terrain | Vegetation | Weather |
 |---|---|---|---|---|
 | **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Heath shrubs, birch copses, erratic boulders, cloudberries, rare standing stones | Mostly heath-clear and mist, some drizzle |
-| **Caledonian Forest** | Lower hill slopes, glen floors, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
-| **Munros** | Base height above 50 m | Rounded domes, NE-facing corries, soft-capped summits | Crags and scree; a few stunted pines and birches below ~70 m | Freezing snow and storms, with misty breaks |
+| **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
+| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Crags and scree; a few stunted pines and birches below ~70 m | Freezing snow and storms, with misty breaks |
 
-Each biome borrows a vanilla height function and ground texture (Moor uses Plains' heath texture, which reads more like heather than Meadows' grass). EWD's `nature` setting only affects farming, bees and footsteps: the Moor farms like the Plains (barley, flax), the forest like the Black Forest. Vegetation comes entirely from `expand_vegetation_scotheim.yaml`, so no vanilla plants leak in. There are no ores and no creatures yet; those are the next phase.
+Each biome borrows a vanilla height function and ground texture. The moor uses Meadows' grass, plus meadow grass, heath flowers and bracken as ground clutter. EWD's `nature` setting only affects farming, bees and footsteps: the Moor farms like the Plains (barley, flax), the forest like the Black Forest. Vegetation comes entirely from `expand_vegetation_scotheim.yaml`, so no vanilla plants leak in. There are no ores and no creatures yet; those are the next phase.
 
 The landscape between them:
 
 - **Glens** are U-shaped troughs trending NE–SW, the Great Glen / Caledonian grain at about 040°. Each glen widens with its depth so walls stay near 35°.
 - **Ribbon lochs** form where glen floors drop below sea level.
 - **Sea lochs** form where glens reach the coast.
-- The island is an ellipse along the grain, 4 × 2.3 km by default, with a ragged coast. Most of it is a flat lowland shelf (~14 m) of open moor; a few separate NE–SW hill massifs rise out of it, wooded on their lower slopes. It comes to about 4–5 km² of new land: roughly 70% moor, 20% forest and 10% Munros (set by `MassifThreshold`).
+- The island is an ellipse along the grain, 4 × 2.3 km by default, with a ragged coast. Most of it is a flat lowland shelf (~14 m) of open moor; a few separate NE–SW hill massifs rise out of it, wooded on their lower slopes. It comes to about 4–5 km² of new land: roughly two-thirds moor, a fifth Munros and the rest forest (set by `MassifThreshold`, `MunroMinHeight` and `ForestCover`).
 
 ## How it fits into the world
 
 - **Placement.** The site is chosen from the world seed: the most open deep-ocean spot 5–8.5 km from the centre, clear of the Ashlands and Deep North. Every peer computes the same site. You can also set the position by hand.
 - **Additive.** The island only rises out of water deeper than a few metres. Vanilla land and the water just off its beaches keep their vanilla biome and terrain. If a vanilla islet sits inside the footprint, the Highlands wrap around it.
-- **Biomes.** Custom biomes come from [Expand World Data](https://thunderstore.io/c/valheim/p/JereKuusela/Expand_World_Data/), a soft dependency. On first run Scotheim writes `expand_biomes_scotheim.yaml` and `expand_vegetation_scotheim.yaml` into `BepInEx/config/expand_world/`, and never overwrites them afterwards, so edits stick. The sources are in `src/Scotheim/Data/`. Scotheim finds the biomes by their identifiers (`highland_moor`, `caledonian_forest`, `munros`). Without EWD, the island uses vanilla Meadows, Black Forest and Mountain, with their vanilla vegetation and creatures.
+- **Biomes.** Custom biomes come from [Expand World Data](https://thunderstore.io/c/valheim/p/JereKuusela/Expand_World_Data/), a soft dependency. On first run Scotheim writes `expand_biomes_scotheim.yaml`, `expand_vegetation_scotheim.yaml` and `expand_clutter_scotheim.yaml` into `BepInEx/config/expand_world/`, and never overwrites them afterwards, so edits stick. The sources are in `src/Scotheim/Data/`. Scotheim finds the biomes by their identifiers (`highland_moor`, `caledonian_forest`, `munros`). Without EWD, the island uses vanilla Meadows, Black Forest and Mountain, with their vanilla vegetation and creatures.
 
 ## Status
 
@@ -59,7 +59,7 @@ Still unverified:
 
 - **New worlds only.** Every player and the server need the mod with identical settings; the log prints a `signature` to compare. EWD syncs its YAML from the server.
 - **No creatures or ores yet.** With custom biomes, nothing spawns on the island until the enemies and materials phase.
-- **No grass yet.** Grass is EWD *clutter*, which custom biomes don't get automatically; it needs clutter entries using vanilla's clutter names.
+- **Map forest dots on the moor.** EWD shades a custom biome's map with its terrain biome (Meadows for the moor), so the map draws forest dots there even where there are no trees.
 - **One water plane.** Valheim has a single sea level, so every loch sits at sea level.
 - **Munros snow.** Mountain ground texture is snow-covered everywhere, not only on the tops.
 - **Steep ground.** 0.2–1.7% of Highland land is steeper than 40° in the previews, mostly where the island meets vanilla islets.

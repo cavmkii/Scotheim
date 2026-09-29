@@ -23,10 +23,10 @@
   biome: highland_moor
   maxAltitude: 1000
   maxTerrainDelta: 2
-# Birch copses where the forest noise is high, not a carpet of trees.
+# The odd birch copse where the forest noise is high; the moor should read as open.
 - prefab: Birch1
   min: 0
-  max: 4
+  max: 1
   scaleMin: 0.5
   randTilt: 4
   chanceToUseGroundTilt: 0.05
@@ -39,7 +39,7 @@
   forestTresholdMax: 0.9
 - prefab: Birch2
   min: 0
-  max: 2
+  max: 0.5
   scaleMin: 0.5
   randTilt: 4
   chanceToUseGroundTilt: 0.05

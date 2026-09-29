@@ -107,8 +107,8 @@ namespace Scotheim.Patches
         }
 
         /// <summary>
-        /// Writes Scotheim's biome and vegetation definitions into EWD's config folder, each only if
-        /// it's missing, so edits stick. EWD reads every expand_biomes*.yaml / expand_vegetation*.yaml
+        /// Writes Scotheim's biome, vegetation and clutter definitions into EWD's config folder, each only if
+        /// it's missing, so edits stick. EWD reads every expand_biomes*.yaml / expand_vegetation*.yaml / expand_clutter*.yaml
         /// there, so these sit alongside its own files and are synced from the server.
         /// </summary>
         internal static void WriteDefaultFiles()
@@ -134,7 +134,7 @@ namespace Scotheim.Patches
             }
         }
 
-        static readonly string[] DataFiles = { FileName, "expand_vegetation_scotheim.yaml" };
+        static readonly string[] DataFiles = { FileName, "expand_vegetation_scotheim.yaml", "expand_clutter_scotheim.yaml" };
     }
 
     /// <summary>Look the biome IDs up again whenever EWD loads biome data or receives names from the server.</summary>

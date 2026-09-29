@@ -29,8 +29,9 @@ static class Harness
         var yaml = Path.Combine(configDir, "expand_biomes_scotheim.yaml");
         var vegYaml = Path.Combine(configDir, "expand_vegetation_scotheim.yaml");
         Check(File.Exists(yaml) && new[] { "biome: highland_moor", "biome: caledonian_forest", "biome: munros" }.All(File.ReadAllText(yaml).Contains)
-            && File.Exists(vegYaml) && File.ReadAllText(vegYaml).Contains("prefab: Pinetree_01"),
-            "biome and vegetation YAML written for Expand World Data");
+            && File.Exists(vegYaml) && File.ReadAllText(vegYaml).Contains("prefab: Pinetree_01")
+            && File.ReadAllText(Path.Combine(configDir, "expand_clutter_scotheim.yaml")).Contains("prefab: instanced_meadows_grass"),
+            "biome, vegetation and clutter YAML written for Expand World Data");
         File.WriteAllText(vegYaml, "# edited");
         typeof(ExpandWorld).GetMethod("WriteDefaultFiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, null);
         Check(File.ReadAllText(vegYaml) == "# edited", "existing YAML is never overwritten");

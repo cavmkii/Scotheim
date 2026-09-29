@@ -60,10 +60,19 @@ namespace Scotheim.Patches
             // Snapshot config now: live edits mid-session would change ground under existing zones.
             var settings = Plugin.Instance.SnapshotSettings();
             float x, y;
-            float open = HighlandsTerrain.FindSite(settings,
-                (wx, wy) => ToAltitude(OriginalBaseHeight.Call(generator, wx, wy, false)), out x, out y);
+            Func<float, float, float> vanilla = (wx, wy) => ToAltitude(OriginalBaseHeight.Call(generator, wx, wy, false));
+            float open = HighlandsTerrain.FindSite(settings, vanilla, out x, out y);
             Plugin.Log.LogInfo(string.Format("Highlands at ({0:F0}, {1:F0}), {2:F0} m from centre; {3:P0} of the site was open ocean. Seed {4}, signature {5}.",
                 x, y, Math.Sqrt(x * x + y * y), open, seed, Plugin.Signature(settings)));
+            var depths = HighlandsTerrain.FootprintAltitudes(settings, vanilla, x, y);
+            if (depths.Length > 0)
+            {
+                Func<float, float> pct = p => depths[Math.Min(depths.Length - 1, (int)(p * depths.Length))];
+                int land = 0;
+                foreach (var d in depths) if (d > HighlandsTerrain.VanillaShore) land++;
+                Plugin.Log.LogInfo(string.Format("Site vanilla base altitude (m): min {0:F0}, p10 {1:F0}, p50 {2:F0}, p90 {3:F0}, max {4:F0}; {5:P0} already land or shore.",
+                    depths[0], pct(0.1f), pct(0.5f), pct(0.9f), depths[depths.Length - 1], land / (float)depths.Length));
+            }
             if (open < 0.9f)
                 Plugin.Log.LogWarning("Less than 90% of the Highlands site was deep ocean. Vanilla land and shallows there are left as they are, " +
                     "so the Highlands will be smaller or broken up. Try a different distance band, a smaller landmass, or set the position by hand.");
