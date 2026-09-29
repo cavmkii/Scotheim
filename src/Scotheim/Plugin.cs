@@ -88,7 +88,7 @@ namespace Scotheim
             BindFloat("6 - Caledonian Forest", "DrumlinAmplitude", 0f, 20f, s => s.DrumlinAmplitude, (s, v) => s.DrumlinAmplitude = v, "Drumlin height (m).");
             BindFloat("6 - Caledonian Forest", "DrumlinCoverage", 0f, 1f, s => s.DrumlinCoverage, (s, v) => s.DrumlinCoverage = v, "Rough fraction of ground covered by drumlins.");
 
-            Patches.ExpandWorld.WriteDefaultBiomes();
+            Patches.ExpandWorld.WriteDefaultFiles();
             new Harmony(Guid).PatchAll(Assembly.GetExecutingAssembly());
             Log.LogInfo(Name + " " + Version + " loaded. Terrain signature: " + Signature(SnapshotSettings()));
         }

@@ -27,8 +27,13 @@ static class Harness
         typeof(Plugin).GetMethod("Awake", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(plugin, null);
 
         var yaml = Path.Combine(configDir, "expand_biomes_scotheim.yaml");
-        Check(File.Exists(yaml) && new[] { "highland_moor", "caledonian_forest", "munros" }.All(File.ReadAllText(yaml).Contains),
-            "biome YAML written for Expand World Data");
+        var vegYaml = Path.Combine(configDir, "expand_vegetation_scotheim.yaml");
+        Check(File.Exists(yaml) && new[] { "biome: highland_moor", "biome: caledonian_forest", "biome: munros" }.All(File.ReadAllText(yaml).Contains)
+            && File.Exists(vegYaml) && File.ReadAllText(vegYaml).Contains("prefab: Pinetree_01"),
+            "biome and vegetation YAML written for Expand World Data");
+        File.WriteAllText(vegYaml, "# edited");
+        typeof(ExpandWorld).GetMethod("WriteDefaultFiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, null);
+        Check(File.ReadAllText(vegYaml) == "# edited", "existing YAML is never overwritten");
 
         var world = new World { m_seed = 12345 };
         var wg = new WorldGenerator(world);

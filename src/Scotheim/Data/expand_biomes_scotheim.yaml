@@ -1,0 +1,68 @@
+# Scotheim's Highland biomes for Expand World Data (checked against EWD 1.73 / Valheim 1.0.16).
+# Scotheim writes this file only if it's missing, so edit freely; delete it to get the defaults back.
+# Scotheim finds the biomes by their 'biome' identifiers below, so keep those.
+# After editing, restart the world so biome IDs and terrain agree.
+#
+# terrain:      which vanilla height function runs first (Scotheim then reshapes it).
+# nature:       in EWD this only decides what can be planted, whether bees are happy, and footsteps.
+#               It does NOT pull in vanilla vegetation or creatures; those come from
+#               expand_vegetation_scotheim.yaml (and, later, spawn files).
+# colorTerrain: which vanilla ground textures to use. Always give all four channels:
+#               EWD reads a missing alpha as 1. Vanilla values: Meadows 0,0,0,0  Plains 0,0,0,1
+#               Black Forest 0,0,1,0  Mountain 0,1,0,0.
+
+# Moor: Plains' golden heath texture reads more like heather moor than Meadows' bright grass.
+# Plains nature means barley and flax can be farmed here.
+- biome: highland_moor
+  name: Highland Moor
+  terrain: Meadows
+  nature: Plains
+  colorTerrain: 0, 0, 0, 1
+  colorMap: 0.53, 0.46, 0.44, 1
+  musicDay: plains
+  environments:
+  - environment: Heath clear
+    weight: 2
+  - environment: Misty
+    weight: 2
+  - environment: LightRain
+    weight: 1.5
+  - environment: Rain
+    weight: 0.5
+  - environment: ThunderStorm
+    weight: 0.1
+
+- biome: caledonian_forest
+  name: Caledonian Forest
+  terrain: BlackForest
+  nature: BlackForest
+  colorTerrain: 0, 0, 1, 0
+  colorMap: 0.24, 0.32, 0.2, 1
+  musicDay: blackforest
+  musicNight: blackforest
+  environments:
+  - environment: DeepForest Mist
+    weight: 2
+  - environment: Misty
+    weight: 0.5
+  - environment: LightRain
+    weight: 0.5
+  - environment: Rain
+    weight: 0.2
+
+# Snow and SnowStorm are freezing; Misty isn't, so the hills sometimes give you a break.
+- biome: munros
+  name: Munros
+  terrain: Mountain
+  nature: Mountain
+  colorTerrain: 0, 1, 0, 0
+  colorMap: 0.6, 0.6, 0.58, 1
+  musicDay: mountain
+  musicNight: mountain
+  environments:
+  - environment: Snow
+    weight: 4
+  - environment: SnowStorm
+    weight: 1
+  - environment: Misty
+    weight: 1

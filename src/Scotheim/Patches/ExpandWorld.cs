@@ -106,79 +106,35 @@ namespace Scotheim.Patches
             return HighlandBiome.None;
         }
 
-        /// <summary>Writes Scotheim's biome definitions for EWD, unless the file already exists (so edits stick).</summary>
-        internal static void WriteDefaultBiomes()
+        /// <summary>
+        /// Writes Scotheim's biome and vegetation definitions into EWD's config folder, each only if
+        /// it's missing, so edits stick. EWD reads every expand_biomes*.yaml / expand_vegetation*.yaml
+        /// there, so these sit alongside its own files and are synced from the server.
+        /// </summary>
+        internal static void WriteDefaultFiles()
         {
             if (!Present) return;
-            try
+            var dir = Path.Combine(Paths.ConfigPath, "expand_world");
+            foreach (var name in DataFiles)
             {
-                var dir = Path.Combine(Paths.ConfigPath, "expand_world");
-                var path = Path.Combine(dir, FileName);
-                if (File.Exists(path)) return;
-                Directory.CreateDirectory(dir);
-                File.WriteAllText(path, DefaultBiomesYaml);
-                Plugin.Log.LogInfo("Wrote " + path);
-            }
-            catch (Exception e)
-            {
-                Plugin.Log.LogError("Couldn't write " + FileName + ": " + e.Message);
+                try
+                {
+                    var path = Path.Combine(dir, name);
+                    if (File.Exists(path)) continue;
+                    Directory.CreateDirectory(dir);
+                    using (var stream = typeof(ExpandWorld).Assembly.GetManifestResourceStream("Scotheim.Data." + name))
+                    using (var file = File.Create(path))
+                        stream.CopyTo(file);
+                    Plugin.Log.LogInfo("Wrote " + path);
+                }
+                catch (Exception e)
+                {
+                    Plugin.Log.LogError("Couldn't write " + name + ": " + e.Message);
+                }
             }
         }
 
-        // Terrain colours pick which vanilla ground textures a biome uses; all four channels matter
-        // (EWD reads a missing alpha as 1). Values are vanilla's Plains, Black Forest and Mountain.
-        // "nature" decides vegetation and plant rules. For now it borrows the vanilla biome, so trees
-        // appear; custom vegetation and spawns come next.
-        const string DefaultBiomesYaml =
-@"# Scotheim's Highland biomes for Expand World Data.
-# Scotheim writes this file only if it's missing, so edit freely; delete it to get the defaults back.
-# Scotheim finds the biomes by their 'biome' identifiers below, so keep those.
-# After editing, restart the world so biome IDs and terrain agree.
-
-- biome: highland_moor
-  name: Highland Moor
-  terrain: Meadows
-  nature: Meadows
-  colorTerrain: 0, 0, 0, 1
-  colorMap: 0.53, 0.46, 0.44, 1
-  environments:
-  - environment: Misty
-    weight: 2
-  - environment: LightRain
-    weight: 2
-  - environment: Rain
-    weight: 1
-  - environment: Heath clear
-    weight: 1
-
-- biome: caledonian_forest
-  name: Caledonian Forest
-  terrain: BlackForest
-  nature: BlackForest
-  colorTerrain: 0, 0, 1, 0
-  colorMap: 0.24, 0.32, 0.2, 1
-  environments:
-  - environment: DeepForest Mist
-    weight: 2
-  - environment: Rain
-    weight: 1
-  - environment: LightRain
-    weight: 1
-
-- biome: munros
-  name: Munros
-  terrain: Mountain
-  nature: Mountain
-  colorTerrain: 0, 1, 0, 0
-  colorMap: 0.6, 0.6, 0.58, 1
-  environments:
-  - environment: Snow
-    weight: 2
-  - environment: SnowStorm
-    weight: 1
-  - environment: Misty
-    weight: 1
-";
+        static readonly string[] DataFiles = { FileName, "expand_vegetation_scotheim.yaml" };
     }
 
     /// <summary>Look the biome IDs up again whenever EWD loads biome data or receives names from the server.</summary>
