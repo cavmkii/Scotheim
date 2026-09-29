@@ -14,9 +14,9 @@ A BepInEx mod for Valheim that adds Scottish Highlands islands: new land raised 
 
 | Biome | Where | Terrain | Vegetation | Weather |
 |---|---|---|---|---|
-| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Heath shrubs, birch copses, erratic boulders, cloudberries, rare standing stones | Mostly heath-clear and mist, some drizzle |
+| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
 | **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
-| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Crags and scree; a few stunted pines and birches below ~70 m | Freezing snow and storms, with misty breaks |
+| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Crags and scree; a few stunted pines and birches below ~70 m; rare cloudberries on high ground | Freezing snow and storms, with misty breaks |
 
 Each biome borrows a vanilla height function and ground texture. The moor uses Meadows' grass, plus meadow grass, heath flowers and bracken as ground clutter. EWD's `nature` setting only affects farming, bees and footsteps: the Moor farms like the Plains (barley, flax), the forest like the Black Forest. Vegetation comes entirely from `expand_vegetation_scotheim.yaml`, so no vanilla plants leak in. There are no ores yet.
 
@@ -36,14 +36,14 @@ Every creature is a [Jötunn](https://thunderstore.io/c/valheim/p/ValheimModding
 | Blackface sheep | Boar | Moor, flocks of 2–5 | 70 (10) | vanilla | Wool, raw mutton |
 | Lamb | Boar piglet | Bred from sheep; grows into a sheep | 20 | vanilla | — |
 | Red deer | Deer | Moor and forest | 90 (10) | — | Deer meat, deer hide |
-| Highland cow | Lox, ¾ size | Moor, rare herds of 2–3 | 1400 (1000) | 1.5 | Highland beef, Highland hide |
+| Highland cow | Lox, ¾ size | Moor, herds of 2–3 | 1400 (1000) | 1.5 | Highland beef, Highland hide |
 | Highland calf | Lox calf | Bred from cattle; grows into a cow | 300 | vanilla | vanilla |
 | Pine marten | Hare, 0.8× | Forest | 25 (20) | — | Pine marten pelt |
 | Hill wolf | Wolf | Munros; packs at night, pairs by day | 220 (80) | 2.5 | vanilla wolf drops |
 | Cù-sìth | Wolf, 1.45× | Moor at night, or in mist by day; alone | 650 | 3.5 | Sìth pelt, wolf fangs |
 | Cat-sìth | Ulv | Forest at night | 450 | 1.3 | Sìth pelt |
 | Bean-nighe | Wraith, 0.85× | Loch and lochan shores at night | 450 (100) | 1.8 | Washer's shroud, chain |
-| Each-uisge | Abomination, 0.9× | Loch shores, rare | 2200 (800) | 1.8 | Kelpie mane |
+| Each-uisge | Abomination, 0.9× | Loch shores, uncommon | 2200 (800) | 1.8 | Kelpie mane (2–3) |
 | Redcap | Goblin, 0.8× | Forest at night, groups of 2–4 | 220 (70) | 2.0 | Hacksilver, coins |
 | Fuath | Troll | Forest, rare | 1500 (600) | 1.6 | vanilla troll drops |
 | Hill giant | Stone golem, 1.25× | Munros above 90 m | 2600 (800) | 1.5 | Giant's heartstone, crystal |
@@ -58,7 +58,7 @@ Items, also Jötunn clones. Each keeps its base item's model and icon for now:
 | Raw / roast mutton | Sheep; cooking station | Food: 55 health, 18 stamina, 4 regen, 30 min |
 | Raw / roast Highland beef | Highland cow; cooking station | Food: 65 health, 22 stamina, 5 regen, 30 min |
 | Blaeberries | Blaeberry bushes in the Caledonian Forest | Food: 15 health, 45 stamina, 15 min; dye for tartan |
-| Tartan cloth | Workbench: 4 wool + 2 blaeberries | Gear |
+| Tartan cloth | Workbench: 4 wool + 2 blaeberries make 2 | Gear |
 | Highland hide, pine marten pelt, Sìth pelt, giant's heartstone, washer's shroud | Drops | Gear |
 | Kelpie mane | Each-uisge | Nothing yet |
 
@@ -206,6 +206,13 @@ python3 tools/Preview/render.py out      # -> out/preview.png (needs numpy, Pill
 ```
 
 The preview uses the defaults in `HighlandsSettings`, so edit those to try values.
+
+Material supply versus recipe demand (a rough estimate from the preview's synthetic world):
+
+```sh
+mono preview.exe out 12345 20000 2000
+python3 tools/Economy/economy.py out
+```
 
 Tests:
 
