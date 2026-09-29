@@ -51,6 +51,9 @@ namespace Scotheim.Terrain
         /// <summary>Base altitude below which vanilla assigns Ocean.</summary>
         public const float OceanThreshold = -26f;
 
+        /// <summary>Base altitude of the island's lowland shelf, where the moor is.</summary>
+        const float LowlandHeight = 14f;
+
         /// <summary>
         /// Vanilla ground above this (its land and the water just off its beaches) is never raised
         /// or reassigned; the landmass only rises out of water deeper than this.
@@ -139,13 +142,24 @@ namespace Scotheim.Terrain
             // Lowland interior at ~28 m, falling to the coast around d = 1, with massifs rising out
             // of it in ridges along the grain. Massifs fade out towards the coast so it doesn't
             // break into cliffs.
-            float profile = SmoothStep(1.15f, 0.3f, d);
-            float u = x * alongX + y * alongY, v = x * acrossX + y * acrossY;
-            float ridges = Noise.Fbm2(u / 1400f, v / 650f, seed + 63);
-            float massif = SmoothStep(-0.45f, 0.4f, ridges) * profile;
-            float island = -34f + 62f * (float)Math.Pow(profile, 0.7) + (s.LandmassCoreHeight - 28f) * massif;
+            // Long, gentle coastal ramp up to a flat lowland shelf (~14 m) that covers most of the interior.
+            float shelf = SmoothStep(1.2f, 0.5f, d);
+            float lowland = -34f + (LowlandHeight + 34f) * shelf;
+            // Massifs: separate NE-SW ridges standing out of the lowland, kept off the coast.
+            float massif = MassifWeight(x, y, d);
+            float island = lowland + (s.LandmassCoreHeight - LowlandHeight) * massif;
             float blended = Lerp(vanillaAltitude, island, weight);
             return Math.Max(vanillaAltitude, blended);
+        }
+
+        /// <summary>0 on the lowland shelf, rising to 1 on the body of a hill massif.</summary>
+        float MassifWeight(float x, float y, float coastDistance)
+        {
+            float profile = SmoothStep(1.1f, 0.4f, coastDistance);
+            if (profile <= 0f) return 0f;
+            float u = x * alongX + y * alongY, v = x * acrossX + y * acrossY;
+            float ridges = Noise.Fbm2(u / 1400f, v / 650f, seed + 63);
+            return SmoothStep(s.MassifThreshold - 0.2f, s.MassifThreshold + 0.25f, ridges) * profile;
         }
 
         /// <summary>
@@ -158,11 +172,14 @@ namespace Scotheim.Terrain
             if (LandWeight(x, y) <= 0.5f) return HighlandBiome.None;
             if (carvedBaseAltitude > MountainThreshold) return HighlandBiome.Munros;
 
-            // Caledonian pinewood survives in the glens and in patches on sheltered lower ground.
+            // Moor is the open lowland shelf. Caledonian pinewood clothes the lower hill slopes below
+            // the Munros, fills the glens, and survives in a few patches out on the moor.
+            float plain = EllipseDistance(x, y);
+            if (MassifWeight(x, y, CoastDistance(x, y, plain)) > 0.3f) return HighlandBiome.Forest;
             float floorNoise;
             float glen = GlenShape(x, y, out floorNoise);
             float patch = Noise.Fbm2(x / 650f, y / 650f, seed + 71);
-            float shelter = (1f - glen) * 0.35f;
+            float shelter = (1f - glen) * 0.25f;
             return patch + shelter > forestThreshold ? HighlandBiome.Forest : HighlandBiome.Moor;
         }
 

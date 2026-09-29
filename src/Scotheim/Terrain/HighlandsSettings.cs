@@ -26,8 +26,10 @@ namespace Scotheim.Terrain
         public float LandmassCoreHeight = 125f;
         /// <summary>How ragged the coastline is (noise on the ellipse distance).</summary>
         public float CoastRoughness = 0.4f;
+        /// <summary>Higher = fewer, smaller massifs (Munros) and more open moor. Noise units, roughly -0.4..0.4.</summary>
+        public float MassifThreshold = 0.25f;
         /// <summary>Rough fraction of land below the Munros given to Caledonian Forest rather than Moor.</summary>
-        public float ForestCover = 0.35f;
+        public float ForestCover = 0.08f;
 
         // Glens: glacial troughs carved into the base height field, so biome assignment follows them.
         public float GlenStrength = 1f;
@@ -61,7 +63,7 @@ namespace Scotheim.Terrain
         public float CorrieSpread = 35f;
 
         // Moorland (Meadows).
-        public float MoorRollAmplitude = 5f;
+        public float MoorRollAmplitude = 2f;
         public float MoorRollScale = 320f;
         public float HummockAmplitude = 1.2f;
         public float HummockScale = 40f;

@@ -47,6 +47,7 @@ namespace Scotheim
             BindFloat("2 - Landmass", "Length", 500f, 5000f, s => s.LandmassLength, (s, v) => s.LandmassLength = v, "Half-length along the grain (m).");
             BindFloat("2 - Landmass", "Width", 500f, 5000f, s => s.LandmassWidth, (s, v) => s.LandmassWidth = v, "Half-width across the grain (m).");
             BindFloat("2 - Landmass", "CoreHeight", 60f, 250f, s => s.LandmassCoreHeight, (s, v) => s.LandmassCoreHeight = v, "Interior height before glens (m above sea). Above 50 becomes Munros.");
+            BindFloat("2 - Landmass", "MassifThreshold", -0.5f, 0.5f, s => s.MassifThreshold, (s, v) => s.MassifThreshold = v, "Higher = fewer, smaller hill massifs (Munros) and more open moor.");
             BindFloat("2 - Landmass", "CoastRoughness", 0f, 0.6f, s => s.CoastRoughness, (s, v) => s.CoastRoughness = v, "0 = smooth ellipse; higher = more headlands, bays and islets.");
             BindFloat("2 - Landmass", "ForestCover", 0f, 1f, s => s.ForestCover, (s, v) => s.ForestCover = v, "Rough fraction of ground below the Munros that is Caledonian Forest rather than Moor.");
 
