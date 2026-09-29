@@ -170,16 +170,19 @@ namespace Scotheim.Terrain
         {
             if (carvedBaseAltitude <= OceanThreshold || vanillaAltitude > VanillaShore) return HighlandBiome.None;
             if (LandWeight(x, y) <= 0.5f) return HighlandBiome.None;
-            if (carvedBaseAltitude > MountainThreshold) return HighlandBiome.Munros;
+            if (carvedBaseAltitude > s.MunroMinHeight) return HighlandBiome.Munros;
 
             // Moor is the open lowland shelf. Caledonian pinewood clothes the lower hill slopes below
             // the Munros, fills the glens, and survives in a few patches out on the moor.
             float plain = EllipseDistance(x, y);
-            if (MassifWeight(x, y, CoastDistance(x, y, plain)) > 0.3f) return HighlandBiome.Forest;
+            float hills = MassifWeight(x, y, CoastDistance(x, y, plain));
+            if (hills > 0.2f) return HighlandBiome.Forest;
+            // Glens only count as sheltered where they cut through hills: out on the flat moor a
+            // glen line is barely carved and shouldn't grow a band of forest.
             float floorNoise;
             float glen = GlenShape(x, y, out floorNoise);
             float patch = Noise.Fbm2(x / 650f, y / 650f, seed + 71);
-            float shelter = (1f - glen) * 0.25f;
+            float shelter = (1f - glen) * 0.25f * SmoothStep(0.02f, 0.12f, hills);
             return patch + shelter > forestThreshold ? HighlandBiome.Forest : HighlandBiome.Moor;
         }
 

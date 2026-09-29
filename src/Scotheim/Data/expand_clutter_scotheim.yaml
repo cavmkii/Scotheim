@@ -1,0 +1,115 @@
+# Scotheim's ground clutter (grass, ferns, reeds) for the Highland biomes, Expand World Data 1.73 format.
+# Scotheim writes this file only if it's missing, so edit freely; delete it to get the defaults back.
+# Entries copy vanilla ones (see reference/ewd-1.73) with only the biome and amounts changed.
+
+# ------------------------------------------------------------------ Highland Moor
+# Meadow grass, with patches of heath flowers and bracken.
+- prefab: instanced_meadows_grass
+  amount: 200
+  biome: highland_moor
+  instanced: true
+  scaleMax: 2.3
+  maxTilt: 25
+  minAltitude: 0.4
+  maxAltitude: 1000
+  terrainTilt: true
+  fractalScale: 5
+- prefab: instanced_meadows_grass_short
+  amount: 250
+  biome: highland_moor
+  instanced: true
+  scaleMax: 2
+  maxTilt: 25
+  minAltitude: 0.3
+  maxAltitude: 1000
+  terrainTilt: true
+  fractalScale: 5
+  fractalThresholdMin: 1
+  fractalThresholdMax: 3
+- prefab: instanced_heathflowers
+  amount: 50
+  biome: highland_moor
+  instanced: true
+  maxTilt: 30
+  minAltitude: 1
+  maxAltitude: 1000
+  fractalScale: 5
+  fractalThresholdMax: 0.6
+- prefab: instanced_ormbunke
+  amount: 12
+  biome: highland_moor
+  instanced: true
+  maxTilt: 18
+  minAltitude: 1
+  maxAltitude: 1000
+  terrainTilt: true
+  fractalThresholdMin: 0.6
+
+# ------------------------------------------------------------------ Caledonian Forest
+- prefab: instanced_forest_groundcover_brown
+  amount: 80
+  biome: caledonian_forest
+  instanced: true
+  maxTilt: 25
+  minAltitude: 0.5
+  maxAltitude: 1000
+  terrainTilt: true
+  fractalThresholdMin: 0.5
+- prefab: instanced_forest_groundcover
+  amount: 50
+  biome: caledonian_forest
+  instanced: true
+  maxTilt: 25
+  minAltitude: 0.5
+  maxAltitude: 1000
+  terrainTilt: true
+  fractalThresholdMin: 0.5
+- prefab: instanced_ormbunke
+  amount: 20
+  biome: caledonian_forest
+  instanced: true
+  maxTilt: 18
+  minAltitude: 1
+  maxAltitude: 1000
+  terrainTilt: true
+  maxOceanDepth: 2
+  fractalThresholdMin: 0.5
+
+# ------------------------------------------------------------------ Munros
+# Rough grass on the lower slopes only; the tops stay bare.
+- prefab: instanced_heathgrass
+  amount: 80
+  biome: munros
+  instanced: true
+  scaleMin: 0.7
+  scaleMax: 1.2
+  maxTilt: 30
+  minAltitude: 0.5
+  maxAltitude: 90
+  terrainTilt: true
+  fractalThresholdMax: 0.8
+
+# ------------------------------------------------------------------ Loch edges
+- prefab: instanced_vass
+  amount: 30
+  biome: highland_moor, caledonian_forest, munros
+  instanced: true
+  scaleMax: 1.3
+  maxTilt: 90
+  minAltitude: -1
+  maxAltitude: -0.1
+  snapToWater: true
+  fractalScale: 5
+- prefab: instanced_waterlilies
+  amount: 40
+  biome: highland_moor, caledonian_forest
+  instanced: true
+  scaleMin: 0.4
+  scaleMax: 0.6
+  maxTilt: 90
+  minAltitude: -1.5
+  maxAltitude: -0.2
+  snapToWater: true
+  randomOffset: 0.1
+  maxOceanDepth: 1
+  fractalScale: 2

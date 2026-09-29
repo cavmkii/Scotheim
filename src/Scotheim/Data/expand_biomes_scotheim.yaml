@@ -11,13 +11,13 @@
 #               EWD reads a missing alpha as 1. Vanilla values: Meadows 0,0,0,0  Plains 0,0,0,1
 #               Black Forest 0,0,1,0  Mountain 0,1,0,0.
 
-# Moor: Plains' golden heath texture reads more like heather moor than Meadows' bright grass.
-# Plains nature means barley and flax can be farmed here.
+# Moor: open grazing land on Meadows' grass texture. Plains nature means barley and flax can
+# be farmed here. (For golden heath ground instead, use colorTerrain: 0, 0, 0, 1.)
 - biome: highland_moor
   name: Highland Moor
   terrain: Meadows
   nature: Plains
-  colorTerrain: 0, 0, 0, 1
+  colorTerrain: 0, 0, 0, 0
   colorMap: 0.53, 0.46, 0.44, 1
   musicDay: plains
   environments:

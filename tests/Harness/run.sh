@@ -14,6 +14,7 @@ mono "$CSC" -nologo -langversion:7.3 -nowarn:1701,1702 -out:"$out/harness.exe" \
   -r:"$HARMONY_DIR/0Harmony.dll" -r:"$mono_lib/Facades/netstandard.dll" -r:"$mono_lib/System.Core.dll" \
   -resource:"$src/Data/expand_biomes_scotheim.yaml",Scotheim.Data.expand_biomes_scotheim.yaml \
   -resource:"$src/Data/expand_vegetation_scotheim.yaml",Scotheim.Data.expand_vegetation_scotheim.yaml \
+  -resource:"$src/Data/expand_clutter_scotheim.yaml",Scotheim.Data.expand_clutter_scotheim.yaml \
   "$here/Stubs.cs" "$here/Harness.cs" "$src/Plugin.cs" "$src"/Patches/*.cs "$src"/Terrain/*.cs
 cp "$HARMONY_DIR"/*.dll "$out/"
 mono "$out/harness.exe"
