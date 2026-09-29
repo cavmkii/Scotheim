@@ -39,9 +39,9 @@ static class Harness
         var world = new World { m_seed = 12345 };
         var wg = new WorldGenerator(world);
         var settings = new HighlandsSettings();
-        float sx, sy;
-        HighlandsTerrain.FindSite(settings, (x, y) => Alt(OriginalBaseHeight.Call(wg, x, y, false)), out sx, out sy);
-        var hl = new HighlandsTerrain(settings, 12345, sx, sy);
+        var site = HighlandsTerrain.FindSite(settings, (x, y) => Alt(OriginalBaseHeight.Call(wg, x, y, false)));
+        var hl = new HighlandsTerrain(settings, 12345, site);
+        float sx = site.X, sy = site.Y;
         Console.WriteLine("     site " + sx.ToString("F0") + ", " + sy.ToString("F0"));
 
         // Sample a grid over the site and the vanilla strip.

@@ -115,11 +115,11 @@ static class Preview
         Directory.CreateDirectory(outDir);
 
         var settings = new HighlandsSettings();
-        float sx, sy;
-        float open = HighlandsTerrain.FindSite(settings, VanillaBase, out sx, out sy);
-        hl = new HighlandsTerrain(settings, seed, sx, sy);
-        Console.WriteLine(string.Format("site ({0:F0}, {1:F0}), {2:F0} m from centre, {3:P0} open ocean",
-            sx, sy, Math.Sqrt(sx * sx + sy * sy), open));
+        var site = HighlandsTerrain.FindSite(settings, VanillaBase);
+        hl = new HighlandsTerrain(settings, seed, site);
+        float sx = site.X, sy = site.Y;
+        Console.WriteLine(string.Format("site ({0:F0}, {1:F0}), {2:F0} m from centre, axis {3:F0} deg, {4:P0} open water",
+            sx, sy, Math.Sqrt(sx * sx + sy * sy), site.Azimuth, site.OpenWater));
 
         float cx = args.Length > 5 ? float.Parse(args[4]) : sx;
         float cy = args.Length > 5 ? float.Parse(args[5]) : sy;

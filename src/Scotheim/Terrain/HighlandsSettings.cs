@@ -16,7 +16,7 @@ namespace Scotheim.Terrain
         public float LandmassX = 0f;
         public float LandmassY = 0f;
         /// <summary>Auto placement searches this distance band from the world centre (late game by default).</summary>
-        public float LandmassMinRadius = 5000f;
+        public float LandmassMinRadius = 4500f;
         public float LandmassMaxRadius = 8500f;
         public float LandmassPreferredRadius = 7000f;
         /// <summary>Semi-axes of the landmass ellipse: along the grain, and across it.</summary>

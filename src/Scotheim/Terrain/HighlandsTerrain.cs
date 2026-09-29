@@ -1,7 +1,19 @@
 using System;
+using System.Collections.Generic;
 
 namespace Scotheim.Terrain
 {
+    /// <summary>Where the landmass goes: centre, ellipse orientation, and how open the water there was.</summary>
+    public sealed class LandmassSite
+    {
+        public float X, Y;
+        /// <summary>Direction of the ellipse's long axis, degrees clockwise from north.</summary>
+        public float Azimuth;
+        /// <summary>Fraction of the footprint that was open water in the vanilla world (1 = no vanilla land touched).</summary>
+        public float OpenWater;
+        internal float Radius, Turn;
+    }
+
     public enum HighlandBiome { None, Moor, Forest, Munros }
 
     /// <summary>
@@ -64,14 +76,22 @@ namespace Scotheim.Terrain
         const float OpenWater = -8f;
 
         readonly float centerX, centerY;
+        // The landmass ellipse's own axes. Usually the grain, but the site search may turn it a little
+        // to fit open water; glens, ridges and drumlins always follow the grain.
+        readonly float landAlongX, landAlongY, landAcrossX, landAcrossY;
         readonly float forestThreshold;
 
-        public HighlandsTerrain(HighlandsSettings settings, int worldSeed, float landmassX, float landmassY)
+        public HighlandsTerrain(HighlandsSettings settings, int worldSeed, LandmassSite site)
         {
             s = settings;
             seed = worldSeed;
-            centerX = landmassX;
-            centerY = landmassY;
+            centerX = site.X;
+            centerY = site.Y;
+            double la = site.Azimuth * Math.PI / 180.0;
+            landAlongX = (float)Math.Sin(la);
+            landAlongY = (float)Math.Cos(la);
+            landAcrossX = landAlongY;
+            landAcrossY = -landAlongX;
             forestThreshold = Quantile(Fbm2Quantiles, 1f - settings.ForestCover);
             double g = settings.GrainAzimuth * Math.PI / 180.0;
             alongX = (float)Math.Sin(g);
@@ -92,13 +112,13 @@ namespace Scotheim.Terrain
 
         /// <summary>
         /// Distance from the landmass centre in ellipse units (1 = the nominal coast), elongated
-        /// along the grain like the real Highlands. No noise; cheap enough for early-outs.
+        /// roughly along the grain like the real Highlands. No noise; cheap enough for early-outs.
         /// </summary>
         float EllipseDistance(float x, float y)
         {
             float dx = x - centerX, dy = y - centerY;
-            float u = (dx * alongX + dy * alongY) / s.LandmassLength;
-            float v = (dx * acrossX + dy * acrossY) / s.LandmassWidth;
+            float u = (dx * landAlongX + dy * landAlongY) / s.LandmassLength;
+            float v = (dx * landAcrossX + dy * landAcrossY) / s.LandmassWidth;
             return (float)Math.Sqrt(u * u + v * v);
         }
 
@@ -192,87 +212,101 @@ namespace Scotheim.Terrain
         }
 
         /// <summary>
-        /// Picks a landmass centre in open ocean. Candidates lie on rings in the configured distance
-        /// band; each is scored by the fraction of its footprint (plus a margin) that is deep water
-        /// in the vanilla base field, and ties go to the one nearest the preferred radius.
+        /// Picks a landmass centre and orientation in open water. Candidates lie on rings in the
+        /// configured distance band, turned up to 30 degrees either way from the grain; each is scored
+        /// by the fraction of its footprint that is open water rather than vanilla land or beach.
+        /// Near-ties go to the orientation closest to the grain, then the preferred radius.
         /// Deterministic for a given seed and settings, so every peer finds the same site.
         /// </summary>
-        /// <returns>Fraction of the footprint that was open ocean (1 = no vanilla land touched).</returns>
-        public static float FindSite(HighlandsSettings s, Func<float, float, float> vanillaAltitude, out float siteX, out float siteY)
+        public static LandmassSite FindSite(HighlandsSettings s, Func<float, float, float> vanillaAltitude)
         {
-            siteX = s.LandmassX;
-            siteY = s.LandmassY;
-            if (!s.LandmassAuto) return Footprint(s, vanillaAltitude, siteX, siteY);
+            if (!s.LandmassAuto)
+            {
+                var manual = new LandmassSite { X = s.LandmassX, Y = s.LandmassY, Azimuth = s.GrainAzimuth };
+                manual.OpenWater = Footprint(s, vanillaAltitude, manual, 14);
+                return manual;
+            }
 
-            float bestScore = -1f, chosenScore = 0f, bestRadiusError = float.MaxValue;
-            float margin = 1.35f * s.LandmassLength;
+            // Coarse pass over every candidate, then re-score the best few properly.
+            var candidates = new List<LandmassSite>();
+            float margin = 1.3f * s.LandmassLength;
             for (float r = s.LandmassMinRadius; r <= s.LandmassMaxRadius + 1f; r += 500f)
             {
+                if (r + margin > 9700f) continue;
                 for (int a = 0; a < 72; a++)
                 {
                     double angle = a * 5.0 * Math.PI / 180.0;
                     float cx = (float)(Math.Sin(angle) * r), cy = (float)(Math.Cos(angle) * r);
-                    // Keep off the world edge and out of Ashlands (south) and Deep North (north),
-                    // which vanilla places beyond 12 km from points 4 km north and south of centre.
-                    if (r + margin > 9700f) continue;
+                    // Keep out of Ashlands (south) and Deep North (north), which vanilla places beyond
+                    // 12 km from points 4 km north and south of centre.
                     if (Dist(cx, cy, 0f, 4000f) + margin > 12000f) continue;
                     if (Dist(cx, cy, 0f, -4000f) + margin > 12000f) continue;
-
-                    float score = Footprint(s, vanillaAltitude, cx, cy);
-                    float radiusError = Math.Abs(r - s.LandmassPreferredRadius);
-                    // Scores within 1% of the best so far count as equal; the preferred radius decides.
-                    bool clearlyBetter = score > bestScore + 0.01f;
-                    bool tieButCloser = score >= bestScore - 0.01f && radiusError < bestRadiusError;
-                    if (clearlyBetter || tieButCloser)
+                    foreach (float turn in new[] { 0f, -15f, 15f, -30f, 30f })
                     {
-                        bestScore = Math.Max(bestScore, score);
-                        chosenScore = score;
-                        bestRadiusError = radiusError;
-                        siteX = cx;
-                        siteY = cy;
+                        var c = new LandmassSite { X = cx, Y = cy, Azimuth = s.GrainAzimuth + turn, Radius = r, Turn = Math.Abs(turn) };
+                        c.OpenWater = Footprint(s, vanillaAltitude, c, 6);
+                        candidates.Add(c);
                     }
                 }
             }
-            return bestScore < 0f ? Footprint(s, vanillaAltitude, siteX, siteY) : chosenScore;
+            if (candidates.Count == 0)
+                return new LandmassSite { X = s.LandmassX, Y = s.LandmassY, Azimuth = s.GrainAzimuth };
+
+            candidates.Sort((p, q) => q.OpenWater.CompareTo(p.OpenWater));
+            LandmassSite best = null;
+            for (int i = 0; i < Math.Min(20, candidates.Count); i++)
+            {
+                var c = candidates[i];
+                c.OpenWater = Footprint(s, vanillaAltitude, c, 14);
+                if (best == null || Better(c, best, s)) best = c;
+            }
+            return best;
+        }
+
+        static bool Better(LandmassSite a, LandmassSite b, HighlandsSettings s)
+        {
+            // Within 1% open water counts as a tie: prefer following the grain, then the preferred radius.
+            if (Math.Abs(a.OpenWater - b.OpenWater) > 0.01f) return a.OpenWater > b.OpenWater;
+            if (a.Turn != b.Turn) return a.Turn < b.Turn;
+            return Math.Abs(a.Radius - s.LandmassPreferredRadius) < Math.Abs(b.Radius - s.LandmassPreferredRadius);
         }
 
         /// <summary>
         /// Vanilla base altitudes sampled over a site's footprint (as FindSite scores it), sorted.
         /// For diagnostics: how deep the real ocean is where the landmass goes.
         /// </summary>
-        public static float[] FootprintAltitudes(HighlandsSettings s, Func<float, float, float> vanillaAltitude, float cx, float cy)
+        public static float[] FootprintAltitudes(HighlandsSettings s, Func<float, float, float> vanillaAltitude, LandmassSite site)
         {
-            var list = new System.Collections.Generic.List<float>();
-            SampleFootprint(s, cx, cy, (x, y) => list.Add(vanillaAltitude(x, y)));
+            var list = new List<float>();
+            SampleFootprint(s, site, 14, (x, y) => list.Add(vanillaAltitude(x, y)));
             list.Sort();
             return list.ToArray();
         }
 
-        static void SampleFootprint(HighlandsSettings s, float cx, float cy, Action<float, float> visit)
+        /// <summary>Visits a grid over the island's extent: the nominal coast ellipse grown by 20%.</summary>
+        static void SampleFootprint(HighlandsSettings s, LandmassSite site, int n, Action<float, float> visit)
         {
-            double g = s.GrainAzimuth * Math.PI / 180.0;
+            double g = site.Azimuth * Math.PI / 180.0;
             float ax = (float)Math.Sin(g), ay = (float)Math.Cos(g);
-            const int n = 14;
             for (int i = -n; i <= n; i++)
             {
                 for (int j = -n; j <= n; j++)
                 {
                     float u = i / (float)n, v = j / (float)n;
                     if (u * u + v * v > 1f) continue;
-                    float along = u * 1.5f * s.LandmassLength, across = v * 1.5f * s.LandmassWidth;
-                    visit(cx + along * ax + across * ay, cy + along * ay - across * ax);
+                    float along = u * 1.2f * s.LandmassLength, across = v * 1.2f * s.LandmassWidth;
+                    visit(site.X + along * ax + across * ay, site.Y + along * ay - across * ax);
                 }
             }
         }
 
-        static float Footprint(HighlandsSettings s, Func<float, float, float> vanillaAltitude, float cx, float cy)
+        static float Footprint(HighlandsSettings s, Func<float, float, float> vanillaAltitude, LandmassSite site, int n)
         {
-            // The footprint ellipse grown by 50% (the shelf plus a moat); fraction that is clearly open
-            // water rather than vanilla land, beach or shallows. Real Valheim ocean is shallow (median
-            // around -23 m near land), so a "deep water" test can't tell sites apart; overlap with
-            // vanilla land is what actually breaks the island up.
+            // Fraction of the footprint that is clearly open water rather than vanilla land, beach or
+            // shallows. Real Valheim ocean is shallow (median around -23 m near land), so a "deep water"
+            // test can't tell sites apart; overlap with vanilla land is what breaks the island up.
             int water = 0, total = 0;
-            SampleFootprint(s, cx, cy, (x, y) =>
+            SampleFootprint(s, site, n, (x, y) =>
             {
                 total++;
                 if (vanillaAltitude(x, y) < OpenWater) water++;
