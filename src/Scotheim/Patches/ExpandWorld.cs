@@ -174,9 +174,11 @@ namespace Scotheim.Patches
         // Fingerprints of every version earlier releases wrote (see git history of src/Scotheim/Data).
         static readonly Dictionary<string, string[]> Shipped = new Dictionary<string, string[]>
         {
-            { FileName, new[] { "e7fd26f1f5d69f39", "063f4b3eae79531a", "47c982eb6dd734ee" } },
-            { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa" } },
-            { "expand_clutter_scotheim.yaml", new[] { "f186b91465d1e721" } },
+            // tests/Data/check_data.py checks this list against git history.
+            { FileName, new[] { "e7fd26f1f5d69f39", "063f4b3eae79531a", "47c982eb6dd734ee", "a6262f4eff3dc651" } },
+            { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa", "5701be8eddf32039" } },
+            { "expand_clutter_scotheim.yaml", new[] { "f186b91465d1e721", "facdfd177fc3d3ed" } },
+            { "expand_spawns_scotheim.yaml", new[] { "e3fe9b1655bcf793" } },
         };
     }
 

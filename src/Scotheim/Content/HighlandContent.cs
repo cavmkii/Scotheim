@@ -66,6 +66,13 @@ namespace Scotheim.Content
             new ItemSpec { Name = "Scot_KelpieMane", Base = "JuteBlue" },
             new ItemSpec { Name = "Scot_WashersShroud", Base = "LinenThread" },
             new ItemSpec { Name = "Scot_GiantHeartstone", Base = "Crystal" },
+            // Highland raw materials: gear is made from these and the drops above, nothing from other biomes.
+            new ItemSpec { Name = "Scot_BogIronOre", Base = "IronOre" },
+            new ItemSpec { Name = "Scot_BogIron", Base = "Iron" },
+            new ItemSpec { Name = "Scot_Hacksilver", Base = "Silver" },
+            new ItemSpec { Name = "Scot_BogOak", Base = "RoundLog" },
+            new ItemSpec { Name = "Scot_Cairngorm", Base = "Crystal" },
+            new ItemSpec { Name = "Scot_RowanWood", Base = "FineWood" },
             new ItemSpec
             {
                 Name = "Scot_TartanCloth", Base = "JuteRed", Station = "piece_workbench",
@@ -115,10 +122,21 @@ namespace Scotheim.Content
                 AddCooking(station, "Scot_Beef", "Scot_CookedBeef", 35f);
             }
 
+            // Bog ore smelts like any iron ore, with charcoal from Highland wood.
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(new SmelterConversionConfig
+            {
+                Station = "smelter", FromItem = "Scot_BogIronOre", ToItem = "Scot_BogIron",
+            }));
+
             Gear.Add();
 
-            CustomItem berries;
-            if (added.TryGetValue("Scot_Blaeberries", out berries)) AddBlaeberryBush(berries.ItemPrefab);
+            // Things to pick up in the Highlands, placed by expand_vegetation_scotheim.yaml.
+            AddPickable(added, "Scot_BlaeberryBush", "BlueberryBush", "Scot_Blaeberries");
+            AddPickable(added, "Scot_BogIronNodule", "Pickable_Stone", "Scot_BogIronOre");
+            AddPickable(added, "Scot_BogOakPickable", "Pickable_Branch", "Scot_BogOak");
+            AddPickable(added, "Scot_CairngormPickable", "Pickable_Flint", "Scot_Cairngorm");
+            AddPickable(added, "Scot_RowanBranch", "Pickable_Branch", "Scot_RowanWood");
+            AddPickable(added, "Scot_HacksilverCache", "Pickable_Stone", "Scot_Hacksilver");
         }
 
         static void AddCooking(string station, string from, string to, float time)
@@ -129,19 +147,26 @@ namespace Scotheim.Content
             }));
         }
 
-        // Valheim's "blueberries" are drawn like bilberries (Vaccinium myrtillus), which is what a
-        // blaeberry is. The Caledonian Forest gets a copy of the bush that yields the Scots-named item.
-        static void AddBlaeberryBush(GameObject berries)
+        // A copy of a vanilla pickable that yields a Highland item instead. Valheim's "blueberries" are
+        // drawn like bilberries (Vaccinium myrtillus), which is what a blaeberry is, so the blaeberry bush
+        // is a copy of the blueberry bush.
+        static void AddPickable(Dictionary<string, CustomItem> added, string name, string basePrefab, string itemName)
         {
-            var bush = PrefabManager.Instance.CreateClonedPrefab("Scot_BlaeberryBush", "BlueberryBush");
-            var pickable = bush != null ? bush.GetComponent<Pickable>() : null;
-            if (pickable == null)
+            CustomItem item;
+            if (!added.TryGetValue(itemName, out item))
             {
-                Plugin.Log.LogWarning("Skipped Scot_BlaeberryBush: BlueberryBush or its Pickable not found.");
+                Plugin.Log.LogWarning("Skipped " + name + ": item " + itemName + " wasn't added.");
                 return;
             }
-            pickable.m_itemPrefab = berries;
-            PrefabManager.Instance.AddPrefab(bush);
+            var clone = PrefabManager.Instance.CreateClonedPrefab(name, basePrefab);
+            var pickable = clone != null ? clone.GetComponent<Pickable>() : null;
+            if (pickable == null)
+            {
+                Plugin.Log.LogWarning("Skipped " + name + ": " + basePrefab + " or its Pickable not found.");
+                return;
+            }
+            pickable.m_itemPrefab = item.ItemPrefab;
+            PrefabManager.Instance.AddPrefab(clone);
         }
 
         // ------------------------------------------------------------ creatures
@@ -186,7 +211,9 @@ namespace Scotheim.Content
             new CreatureSpec { Name = "Scot_Fuath", Base = "Troll", Health = 1500 },
             new CreatureSpec { Name = "Scot_HillGiant", Base = "StoneGolem", Health = 2600, Scale = 1.25f,
                 Drops = new[] { Drop("Scot_GiantHeartstone", 1, 1), Drop("Crystal", 8, 12) } },
-            new CreatureSpec { Name = "Scot_Redcap", Base = "Goblin", Health = 220, Scale = 0.8f },
+            // Redcaps hoard: hacksilver instead of the goblin's black metal scrap.
+            new CreatureSpec { Name = "Scot_Redcap", Base = "Goblin", Health = 220, Scale = 0.8f,
+                Drops = new[] { Drop("Scot_Hacksilver", 1, 3), Drop("Coins", 10, 20, 50f) } },
         };
 
         static void AddCreatures()

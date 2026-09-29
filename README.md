@@ -44,7 +44,7 @@ Every creature is a [Jötunn](https://thunderstore.io/c/valheim/p/ValheimModding
 | Cat-sìth | Ulv | Forest at night | 450 | 1.3 | Sìth pelt |
 | Bean-nighe | Wraith, 0.85× | Loch and lochan shores at night | 450 (100) | 1.8 | Washer's shroud, chain |
 | Each-uisge | Abomination, 0.9× | Loch shores, rare | 2200 (800) | 1.8 | Kelpie mane |
-| Redcap | Goblin, 0.8× | Forest at night, groups of 2–4 | 220 (70) | 2.0 | vanilla goblin drops |
+| Redcap | Goblin, 0.8× | Forest at night, groups of 2–4 | 220 (70) | 2.0 | Hacksilver, coins |
 | Fuath | Troll | Forest, rare | 1500 (600) | 1.6 | vanilla troll drops |
 | Hill giant | Stone golem, 1.25× | Munros above 90 m | 2600 (800) | 1.5 | Giant's heartstone, crystal |
 
@@ -70,7 +70,17 @@ Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tam
 
 Each piece is a clone of a vanilla item that **looks** right, with its numbers copied at load time from an **Ashlands** item (the **stat donor**) and scaled. Where Ashlands has no such weapon, a Mistlands donor is scaled up. The gear is meant to follow the Mistlands: armour holds up through Ashlands and falls behind in the Deep North, while the set bonuses stay worth wearing. Attacks, animations and any equip effect stay the look item's. On load, the log prints a `Stats …` line with every item's final numbers.
 
-Everything is made at the black forge except the Sìth set, the Faerie Flag and the two staves, which are made at the galdr table. Recipes add Ashlands materials (flametal, blackwood, Ask hide, gemstones) to the Highland drops.
+Everything is made at the black forge except the Sìth set, the Faerie Flag and the two staves, which are made at the galdr table. **Recipes use only what the Highlands yield:** Highland drops and raw materials (below), plus vanilla items that Highland creatures and trees drop (wolf fang, troll hide, crystal, chain, deer hide). Rare drops do the job of vanilla's idols. Legendaries need giant's heartstones and a cairngorm; Sìth gear needs Sìth pelts and kelpie mane. `tests/Data/check_data.py` fails if a recipe uses anything else.
+
+**Highland raw materials**
+
+| Material | Where | Use | Basis |
+|---|---|---|---|
+| Bog iron ore → bog iron | Nodules at loch and lochan edges; smelt in the vanilla smelter | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore. |
+| Hacksilver | Redcaps (1–3); rare hoards on moor and in forest | Pictish gear | Pictish silver was largely cut-up Roman silver (the Traprain Law and Gaulcross hoards). |
+| Bog oak | Pulled from the open moor | Shafts, bows, shields, the caber | Oak preserved black in peat. |
+| Cairngorm | Rare, above 70 m in the Munros | Legendaries, staves, the Sìth crown | Smoky quartz from the Cairngorms, set in dirk hilts and plaid brooches. |
+| Rowan wood | Branches in the Caledonian Forest | Staves, the Sìth crown | Rowan is the Highland charm against witches and fairies. |
 
 **Weapons and shields**
 
@@ -80,8 +90,8 @@ Everything is made at the black forge except the Sìth set, the Faerie Flag and 
 | Wallace sword *(leg.)* | 2H sword | Krom | Slayer | ×1.2 damage, ×1.5 weight and durability, −5 % move | Freedom |
 | Claidheamh Soluis *(leg.)* | 1H sword | Mistwalker | Nidhogg | ×1.1 damage; elemental becomes spirit | Freedom |
 | Bruce's axe *(leg.)* | 1H axe (Axes) | Jotun Bane | Berzerkr axe | ×1.15 damage; elemental becomes slash | Freedom |
-| Sparth | 2H axe (Axes) | Black metal battleaxe | Skullsplittur | elemental becomes slash | Freedom |
-| Caber | 2H club (Clubs) | Stagbreaker | Demolisher | ×1.5 knockback | Freedom |
+| Sparth | 2H axe (Axes) | Black metal battleaxe | Skullsplittur (Mistlands) | ×1.3 damage; elemental becomes slash | Freedom |
+| Caber | 2H club (Clubs) | Stagbreaker | Demolisher (Mistlands) | ×1.3 damage, ×1.5 knockback | Freedom |
 | Lochaber axe | Atgeir (Polearms) | Black metal atgeir | Himminafl (Mistlands) | ×1.3 damage; elemental becomes slash | Schiltron |
 | Ettrick bow | Bow | Huntsman bow | Ashlands bow | elemental becomes slash | Schiltron |
 | Targe | Round shield (Blocking) | Banded shield | Flametal shield | — | Schiltron |
@@ -164,7 +174,7 @@ Still unverified:
 ## Known limitations
 
 - **New worlds only.** Every player and the server need the mod with identical settings; the log prints a `signature` to compare. EWD syncs its YAML from the server.
-- **No ores yet.** The kelpie mane has no use yet.
+- **Crafting stations** (black forge, galdr table) are still built from Mistlands materials; only the gear recipes are Highland-only.
 - **Gear looks vanilla.** Each piece keeps its look item's model and icon; in particular, the Wallace sword is no bigger than Krom.
 - **Stand-in creatures.** Clones look, move and attack exactly like their base, and a scaled creature's ragdoll drops back to normal size when it dies. Clones also carry the base's trophy drop.
 - **Clients and server must match.** Jötunn enforces this: everyone needs Scotheim with the same minor version.
