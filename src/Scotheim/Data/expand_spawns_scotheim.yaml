@@ -1,0 +1,199 @@
+# Scotheim creature spawns for Expand World Data (needs "Spawn data = true" in expand_world_data.cfg).
+# The Scot_* prefabs are Jötunn clones registered by Scotheim.dll (see src/Scotheim/Content).
+# fields.damage replaces vanilla's random 0.75-1 damage factor, so 2 is roughly 2.3x vanilla.
+# Health and drops are set on the clones, not here.
+# Edit freely: Scotheim only replaces this file while it's unedited. Once edited, new defaults go to a .new file beside it.
+
+# ---------------------------------------------------------------- Highland Moor
+- prefab: Scot_Sheep
+  name: Scotheim sheep
+  biome: highland_moor
+  spawnChance: 60
+  maxSpawned: 6
+  spawnInterval: 100
+  maxLevel: 3
+  minAltitude: 1
+  spawnDistance: 40
+  groupSizeMin: 2
+  groupSizeMax: 5
+  groupRadius: 8
+- prefab: Scot_RedDeer
+  name: Scotheim red deer
+  biome: highland_moor, caledonian_forest
+  spawnChance: 40
+  maxSpawned: 4
+  spawnInterval: 150
+  maxLevel: 3
+  minAltitude: 1
+  spawnDistance: 64
+  groupSizeMin: 2
+  groupSizeMax: 4
+  groupRadius: 6
+- prefab: Scot_HighlandCow
+  name: Scotheim highland cattle
+  biome: highland_moor
+  spawnChance: 10
+  maxSpawned: 3
+  spawnInterval: 800
+  maxLevel: 2
+  minAltitude: 1
+  spawnDistance: 100
+  groupSizeMin: 2
+  groupSizeMax: 3
+  groupRadius: 10
+  fields:
+    damage: 1.5
+- prefab: Scot_CuSith
+  name: Scotheim cu-sith night
+  biome: highland_moor
+  spawnChance: 15
+  maxSpawned: 1
+  spawnInterval: 600
+  maxLevel: 2
+  minAltitude: 1
+  spawnAtDay: false
+  spawnDistance: 30
+  groupRadius: 3
+  fields:
+    damage: 3.5
+- prefab: Scot_CuSith
+  name: Scotheim cu-sith mist
+  biome: highland_moor
+  spawnChance: 10
+  maxSpawned: 1
+  spawnInterval: 900
+  maxLevel: 2
+  minAltitude: 1
+  spawnAtNight: false
+  requiredEnvironments: Misty
+  spawnDistance: 30
+  groupRadius: 3
+  fields:
+    damage: 3.5
+# Loch and lochan margins: ground within a couple of metres of the water.
+- prefab: Scot_BeanNighe
+  name: Scotheim bean-nighe
+  biome: highland_moor, caledonian_forest
+  spawnChance: 20
+  maxSpawned: 1
+  spawnInterval: 600
+  maxLevel: 2
+  minAltitude: -1
+  maxAltitude: 2
+  spawnAtDay: false
+  spawnDistance: 40
+  groupRadius: 1
+  groundOffset: 1
+  fields:
+    damage: 1.8
+- prefab: Scot_EachUisge
+  name: Scotheim each-uisge
+  biome: highland_moor
+  spawnChance: 8
+  maxSpawned: 1
+  spawnInterval: 3000
+  minAltitude: -2
+  maxAltitude: 2
+  spawnDistance: 60
+  groupRadius: 1
+  groundOffset: 0
+  fields:
+    damage: 1.8
+
+# ------------------------------------------------------------ Caledonian Forest
+- prefab: Scot_PineMarten
+  name: Scotheim pine marten
+  biome: caledonian_forest
+  spawnChance: 40
+  maxSpawned: 4
+  spawnInterval: 150
+  maxLevel: 3
+  minAltitude: 1
+  spawnDistance: 20
+  groupSizeMax: 2
+  groupRadius: 4
+- prefab: Scot_CatSith
+  name: Scotheim cat-sith
+  biome: caledonian_forest
+  spawnChance: 12
+  maxSpawned: 1
+  spawnInterval: 800
+  maxLevel: 2
+  minAltitude: 1
+  spawnAtDay: false
+  spawnDistance: 30
+  groupRadius: 3
+  fields:
+    damage: 1.3
+- prefab: Scot_Redcap
+  name: Scotheim redcaps
+  biome: caledonian_forest
+  spawnChance: 20
+  maxSpawned: 4
+  spawnInterval: 400
+  maxLevel: 3
+  minAltitude: 1
+  spawnAtDay: false
+  spawnDistance: 30
+  groupSizeMin: 2
+  groupSizeMax: 4
+  groupRadius: 4
+  fields:
+    damage: 2
+- prefab: Scot_Fuath
+  name: Scotheim fuath
+  biome: caledonian_forest
+  spawnChance: 6
+  maxSpawned: 1
+  spawnInterval: 3000
+  maxLevel: 2
+  minAltitude: 1
+  spawnDistance: 60
+  groupRadius: 3
+  fields:
+    damage: 1.6
+
+# ----------------------------------------------------------------------- Munros
+- prefab: Scot_HillWolf
+  name: Scotheim hill wolves night
+  biome: munros
+  spawnChance: 40
+  maxSpawned: 5
+  spawnInterval: 150
+  maxLevel: 3
+  minAltitude: 1
+  spawnAtDay: false
+  spawnDistance: 30
+  groupSizeMin: 2
+  groupSizeMax: 4
+  groupRadius: 5
+  maxTilt: 45
+  fields:
+    damage: 2.5
+- prefab: Scot_HillWolf
+  name: Scotheim hill wolves day
+  biome: munros
+  spawnChance: 20
+  maxSpawned: 2
+  spawnInterval: 400
+  maxLevel: 3
+  minAltitude: 1
+  spawnAtNight: false
+  spawnDistance: 30
+  groupSizeMax: 2
+  groupRadius: 5
+  maxTilt: 45
+  fields:
+    damage: 2.5
+- prefab: Scot_HillGiant
+  name: Scotheim hill giant
+  biome: munros
+  spawnChance: 20
+  maxSpawned: 1
+  spawnInterval: 600
+  maxLevel: 2
+  minAltitude: 90
+  spawnDistance: 60
+  groupRadius: 4
+  fields:
+    damage: 1.5

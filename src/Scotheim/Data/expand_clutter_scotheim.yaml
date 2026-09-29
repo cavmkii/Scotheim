@@ -1,5 +1,5 @@
 # Scotheim's ground clutter (grass, ferns, reeds) for the Highland biomes, Expand World Data 1.73 format.
-# Scotheim writes this file only if it's missing, so edit freely; delete it to get the defaults back.
+# Edit freely: Scotheim only replaces this file while it's unedited. Once edited, new defaults go to a .new file beside it.
 # Entries copy vanilla ones (see reference/ewd-1.73) with only the biome and amounts changed.
 
 # ------------------------------------------------------------------ Highland Moor

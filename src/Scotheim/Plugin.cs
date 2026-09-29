@@ -11,11 +11,16 @@ namespace Scotheim
 {
     [BepInPlugin(Guid, Name, Version)]
     [BepInDependency(ExpandWorld.Guid, BepInDependency.DependencyFlags.SoftDependency)]
-    public class Plugin : BaseUnityPlugin
+    [BepInDependency(JotunnGuid, BepInDependency.DependencyFlags.HardDependency)]
+    public partial class Plugin : BaseUnityPlugin
     {
         public const string Guid = "cavmkii.scotheim";
         public const string Name = "Scotheim";
-        public const string Version = "0.2.0";
+        public const string Version = "0.3.0";
+        const string JotunnGuid = "com.jotunn.jotunn";
+
+        // Creatures and items (Content/). Kept out of this file so the patch harness can build without Jötunn.
+        partial void RegisterContent();
 
         internal static ManualLogSource Log;
         internal static Plugin Instance;
@@ -97,6 +102,7 @@ namespace Scotheim
             BindFloat("6 - Caledonian Forest", "DrumlinCoverage", 0f, 1f, s => s.DrumlinCoverage, (s, v) => s.DrumlinCoverage = v, "Rough fraction of ground covered by drumlins.");
 
             Patches.ExpandWorld.WriteDefaultFiles();
+            RegisterContent();
             new Harmony(Guid).PatchAll(Assembly.GetExecutingAssembly());
             Log.LogInfo(Name + " " + Version + " loaded. Terrain signature: " + Signature(SnapshotSettings()));
         }

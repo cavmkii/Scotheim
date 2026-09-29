@@ -1,5 +1,5 @@
 # Scotheim's vegetation for the Highland biomes (Expand World Data 1.73 format).
-# Scotheim writes this file only if it's missing, so edit freely; delete it to get the defaults back.
+# Edit freely: Scotheim only replaces this file while it's unedited. Once edited, new defaults go to a .new file beside it.
 #
 # Every entry starts from the matching vanilla entry (same prefab, tilt, altitude and grouping
 # rules) and changes only the biome and the counts. Counts are per 64 m zone, like vanilla.
@@ -196,7 +196,7 @@
   minAltitude: 1
   maxAltitude: 1000
   maxTerrainDelta: 2
-- prefab: BlueberryBush
+- prefab: Scot_BlaeberryBush
   min: 1
   max: 2
   biome: caledonian_forest

@@ -107,9 +107,12 @@ namespace Scotheim.Patches
         }
 
         /// <summary>
-        /// Writes Scotheim's biome, vegetation and clutter definitions into EWD's config folder, each only if
-        /// it's missing, so edits stick. EWD reads every expand_biomes*.yaml / expand_vegetation*.yaml / expand_clutter*.yaml
-        /// there, so these sit alongside its own files and are synced from the server.
+        /// Writes Scotheim's biome, vegetation, clutter and spawn definitions into EWD's config folder. EWD reads
+        /// every expand_biomes*.yaml / expand_vegetation*.yaml / expand_clutter*.yaml / expand_spawns*.yaml there,
+        /// so these sit alongside its own files and are synced from the server.
+        ///
+        /// Edits stick: a file is replaced only if it's missing or byte-for-byte a version an earlier Scotheim
+        /// wrote. An edited file is left alone and the new default goes next to it as *.yaml.new, which EWD ignores.
         /// </summary>
         internal static void WriteDefaultFiles()
         {
@@ -119,13 +122,32 @@ namespace Scotheim.Patches
             {
                 try
                 {
-                    var path = Path.Combine(dir, name);
-                    if (File.Exists(path)) continue;
-                    Directory.CreateDirectory(dir);
+                    string shipped;
                     using (var stream = typeof(ExpandWorld).Assembly.GetManifestResourceStream("Scotheim.Data." + name))
-                    using (var file = File.Create(path))
-                        stream.CopyTo(file);
-                    Plugin.Log.LogInfo("Wrote " + path);
+                    using (var reader = new StreamReader(stream))
+                        shipped = reader.ReadToEnd();
+                    var path = Path.Combine(dir, name);
+                    Directory.CreateDirectory(dir);
+                    if (!File.Exists(path))
+                    {
+                        File.WriteAllText(path, shipped);
+                        Plugin.Log.LogInfo("Wrote " + path);
+                        continue;
+                    }
+                    var existing = Fingerprint(File.ReadAllText(path));
+                    if (existing == Fingerprint(shipped)) continue;
+                    string[] older;
+                    if (Shipped.TryGetValue(name, out older) && Array.IndexOf(older, existing) >= 0)
+                    {
+                        File.WriteAllText(path, shipped);
+                        Plugin.Log.LogInfo("Updated " + path + " (it was an unedited copy from an older Scotheim).");
+                    }
+                    else
+                    {
+                        File.WriteAllText(path + ".new", shipped);
+                        Plugin.Log.LogWarning(path + " has local edits, so it was kept. This version's default is in " +
+                            name + ".new; merge what you want from it.");
+                    }
                 }
                 catch (Exception e)
                 {
@@ -134,7 +156,28 @@ namespace Scotheim.Patches
             }
         }
 
-        static readonly string[] DataFiles = { FileName, "expand_vegetation_scotheim.yaml", "expand_clutter_scotheim.yaml" };
+        /// <summary>SHA-256 prefix of the text with CRs dropped, so a Windows checkout's line endings don't count as edits.</summary>
+        internal static string Fingerprint(string text)
+        {
+            using (var sha = System.Security.Cryptography.SHA256.Create())
+            {
+                var hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(text.Replace("\r", "")));
+                return BitConverter.ToString(hash, 0, 8).Replace("-", "").ToLowerInvariant();
+            }
+        }
+
+        static readonly string[] DataFiles =
+        {
+            FileName, "expand_vegetation_scotheim.yaml", "expand_clutter_scotheim.yaml", "expand_spawns_scotheim.yaml",
+        };
+
+        // Fingerprints of every version earlier releases wrote (see git history of src/Scotheim/Data).
+        static readonly Dictionary<string, string[]> Shipped = new Dictionary<string, string[]>
+        {
+            { FileName, new[] { "e7fd26f1f5d69f39", "063f4b3eae79531a", "47c982eb6dd734ee" } },
+            { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa" } },
+            { "expand_clutter_scotheim.yaml", new[] { "f186b91465d1e721" } },
+        };
     }
 
     /// <summary>Look the biome IDs up again whenever EWD loads biome data or receives names from the server.</summary>
