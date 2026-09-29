@@ -68,41 +68,58 @@ Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tam
 
 ### Weapons and armour
 
-Each piece is a clone of a vanilla item that **looks** right, with its numbers copied at load time from a Mistlands item (the **stat donor**) and scaled. Balance therefore follows the game's own Mistlands values. Attacks, animations and any equip effect (such as the feather cape's slow fall) stay the look item's. Everything is made at the black forge, except the Sìth set, which is made at the galdr table.
+Each piece is a clone of a vanilla item that **looks** right, with its numbers copied at load time from an **Ashlands** item (the **stat donor**) and scaled. Where Ashlands has no such weapon, a Mistlands donor is scaled up. The gear is meant to follow the Mistlands: armour holds up through Ashlands and falls behind in the Deep North, while the set bonuses stay worth wearing. Attacks, animations and any equip effect stay the look item's. On load, the log prints a `Stats …` line with every item's final numbers.
+
+Everything is made at the black forge except the Sìth set, the Faerie Flag and the two staves, which are made at the galdr table. Recipes add Ashlands materials (flametal, blackwood, Ask hide, gemstones) to the Highland drops.
 
 **Weapons and shields**
 
-| Piece | Looks like | Stats from | Changes |
+| Weapon | Type (skill) | Looks like | Stats from | Changes | Boosted by |
+|---|---|---|---|---|---|
+| Claymore | 2H sword (Swords) | Krom | Slayer | — | Freedom |
+| Wallace sword *(leg.)* | 2H sword | Krom | Slayer | ×1.2 damage, ×1.5 weight and durability, −5 % move | Freedom |
+| Claidheamh Soluis *(leg.)* | 1H sword | Mistwalker | Nidhogg | ×1.1 damage; elemental becomes spirit | Freedom |
+| Bruce's axe *(leg.)* | 1H axe (Axes) | Jotun Bane | Berzerkr axe | ×1.15 damage; elemental becomes slash | Freedom |
+| Sparth | 2H axe (Axes) | Black metal battleaxe | Skullsplittur | elemental becomes slash | Freedom |
+| Caber | 2H club (Clubs) | Stagbreaker | Demolisher | ×1.5 knockback | Freedom |
+| Lochaber axe | Atgeir (Polearms) | Black metal atgeir | Himminafl (Mistlands) | ×1.3 damage; elemental becomes slash | Schiltron |
+| Ettrick bow | Bow | Huntsman bow | Ashlands bow | elemental becomes slash | Schiltron |
+| Targe | Round shield (Blocking) | Banded shield | Flametal shield | — | Schiltron |
+| Pictish shield | Buckler (Blocking) | Bronze buckler | Carapace buckler (Mistlands) | ×1.3 block | Schiltron |
+| Pictish spear | Spear | Bronze spear | Splitner | elemental becomes slash | Woad |
+| Pictish crossbow | Crossbow | Arbalest | Ripper | elemental becomes slash | Woad |
+| Dirk | Knife | Black metal knife | Skoll and Hati (Mistlands) | ×1.4 damage | Woad |
+| Staff of the Cailleach | Elemental staff (frost) | Staff of ice shards | same (Mistlands) | ×1.4 damage | Glamour |
+| Seer's stone | Blood magic staff | Staff of protection | same | ward strength comes from Blood magic skill | Glamour |
+
+**Armour sets.** Head, chest and legs make a set; wearing all three gives the bonus.
+
+| Set | Pieces (looks like) | Stats from | Changes | Set bonus |
+|---|---|---|---|---|
+| **Pictish** | Silver chain (Dverger circlet), jerkin (leather tunic), trews (leather pants) | Ask (Ashlands medium) | ×0.75 armour, half weight, no move penalty, plus each Fenris piece's movement speed | **Woad**: Sneak, Spears, Knives, Crossbows +20; −15 % run stamina drain; plus the Fenris set bonus's running effects |
+| **Clansman** | Blue bonnet (leather helmet), léine (rag tunic), kilt (rag pants) | Ask | ×0.9 armour, 60 % weight, no move penalty | **Freedom**: Swords, Axes, Clubs +20; +30 % stamina regen |
+| **Man-at-arms** | Knapskull (padded helmet), brigandine (iron scale) *or* acton (padded cuirass), chausses (iron greaves) | Flametal (Ashlands heavy); acton from the Ask chest | acton has no move penalty | **Schiltron**: Blocking, Polearms, Bows +20; resistant to pierce |
+| **Sìth** | Crown of the Sìth (Midsummer crown), robe and leggings (Eitr-weave) | Embla (Ashlands mage), including eitr regen | — | **Glamour**: Elemental and Blood magic +20, Sneak +15; +50 % eitr regen |
+
+Vanilla sets give +15 to one or two skills; these give more on purpose, so a set is still worth wearing after its armour is outclassed. Valheim's tooltip lists only two skills per effect, so the others are named in the bonus text.
+
+**Capes** stand alone:
+
+| Cape | Looks like | Stats from | Extra |
 |---|---|---|---|
-| Claymore | Krom | Krom | — |
-| Dirk | Black metal knife | Skoll and Hati | — |
-| Lochaber axe | Black metal atgeir | Himminafl | lightning becomes slash |
-| Targe | Banded shield | Carapace shield | — |
-| Pictish spear | Bronze spear | Carapace spear | — |
-| Pictish shield | Bronze buckler | Carapace buckler | — |
-| Bruce's axe | Jotun Bane | Jotun Bane | 130 % damage, poison becomes slash |
-| Claidheamh Soluis | Mistwalker | Mistwalker | 120 % damage, frost becomes spirit |
-| Wallace sword | Krom | Krom | 130 % damage, 150 % weight and durability, −5 % movement |
-
-**Armour sets.** Head, chest and legs make a set, and wearing all three gives the bonus. Capes stand alone, as in vanilla. Each bonus is a new status effect; only its icon is borrowed from a vanilla set bonus.
-
-| Set | Pieces (looks like) | Armour | Set bonus |
-|---|---|---|---|
-| **Pictish** | Silver chain (Dverger circlet), jerkin (leather tunic), trews (leather pants) | 60–70 % of Carapace, half weight; each piece also gets the matching Fenris piece's movement speed | **Woad**: +15 Sneak, +15 Spears, −15 % run stamina drain, plus the Fenris set bonus's running effects |
-| **Clansman** | Blue bonnet (leather helmet), léine (rag tunic), kilt (rag pants) | 80–85 % of Carapace, 60 % weight, no movement penalty | **Freedom**: +15 Swords, +15 Axes, +25 % stamina regen |
-| **Man-at-arms** | Knapskull (padded helmet), brigandine (iron scale) *or* acton (padded cuirass), chausses (iron greaves) | Brigandine and chausses 115 % of Carapace and heavier; acton 80 % and light | **Schiltron**: +15 Blocking, +15 Polearms, resistant to pierce |
-| **Sìth** | Crown of the Sìth (Midsummer crown), robe and leggings (Eitr-weave) | Eitr-weave's numbers and eitr regen | **Glamour**: +15 Elemental magic, +15 Sneak, +50 % eitr regen |
-
-The Fenris borrowing happens at load time: Woad adds whatever Run skill bonus, run stamina change and speed the Fenris set bonus has, and the log prints exactly what was taken.
-
-**Capes**, one to match each set: Pictish cloak (deer hide cape), belted plaid (troll hide cape), saltire cape (linen cape) and the Fairy Flag (feather cape). All take their numbers from the feather cape. The Fairy Flag, made at the galdr table, also resists pierce and keeps the feather cape's slow fall. Upgrades cost roughly half the base materials per level.
+| Pictish cloak | Deer hide cape | Ash cape | +5 % movement speed |
+| Belted plaid | Troll hide cape | Ash cape | Worn effect: −15 % run and jump stamina |
+| Saltire cape | Linen cape | Ash cape | — |
+| Faerie Flag | Feather cape | Feather cape | Resistant to pierce; keeps the slow fall |
 
 On the sources:
 
 - **Bruce's axe.** Robert the Bruce killing Henry de Bohun with an axe at Bannockburn (1314) is in Barbour's *The Brus* (1370s).
 - **Claidheamh Soluis.** The Sword of Light recurs in the Gaelic tales J. F. Campbell collected in *Popular Tales of the West Highlands* (1860–62).
 - **Wallace sword.** The two-hander at the Wallace Monument in Stirling; its link to Wallace himself is traditional rather than established.
-- **Fairy Flag.** The Bratach Sìth is a real flag kept by the MacLeods at Dunvegan. Its victory-bringing powers are legend.
+- **Faerie Flag.** The Bratach Sìth (usually spelled "Fairy Flag") is a real flag kept by the MacLeods at Dunvegan. Its victory-bringing powers are legend.
+- **Ettrick bow and Pictish crossbow.** Archers from Ettrick Forest fought at Falkirk (1298). Crossbows appear in hunting scenes on Pictish stones at St Vigeans, Shandwick and Glenferness.
+- **Sparth, caber, Cailleach, seer's stone.** The sparth is the galloglass axe of the late-medieval Hebrides; the caber is Highland Games, not warfare. The Cailleach Bheur is the winter hag of Gaelic lore, and the Brahan Seer a 17th-century figure of tradition, possibly real.
 - **Pictish set.** Only the spear, the small shield and the silver chains have evidence behind them: carved stones such as Aberlemno, and the massive silver chains. No Pictish clothing survives. That the Picts painted or tattooed themselves is a Roman claim and is disputed; the item descriptions say so.
 - **Clansman set.** This follows the film, not the 1290s. The belted plaid is attested from the late 16th century and the little kilt from the 18th. The item descriptions own up to it.
 - **Man-at-arms set.** Mail, quilted aketons (actons), plated coats and steel caps fit the Wars of Independence. A saltire appears on the seal of the Guardians of Scotland from 1286.
@@ -138,7 +155,7 @@ What has been verified:
 
 Still unverified:
 
-- that it builds against the real game. In particular, the gear code uses item stat fields and `HitData.DamageTypes.Modify` written from memory (`tests/Content/ValheimStub.cs` lists them). A wrong name shows up as a compile error. The five fields the creature code sets compiled and loaded in the game;
+- that it builds against the real game. In particular, the newest gear code uses a few game fields written from memory (`SharedData.m_attackForce`, `m_eitrRegenModifier`, `m_equipStatusEffect`, `SE_Stats.m_jumpStaminaUseModifier`, the `BloodMagic`/`Crossbows`/`Bows`/`Clubs`/`Knives` skill names); `tests/Content/ValheimStub.cs` lists all stubbed names. A wrong name shows up as a compile error. Everything before this compiled and loaded in the game;
 - creature balance, and spawn rates in play;
 - how deep real Valheim ocean is around the chosen site. This decides how fully the island rises; the log reports the fraction of open ocean;
 - how the vegetation densities look in game;

@@ -21,39 +21,44 @@ namespace Scotheim.Content
             public Action<SE_ScotSet> Configure;
         }
 
-        // Skill bonuses follow vanilla's +15 per set skill; regen and drain changes stay near vanilla sets too.
+        // Late-game bonuses: +20 per skill (vanilla sets give +15 to one or two), so a set stays worth
+        // wearing after its armour falls behind. The third and fourth skills ride on SE_ScotSet.
         static readonly SetSpec[] Specs =
         {
             new SetSpec
             {
                 Id = "pictish", Name = "Woad", Icon = "SetEffect_TrollArmor",
-                Tooltip = "Painted for the raid: quiet, quick and deadly with a spear.",
+                Tooltip = "Painted for the raid: quiet, quick, and deadly with spear, knife and crossbow.",
                 Configure = se =>
                 {
-                    se.m_skillLevel = Skills.SkillType.Sneak; se.m_skillLevelModifier = 15f;
-                    se.m_skillLevel2 = Skills.SkillType.Spears; se.m_skillLevelModifier2 = 15f;
+                    se.m_skillLevel = Skills.SkillType.Sneak; se.m_skillLevelModifier = 20f;
+                    se.m_skillLevel2 = Skills.SkillType.Spears; se.m_skillLevelModifier2 = 20f;
+                    se.AddSkill(Skills.SkillType.Knives, 20f);
+                    se.AddSkill(Skills.SkillType.Crossbows, 20f);
                     se.m_runStaminaDrainModifier = -0.15f;
                 },
             },
             new SetSpec
             {
                 Id = "clansman", Name = "Freedom", Icon = "SetEffect_BerserkerArmor",
-                Tooltip = "Light kit and a long blade. You can keep swinging.",
+                Tooltip = "Light kit and heavy blows. You can keep swinging.",
                 Configure = se =>
                 {
-                    se.m_skillLevel = Skills.SkillType.Swords; se.m_skillLevelModifier = 15f;
-                    se.m_skillLevel2 = Skills.SkillType.Axes; se.m_skillLevelModifier2 = 15f;
-                    se.m_staminaRegenMultiplier = 1.25f;
+                    se.m_skillLevel = Skills.SkillType.Swords; se.m_skillLevelModifier = 20f;
+                    se.m_skillLevel2 = Skills.SkillType.Axes; se.m_skillLevelModifier2 = 20f;
+                    se.AddSkill(Skills.SkillType.Clubs, 20f);
+                    se.m_staminaRegenMultiplier = 1.3f;
                 },
             },
             new SetSpec
             {
                 Id = "manatarms", Name = "Schiltron", Icon = "SetEffect_DeepNorthMediumArmor",
-                Tooltip = "Hold the line: better blocks and pole-arms, and arrows glance off.",
+                Tooltip = "Hold the line: better blocks, pole-arms and bows, and arrows glance off.",
                 Configure = se =>
                 {
-                    se.m_skillLevel = Skills.SkillType.Blocking; se.m_skillLevelModifier = 15f;
-                    se.m_skillLevel2 = Skills.SkillType.Polearms; se.m_skillLevelModifier2 = 15f;
+                    se.m_skillLevel = Skills.SkillType.Blocking; se.m_skillLevelModifier = 20f;
+                    se.m_skillLevel2 = Skills.SkillType.Polearms; se.m_skillLevelModifier2 = 20f;
+                    se.AddSkill(Skills.SkillType.Bows, 20f);
                     se.m_mods = new List<HitData.DamageModPair>
                     {
                         new HitData.DamageModPair { m_type = HitData.DamageType.Pierce, m_modifier = HitData.DamageModifier.Resistant },
@@ -66,9 +71,21 @@ namespace Scotheim.Content
                 Tooltip = "The Sìth's glamour: eitr comes quicker, and eyes slide off you.",
                 Configure = se =>
                 {
-                    se.m_skillLevel = Skills.SkillType.ElementalMagic; se.m_skillLevelModifier = 15f;
-                    se.m_skillLevel2 = Skills.SkillType.Sneak; se.m_skillLevelModifier2 = 15f;
+                    se.m_skillLevel = Skills.SkillType.ElementalMagic; se.m_skillLevelModifier = 20f;
+                    se.m_skillLevel2 = Skills.SkillType.BloodMagic; se.m_skillLevelModifier2 = 20f;
+                    se.AddSkill(Skills.SkillType.Sneak, 15f);
                     se.m_eitrRegenMultiplier = 1.5f;
+                },
+            },
+            // Not a set bonus: worn with the belted plaid.
+            new SetSpec
+            {
+                Id = "plaid", Name = "Belted plaid", Icon = "SetEffect_LoxArmor",
+                Tooltip = "Wrapped in wool: running and jumping cost less.",
+                Configure = se =>
+                {
+                    se.m_runStaminaDrainModifier = -0.15f;
+                    se.m_jumpStaminaUseModifier = -0.15f;
                 },
             },
         };
@@ -90,8 +107,7 @@ namespace Scotheim.Content
                                           new KeyValuePair<Skills.SkillType, float>(fenris.m_skillLevel2, fenris.m_skillLevelModifier2) })
             {
                 if (skill.Key != Skills.SkillType.Run || skill.Value == 0f) continue;
-                woad.m_extraSkills.Add(skill);
-                woad.m_tooltip += "\nRun +" + skill.Value;
+                woad.AddSkill(skill.Key, skill.Value);
                 taken.Add("Run +" + skill.Value);
             }
             if (fenris.m_runStaminaDrainModifier != 0f)
@@ -120,8 +136,8 @@ namespace Scotheim.Content
             }
         }
 
-        /// <summary>Registers the set bonuses and returns them by set id.</summary>
-        internal static Dictionary<string, StatusEffect> AddBonuses()
+        /// <summary>Registers the set bonuses (and the plaid's effect) and returns them by id.</summary>
+        internal static Dictionary<string, StatusEffect> AddEffects()
         {
             var added = new Dictionary<string, StatusEffect>();
             foreach (var spec in Specs)
@@ -137,6 +153,9 @@ namespace Scotheim.Content
                     else Plugin.Log.LogWarning("Set bonus " + spec.Name + " has no icon: " + spec.Icon + " not found.");
                     spec.Configure(se);
                     if (spec.Id == "pictish") BorrowFenrisRun(se);
+                    // Valheim's tooltip lists the first two skills; name the rest in the text.
+                    foreach (var extra in se.m_extraSkills)
+                        se.m_tooltip += "\n" + extra.Key + " +" + extra.Value;
                     ItemManager.Instance.AddStatusEffect(new CustomStatusEffect(se, false));
                     added[spec.Id] = se;
                 }
@@ -149,10 +168,13 @@ namespace Scotheim.Content
         }
     }
 
-    /// <summary>SE_Stats has two skill slots; this carries more (Woad's third, from the Fenris set).</summary>
+    /// <summary>SE_Stats has two skill slots; this carries more.</summary>
     public class SE_ScotSet : SE_Stats
     {
         public List<KeyValuePair<Skills.SkillType, float>> m_extraSkills = new List<KeyValuePair<Skills.SkillType, float>>();
+
+        public void AddSkill(Skills.SkillType skill, float bonus) =>
+            m_extraSkills.Add(new KeyValuePair<Skills.SkillType, float>(skill, bonus));
 
         public override void ModifySkillLevel(Skills.SkillType skill, ref float value)
         {
