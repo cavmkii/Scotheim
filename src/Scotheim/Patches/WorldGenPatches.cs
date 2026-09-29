@@ -62,7 +62,7 @@ namespace Scotheim.Patches
             float x, y;
             Func<float, float, float> vanilla = (wx, wy) => ToAltitude(OriginalBaseHeight.Call(generator, wx, wy, false));
             float open = HighlandsTerrain.FindSite(settings, vanilla, out x, out y);
-            Plugin.Log.LogInfo(string.Format("Highlands at ({0:F0}, {1:F0}), {2:F0} m from centre; {3:P0} of the site was open ocean. Seed {4}, signature {5}.",
+            Plugin.Log.LogInfo(string.Format("Highlands at ({0:F0}, {1:F0}), {2:F0} m from centre; {3:P0} of the site was open water. Seed {4}, signature {5}.",
                 x, y, Math.Sqrt(x * x + y * y), open, seed, Plugin.Signature(settings)));
             var depths = HighlandsTerrain.FootprintAltitudes(settings, vanilla, x, y);
             if (depths.Length > 0)
@@ -74,7 +74,7 @@ namespace Scotheim.Patches
                     depths[0], pct(0.1f), pct(0.5f), pct(0.9f), depths[depths.Length - 1], land / (float)depths.Length));
             }
             if (open < 0.9f)
-                Plugin.Log.LogWarning("Less than 90% of the Highlands site was deep ocean. Vanilla land and shallows there are left as they are, " +
+                Plugin.Log.LogWarning("Less than 90% of the Highlands site was open water. Vanilla land and shallows there are left as they are, " +
                     "so the Highlands will be smaller or broken up. Try a different distance band, a smaller landmass, or set the position by hand.");
             if (!ExpandWorld.Present)
                 Plugin.Log.LogWarning("Expand World Data not found: the Highlands use vanilla Meadows, Black Forest and Mountain.");
