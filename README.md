@@ -14,9 +14,9 @@ A BepInEx mod for Valheim that adds Scottish Highlands islands: new land raised 
 
 | Biome | Where | Terrain | Vegetation | Weather |
 |---|---|---|---|---|
-| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Heath shrubs, birch copses, erratic boulders, cloudberries, rare standing stones | Mostly heath-clear and mist, some drizzle |
+| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
 | **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
-| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Crags and scree; a few stunted pines and birches below ~70 m | Freezing snow and storms, with misty breaks |
+| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Crags and scree; a few stunted pines and birches below ~70 m; rare cloudberries on high ground | Freezing snow and storms, with misty breaks |
 
 Each biome borrows a vanilla height function and ground texture. The moor uses Meadows' grass, plus meadow grass, heath flowers and bracken as ground clutter. EWD's `nature` setting only affects farming, bees and footsteps: the Moor farms like the Plains (barley, flax), the forest like the Black Forest. Vegetation comes entirely from `expand_vegetation_scotheim.yaml`, so no vanilla plants leak in. There are no ores yet.
 
@@ -206,6 +206,13 @@ python3 tools/Preview/render.py out      # -> out/preview.png (needs numpy, Pill
 ```
 
 The preview uses the defaults in `HighlandsSettings`, so edit those to try values.
+
+Material supply versus recipe demand (a rough estimate from the preview's synthetic world):
+
+```sh
+mono preview.exe out 12345 20000 2000
+python3 tools/Economy/economy.py out
+```
 
 Tests:
 

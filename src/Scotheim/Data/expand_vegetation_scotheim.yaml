@@ -100,19 +100,32 @@
   groupSizeMin: 3
   groupSizeMax: 6
   groupRadius: 8
-# Cloudberries grow on real Highland bogs.
-- prefab: CloudberryBush
+# Blaeberry (bilberry) is the common berry of Highland moor.
+- prefab: Scot_BlaeberryBush
   min: 0
-  max: 2
+  max: 1
   chanceToUseGroundTilt: 1
   biome: highland_moor
   minAltitude: 2
   maxAltitude: 50
   maxTilt: 30
   maxTerrainDelta: 2
-  groupSizeMin: 10
-  groupSizeMax: 15
-  groupRadius: 6
+  groupSizeMin: 4
+  groupSizeMax: 8
+  groupRadius: 5
+# Cloudberry is scarce in Scotland: high, boggy ground in the Munros only.
+- prefab: CloudberryBush
+  min: 0
+  max: 0.3
+  chanceToUseGroundTilt: 1
+  biome: munros
+  minAltitude: 60
+  maxAltitude: 1000
+  maxTilt: 25
+  maxTerrainDelta: 2
+  groupSizeMin: 3
+  groupSizeMax: 6
+  groupRadius: 4
 - prefab: Pickable_Stone
   min: 20
   max: 20
