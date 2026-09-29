@@ -228,12 +228,22 @@ namespace Scotheim.Terrain
             return bestScore < 0f ? Footprint(s, vanillaAltitude, siteX, siteY) : chosenScore;
         }
 
-        static float Footprint(HighlandsSettings s, Func<float, float, float> vanillaAltitude, float cx, float cy)
+        /// <summary>
+        /// Vanilla base altitudes sampled over a site's footprint (as FindSite scores it), sorted.
+        /// For diagnostics: how deep the real ocean is where the landmass goes.
+        /// </summary>
+        public static float[] FootprintAltitudes(HighlandsSettings s, Func<float, float, float> vanillaAltitude, float cx, float cy)
         {
-            // Sample the footprint ellipse grown by 50% (the shelf plus a moat).
+            var list = new System.Collections.Generic.List<float>();
+            SampleFootprint(s, cx, cy, (x, y) => list.Add(vanillaAltitude(x, y)));
+            list.Sort();
+            return list.ToArray();
+        }
+
+        static void SampleFootprint(HighlandsSettings s, float cx, float cy, Action<float, float> visit)
+        {
             double g = s.GrainAzimuth * Math.PI / 180.0;
             float ax = (float)Math.Sin(g), ay = (float)Math.Cos(g);
-            int water = 0, total = 0;
             const int n = 14;
             for (int i = -n; i <= n; i++)
             {
@@ -242,12 +252,20 @@ namespace Scotheim.Terrain
                     float u = i / (float)n, v = j / (float)n;
                     if (u * u + v * v > 1f) continue;
                     float along = u * 1.5f * s.LandmassLength, across = v * 1.5f * s.LandmassWidth;
-                    float x = cx + along * ax + across * ay;
-                    float y = cy + along * ay - across * ax;
-                    total++;
-                    if (vanillaAltitude(x, y) < -20f) water++;
+                    visit(cx + along * ax + across * ay, cy + along * ay - across * ax);
                 }
             }
+        }
+
+        static float Footprint(HighlandsSettings s, Func<float, float, float> vanillaAltitude, float cx, float cy)
+        {
+            // The footprint ellipse grown by 50% (the shelf plus a moat); fraction that is deep water.
+            int water = 0, total = 0;
+            SampleFootprint(s, cx, cy, (x, y) =>
+            {
+                total++;
+                if (vanillaAltitude(x, y) < -20f) water++;
+            });
             return total == 0 ? 0f : water / (float)total;
         }
 
