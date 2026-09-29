@@ -19,9 +19,10 @@ namespace Scotheim.Content
         {
             public string Name, Look, Donor;
             public float Damage = 1f, Armor = 1f, Weight = 1f, Durability = 1f;
-            public bool Set; // part of the Pictish set (bonus: Woad)
+            public string Set; // id of the armour set this piece belongs to (see Sets)
             public Action<ItemDrop.ItemData.SharedData> Tweak;
             public RequirementConfig[] Recipe;
+            public string Station = Forge;
         }
 
         static RequirementConfig Req(string item, int amount, int perLevel) => new RequirementConfig(item, amount, perLevel);
@@ -43,15 +44,6 @@ namespace Scotheim.Content
             new GearSpec { Name = "Scot_Targe", Look = "ShieldBanded", Donor = "ShieldCarapace",
                 Recipe = new[] { Req("FineWood", 10, 5), Req("Iron", 4, 2), Req("Scot_HighlandHide", 4, 2), Req("Scot_TartanCloth", 1, 1) } },
 
-            // --- armour
-            new GearSpec { Name = "Scot_Knapskull", Look = "HelmetPadded", Donor = "HelmetCarapace",
-                Recipe = new[] { Req("Iron", 10, 5), Req("BlackMetal", 6, 3), Req("Scot_MartenPelt", 2, 1) } },
-            new GearSpec { Name = "Scot_Acton", Look = "ArmorPaddedCuirass", Donor = "ArmorCarapaceChest", Armor = 0.8f, Weight = 0.6f,
-                // Quilted and light: less armour than the brigandine, no movement penalty.
-                Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_TartanCloth", 6, 3), Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 4, 2) } },
-            new GearSpec { Name = "Scot_Brigandine", Look = "ArmorIronChest", Donor = "ArmorCarapaceChest", Armor = 1.15f, Weight = 1.3f,
-                Recipe = new[] { Req("BlackMetal", 20, 10), Req("Iron", 10, 5), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
 
             // --- legendary
             // Robert the Bruce's axe at Bannockburn (1314): one blow killed Henry de Bohun and broke the shaft
@@ -70,34 +62,68 @@ namespace Scotheim.Content
             new GearSpec { Name = "Scot_WallaceSword", Look = "THSwordKrom", Donor = "THSwordKrom", Damage = 1.3f, Weight = 1.5f, Durability = 1.5f,
                 Tweak = s => s.m_movementModifier -= 0.05f,
                 Recipe = new[] { Req("Scot_GiantHeartstone", 2, 1), Req("BlackMetal", 30, 15), Req("Iron", 15, 5), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
-            // The Bratach Sìth of the MacLeods, kept at Dunvegan; said to bring victory when unfurled.
-            // As a cape: the donor's numbers, plus resistance to pierce.
-            new GearSpec { Name = "Scot_FairyFlag", Look = "CapeLinen", Donor = "CapeLinen",
-                Tweak = s => s.m_damageModifiers.Add(new HitData.DamageModPair { m_type = HitData.DamageType.Pierce, m_modifier = HitData.DamageModifier.Resistant }),
-                Recipe = new[] { Req("Scot_WashersShroud", 3, 1), Req("Scot_SithPelt", 2, 1), Req("LinenThread", 10, 5), Req("JuteRed", 4, 2) } },
 
-            // --- Pictish: light and quick, after the Aberlemno stone's bareheaded spearmen with small shields.
+            // --- Pictish weapons: after the Aberlemno stone's bareheaded spearmen with small shields.
             new GearSpec { Name = "Scot_PictishSpear", Look = "SpearBronze", Donor = "SpearCarapace",
                 Recipe = new[] { Req("YggdrasilWood", 8, 4), Req("BlackMetal", 10, 5), Req("Silver", 2, 1) } },
             new GearSpec { Name = "Scot_PictishShield", Look = "ShieldBronzeBuckler", Donor = "ShieldCarapaceBuckler",
                 Recipe = new[] { Req("FineWood", 8, 4), Req("Scot_HighlandHide", 3, 1), Req("Silver", 2, 1) } },
-            new GearSpec { Name = "Scot_PictishChain", Look = "HelmetDverger", Donor = "HelmetCarapace", Armor = 0.6f, Weight = 0.5f, Set = true,
+
+            // --- Pictish set: light and quick. Only the silver chain has evidence behind it.
+            new GearSpec { Name = "Scot_PictishChain", Look = "HelmetDverger", Donor = "HelmetCarapace", Armor = 0.6f, Weight = 0.5f, Set = "pictish",
                 Recipe = new[] { Req("Silver", 20, 10), Req("Scot_GiantHeartstone", 1, 0) } },
-            new GearSpec { Name = "Scot_PictishJerkin", Look = "ArmorLeatherChest", Donor = "ArmorCarapaceChest", Armor = 0.7f, Weight = 0.5f, Set = true,
+            new GearSpec { Name = "Scot_PictishJerkin", Look = "ArmorLeatherChest", Donor = "ArmorCarapaceChest", Armor = 0.7f, Weight = 0.5f, Set = "pictish",
                 Tweak = s => s.m_movementModifier = 0f,
                 Recipe = new[] { Req("Scot_HighlandHide", 6, 3), Req("ScaleHide", 6, 3), Req("Silver", 4, 2) } },
-            new GearSpec { Name = "Scot_PictishTrews", Look = "ArmorLeatherLegs", Donor = "ArmorCarapaceLegs", Armor = 0.7f, Weight = 0.5f, Set = true,
+            new GearSpec { Name = "Scot_PictishTrews", Look = "ArmorLeatherLegs", Donor = "ArmorCarapaceLegs", Armor = 0.7f, Weight = 0.5f, Set = "pictish",
                 Tweak = s => s.m_movementModifier = 0f,
                 Recipe = new[] { Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 4, 2), Req("Silver", 2, 1) } },
-        };
+            new GearSpec { Name = "Scot_PictishCloak", Look = "CapeDeerHide", Donor = "CapeFeather", Set = "pictish",
+                Recipe = new[] { Req("Scot_MartenPelt", 6, 3), Req("Scot_HighlandHide", 2, 1), Req("Silver", 2, 1) } },
 
-        // Pictish set bonus: a copy of the troll leather set's "Sneaky", renamed.
-        const string SetName = "scot_pictish";
-        const int SetSize = 3;
+            // --- Clansman set ("Braveheart"): the film's look, not the 1290s. Light, for two-handers.
+            new GearSpec { Name = "Scot_BlueBonnet", Look = "HelmetLeather", Donor = "HelmetCarapace", Armor = 0.8f, Weight = 0.5f, Set = "clansman",
+                Recipe = new[] { Req("Scot_Wool", 6, 3), Req("Scot_Blaeberries", 4, 2), Req("Scot_HighlandHide", 1, 1) } },
+            new GearSpec { Name = "Scot_Leine", Look = "ArmorRagsChest", Donor = "ArmorCarapaceChest", Armor = 0.85f, Weight = 0.6f, Set = "clansman",
+                Tweak = s => s.m_movementModifier = 0f,
+                Recipe = new[] { Req("LinenThread", 10, 5), Req("Scot_HighlandHide", 4, 2), Req("Iron", 4, 2) } },
+            new GearSpec { Name = "Scot_Kilt", Look = "ArmorRagsLegs", Donor = "ArmorCarapaceLegs", Armor = 0.85f, Weight = 0.6f, Set = "clansman",
+                Tweak = s => s.m_movementModifier = 0f,
+                Recipe = new[] { Req("Scot_TartanCloth", 6, 3), Req("Scot_HighlandHide", 2, 1) } },
+            new GearSpec { Name = "Scot_BeltedPlaid", Look = "CapeTrollHide", Donor = "CapeFeather", Set = "clansman",
+                Recipe = new[] { Req("Scot_TartanCloth", 8, 4), Req("Scot_Wool", 4, 2) } },
+
+            // --- Man-at-arms set: Wars of Independence steel. Heavy; either chest piece counts.
+            new GearSpec { Name = "Scot_Knapskull", Look = "HelmetPadded", Donor = "HelmetCarapace", Set = "manatarms",
+                Recipe = new[] { Req("Iron", 10, 5), Req("BlackMetal", 6, 3), Req("Scot_MartenPelt", 2, 1) } },
+            new GearSpec { Name = "Scot_Acton", Look = "ArmorPaddedCuirass", Donor = "ArmorCarapaceChest", Armor = 0.8f, Weight = 0.6f, Set = "manatarms",
+                // Quilted and light: less armour than the brigandine, no movement penalty.
+                Tweak = s => s.m_movementModifier = 0f,
+                Recipe = new[] { Req("Scot_TartanCloth", 6, 3), Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 4, 2) } },
+            new GearSpec { Name = "Scot_Brigandine", Look = "ArmorIronChest", Donor = "ArmorCarapaceChest", Armor = 1.15f, Weight = 1.3f, Set = "manatarms",
+                Recipe = new[] { Req("BlackMetal", 20, 10), Req("Iron", 10, 5), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
+            new GearSpec { Name = "Scot_Chausses", Look = "ArmorIronLegs", Donor = "ArmorCarapaceLegs", Armor = 1.15f, Weight = 1.3f, Set = "manatarms",
+                Recipe = new[] { Req("BlackMetal", 14, 7), Req("Iron", 10, 5), Req("Scot_HighlandHide", 2, 1) } },
+            new GearSpec { Name = "Scot_SaltireCape", Look = "CapeLinen", Donor = "CapeFeather", Set = "manatarms",
+                Recipe = new[] { Req("LinenThread", 10, 5), Req("JuteBlue", 4, 2), Req("Scot_TartanCloth", 2, 1) } },
+
+            // --- Sìth set: faerie glamour, for eitr magic. Made at the galdr table.
+            new GearSpec { Name = "Scot_SithCrown", Look = "HelmetMidsummerCrown", Donor = "HelmetMage", Set = "sith", Station = "piece_magetable",
+                Recipe = new[] { Req("Scot_SithPelt", 2, 1), Req("Scot_Blaeberries", 6, 3), Req("Eitr", 8, 4) } },
+            new GearSpec { Name = "Scot_SithRobe", Look = "ArmorMageChest", Donor = "ArmorMageChest", Set = "sith", Station = "piece_magetable",
+                Recipe = new[] { Req("Scot_SithPelt", 4, 2), Req("Scot_KelpieMane", 4, 2), Req("JuteBlue", 6, 3), Req("Eitr", 15, 5) } },
+            new GearSpec { Name = "Scot_SithLeggings", Look = "ArmorMageLegs", Donor = "ArmorMageLegs", Set = "sith", Station = "piece_magetable",
+                Recipe = new[] { Req("Scot_SithPelt", 3, 1), Req("Scot_KelpieMane", 2, 1), Req("JuteBlue", 4, 2), Req("Eitr", 10, 5) } },
+            // The Bratach Sìth of the MacLeods, kept at Dunvegan; said to bring victory when unfurled.
+            // Keeps the feather cape's look and its slow fall; adds resistance to pierce.
+            new GearSpec { Name = "Scot_FairyFlag", Look = "CapeFeather", Donor = "CapeFeather", Set = "sith", Station = "piece_magetable",
+                Tweak = s => s.m_damageModifiers.Add(new HitData.DamageModPair { m_type = HitData.DamageType.Pierce, m_modifier = HitData.DamageModifier.Resistant }),
+                Recipe = new[] { Req("Scot_WashersShroud", 3, 1), Req("Scot_SithPelt", 2, 1), Req("LinenThread", 10, 5), Req("JuteRed", 4, 2) } },
+        };
 
         internal static void Add()
         {
-            var woad = AddWoad();
+            var bonuses = Sets.AddBonuses();
             foreach (var spec in Items)
             {
                 try
@@ -113,7 +139,7 @@ namespace Scotheim.Content
                     {
                         Name = Localization.ItemName(spec.Name),
                         Description = Localization.ItemDescription(spec.Name),
-                        CraftingStation = Forge,
+                        CraftingStation = spec.Station,
                         Requirements = spec.Recipe,
                     });
                     if (item.ItemDrop == null)
@@ -124,11 +150,12 @@ namespace Scotheim.Content
                     var s = item.ItemDrop.m_itemData.m_shared;
                     CopyStats(donor.m_itemData.m_shared, s, spec);
                     if (spec.Tweak != null) spec.Tweak(s);
-                    if (spec.Set && woad != null)
+                    StatusEffect bonus;
+                    if (spec.Set != null && bonuses.TryGetValue(spec.Set, out bonus))
                     {
-                        s.m_setName = SetName;
-                        s.m_setSize = SetSize;
-                        s.m_setStatusEffect = woad;
+                        s.m_setName = "scot_" + spec.Set;
+                        s.m_setSize = Sets.Size;
+                        s.m_setStatusEffect = bonus;
                     }
                     ItemManager.Instance.AddItem(item);
                 }
@@ -137,21 +164,6 @@ namespace Scotheim.Content
                     Plugin.Log.LogError("Couldn't add " + spec.Name + ": " + e);
                 }
             }
-        }
-
-        static StatusEffect AddWoad()
-        {
-            var troll = PrefabManager.Cache.GetPrefab<StatusEffect>("SetEffect_TrollArmor");
-            if (troll == null)
-            {
-                Plugin.Log.LogWarning("Pictish set bonus skipped: SetEffect_TrollArmor not found.");
-                return null;
-            }
-            var woad = UnityEngine.Object.Instantiate(troll);
-            woad.name = "SetEffect_ScotWoad";
-            woad.m_name = "$se_scot_woad";
-            ItemManager.Instance.AddStatusEffect(new CustomStatusEffect(woad, false));
-            return woad;
         }
 
         // Numbers only. Attacks, animations and item type stay the look's, so a knife still swings like a knife.

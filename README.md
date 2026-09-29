@@ -68,28 +68,32 @@ Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tam
 
 ### Weapons and armour
 
-All are made at the black forge. Each is a clone of a vanilla item that **looks** right, with its numbers copied at load time from a Mistlands item (the **stat donor**) and scaled. Balance therefore follows the game's own Mistlands values. Attacks and animations stay the look item's, so the dirk swings like a knife and the Lochaber axe like an atgeir.
+Each piece is a clone of a vanilla item that **looks** right, with its numbers copied at load time from a Mistlands item (the **stat donor**) and scaled. Balance therefore follows the game's own Mistlands values. Attacks, animations and any equip effect (such as the feather cape's slow fall) stay the look item's. Everything is made at the black forge, except the Sìth set, which is made at the galdr table.
 
-| Piece | Looks like | Stats from | Changes | Recipe (quality 1) |
-|---|---|---|---|---|
-| Claymore | Krom | Krom | — | 20 black metal, 10 iron, 3 Highland hide, 2 tartan |
-| Dirk | Black metal knife | Skoll and Hati | — | 8 black metal, 4 Yggdrasil wood, 2 marten pelt |
-| Lochaber axe | Black metal atgeir | Himminafl | lightning damage becomes slash | 10 Yggdrasil wood, 20 black metal, 10 iron, 2 Highland hide |
-| Targe | Banded shield | Carapace shield | — | 10 fine wood, 4 iron, 4 Highland hide, 1 tartan |
-| Knapskull | Padded helmet | Carapace helmet | — | 10 iron, 6 black metal, 2 marten pelt |
-| Acton | Padded cuirass | Carapace breastplate | 80 % armour, 60 % weight, no movement penalty | 6 tartan, 10 wool, 4 Highland hide |
-| Brigandine | Iron scale mail | Carapace breastplate | 115 % armour, 130 % weight | 20 black metal, 10 iron, 4 tartan, 4 Highland hide |
-| Bruce's axe | Jotun Bane | Jotun Bane | 130 % damage, poison becomes slash | 2 giant's heartstone, 20 black metal, 6 Yggdrasil wood, 2 Highland hide |
-| Claidheamh Soluis | Mistwalker | Mistwalker | 120 % damage, frost becomes spirit | 3 giant's heartstone, 4 Sìth pelt, 20 black metal, 10 eitr |
-| Wallace sword | Krom | Krom | 130 % damage, 150 % weight and durability, −5 % movement | 2 giant's heartstone, 30 black metal, 15 iron, 4 tartan, 4 Highland hide |
-| Fairy Flag (cape) | Linen cape | Linen cape | resistant to pierce | 3 washer's shroud, 2 Sìth pelt, 10 linen thread, 4 red jute |
-| Pictish spear | Bronze spear | Carapace spear | — | 8 Yggdrasil wood, 10 black metal, 2 silver |
-| Pictish shield | Bronze buckler | Carapace buckler | — | 8 fine wood, 3 Highland hide, 2 silver |
-| Pictish silver chain (head) | Dverger circlet | Carapace helmet | 60 % armour, half weight | 20 silver, 1 giant's heartstone |
-| Pictish jerkin | Leather tunic | Carapace breastplate | 70 % armour, half weight, no movement penalty | 6 Highland hide, 6 scale hide, 4 silver |
-| Pictish trews | Leather pants | Carapace greaves | 70 % armour, half weight, no movement penalty | 10 wool, 4 Highland hide, 2 silver |
+**Weapons and shields**
 
-Upgrades cost roughly half the base materials per level. The Pictish chain, jerkin and trews form a set; wearing all three gives **Woad**, a renamed copy of the troll leather set's sneak bonus. The other pieces give no set bonus.
+| Piece | Looks like | Stats from | Changes |
+|---|---|---|---|
+| Claymore | Krom | Krom | — |
+| Dirk | Black metal knife | Skoll and Hati | — |
+| Lochaber axe | Black metal atgeir | Himminafl | lightning becomes slash |
+| Targe | Banded shield | Carapace shield | — |
+| Pictish spear | Bronze spear | Carapace spear | — |
+| Pictish shield | Bronze buckler | Carapace buckler | — |
+| Bruce's axe | Jotun Bane | Jotun Bane | 130 % damage, poison becomes slash |
+| Claidheamh Soluis | Mistwalker | Mistwalker | 120 % damage, frost becomes spirit |
+| Wallace sword | Krom | Krom | 130 % damage, 150 % weight and durability, −5 % movement |
+
+**Armour sets.** Four pieces each (head, chest, legs and cape). Wearing all four gives the set bonus. Each bonus is a new status effect; only its icon is borrowed from a vanilla set bonus.
+
+| Set | Pieces (looks like) | Armour | Set bonus |
+|---|---|---|---|
+| **Pictish** | Silver chain (Dverger circlet), jerkin (leather tunic), trews (leather pants), cloak (deer hide cape) | 60–70 % of Carapace, half weight, no movement penalty | **Woad**: +15 Sneak, +15 Spears, −15 % run stamina drain |
+| **Clansman** | Blue bonnet (leather helmet), léine (rag tunic), kilt (rag pants), belted plaid (troll hide cape) | 80–85 % of Carapace, 60 % weight, no movement penalty | **Freedom**: +15 Swords, +15 Axes, +25 % stamina regen |
+| **Man-at-arms** | Knapskull (padded helmet), brigandine (iron scale) *or* acton (padded cuirass), chausses (iron greaves), saltire cape (linen cape) | Brigandine and chausses 115 % of Carapace and heavier; acton 80 % and light | **Schiltron**: +15 Blocking, +15 Polearms, resistant to pierce |
+| **Sìth** | Crown of the Sìth (Midsummer crown), robe and leggings (Eitr-weave), Fairy Flag (feather cape) | Eitr-weave's numbers and eitr regen | **Glamour**: +15 Elemental magic, +15 Sneak, +50 % eitr regen |
+
+Capes take their numbers from the feather cape. The Fairy Flag also resists pierce and keeps the feather cape's slow fall. Upgrades cost roughly half the base materials per level.
 
 On the sources:
 
@@ -97,7 +101,9 @@ On the sources:
 - **Claidheamh Soluis.** The Sword of Light recurs in the Gaelic tales J. F. Campbell collected in *Popular Tales of the West Highlands* (1860–62).
 - **Wallace sword.** The two-hander at the Wallace Monument in Stirling; its link to Wallace himself is traditional rather than established.
 - **Fairy Flag.** The Bratach Sìth is a real flag kept by the MacLeods at Dunvegan. Its victory-bringing powers are legend.
-- **Pictish set.** Only the spear, the small shield and the silver chains have evidence behind them: carved stones such as Aberlemno, and the massive silver chains. No Pictish clothing survives, so the jerkin and trews are guesses. The chain is worn on the head because Valheim has no neck slot. That the Picts painted or tattooed themselves is a Roman claim ("Picti", the painted ones) and is disputed; the item descriptions say so.
+- **Pictish set.** Only the spear, the small shield and the silver chains have evidence behind them: carved stones such as Aberlemno, and the massive silver chains. No Pictish clothing survives. That the Picts painted or tattooed themselves is a Roman claim and is disputed; the item descriptions say so.
+- **Clansman set.** This follows the film, not the 1290s. The belted plaid is attested from the late 16th century and the little kilt from the 18th. The item descriptions own up to it.
+- **Man-at-arms set.** Mail, quilted aketons (actons), plated coats and steel caps fit the Wars of Independence. A saltire appears on the seal of the Guardians of Scotland from 1286.
 
 ## How it fits into the world
 

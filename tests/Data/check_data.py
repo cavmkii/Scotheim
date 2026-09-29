@@ -102,12 +102,27 @@ stations = set(re.findall(r'"(piece_\w+)"', content))
 check(stations <= vanilla_prefabs, "crafting stations exist (" + ", ".join(sorted(stations)) + ")")
 # --- gear
 bad = sorted({v for pair in gear.values() for v in pair} - vanilla_items)
-check(len(gear) == 16 and not bad, "%d gear pieces; looks and stat donors are vanilla items" % len(gear) + (": " + ", ".join(bad) if bad else ""))
+check(len(gear) == 26 and not bad, "%d gear pieces; looks and stat donors are vanilla items" % len(gear) + (": " + ", ".join(bad) if bad else ""))
 needed = set(re.findall(r'Req\("(\w+)"', gear_src))
 bad = sorted(n for n in needed if n not in items and n not in vanilla_items)
 check(not bad, "gear recipes name real items (" + ", ".join(sorted(needed)) + ")" + (": missing " + ", ".join(bad) if bad else ""))
-forge = re.search(r'const string Forge = "(\w+)"', gear_src).group(1)
-check(forge in vanilla_prefabs, "gear crafting station exists (" + forge + ")")
+stations = {re.search(r'const string Forge = "(\w+)"', gear_src).group(1)} | set(re.findall(r'Station = "(\w+)"', gear_src))
+check(stations <= vanilla_prefabs, "gear crafting stations exist (" + ", ".join(sorted(stations)) + ")")
+sets_src = (root / "src/Scotheim/Content/Sets.cs").read_text(encoding="utf-8")
+set_ids = set(re.findall(r'Id = "(\w+)"', sets_src))
+by_set = {}
+for n, sid in re.findall(r'Name = "(Scot_\w+)"[^\n]*Set = "(\w+)"', gear_src):
+    by_set.setdefault(sid, []).append(n)
+check(set(by_set) == set_ids, "every set has pieces and a bonus (" + ", ".join(sorted(set_ids)) + ")")
+for sid, names in sorted(by_set.items()):
+    check(any(l.startswith("Helm") for l in (gear[n][0] for n in names)) and
+          any(l.startswith("Cape") for l in (gear[n][0] for n in names)) and
+          any(l.endswith("Legs") for l in (gear[n][0] for n in names)) and
+          any(l.endswith(("Chest", "Cuirass")) for l in (gear[n][0] for n in names)),
+          "set %s covers head, chest, legs and cape (%s)" % (sid, ", ".join(names)))
+icons = set(re.findall(r'Icon = "(\w+)"', sets_src))
+effects = {l.split("|")[1] for l in (root / "reference/jotunn-valheim-1.0.7/status-effects.txt").read_text(encoding="utf-8").splitlines() if "|" in l} if (root / "reference/jotunn-valheim-1.0.7/status-effects.txt").exists() else set()
+check(icons <= effects, "set bonus icons come from vanilla status effects (" + ", ".join(sorted(icons)) + ")")
 for kind, defined in (("item", items), ("creature", creatures), ("gear piece", gear)):
     missing = sorted(n for n in defined if '{ "%s", ' % n not in localization)
     check(not missing, "every %s has English text" % kind + (": " + ", ".join(missing) if missing else ""))
