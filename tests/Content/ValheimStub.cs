@@ -28,11 +28,11 @@ public class CharacterDrop : UnityEngine.MonoBehaviour { public class Drop { } }
 public class SpawnSystem : UnityEngine.MonoBehaviour { public class SpawnData { } }
 public class CookingStation : UnityEngine.MonoBehaviour { public class ItemConversion { } }
 public class Heightmap { public enum Biome { None = 0 } public enum BiomeArea { Edge = 1 } }
-public class StatusEffect : UnityEngine.ScriptableObject { public string m_name, m_tooltip; public UnityEngine.Sprite m_icon; public virtual void ModifySkillLevel(Skills.SkillType skill, ref float value) { } }
+public class StatusEffect : UnityEngine.ScriptableObject { public float m_ttl; public string m_name, m_tooltip; public UnityEngine.Sprite m_icon; public virtual void ModifySkillLevel(Skills.SkillType skill, ref float value) { } }
 public class SE_Stats : StatusEffect
 {
     public Skills.SkillType m_skillLevel, m_skillLevel2; public float m_skillLevelModifier, m_skillLevelModifier2;
-    public float m_runStaminaDrainModifier, m_jumpStaminaUseModifier, m_speedModifier, m_staminaRegenMultiplier = 1f, m_eitrRegenMultiplier = 1f;
+    public float m_runStaminaDrainModifier, m_jumpStaminaUseModifier, m_speedModifier, m_healthRegenMultiplier = 1f, m_staminaRegenMultiplier = 1f, m_eitrRegenMultiplier = 1f;
     public System.Collections.Generic.List<HitData.DamageModPair> m_mods;
     public override void ModifySkillLevel(Skills.SkillType skill, ref float value) { }
 }
@@ -42,5 +42,5 @@ public class HitData
     public struct DamageTypes { public float m_damage, m_blunt, m_slash, m_pierce, m_chop, m_pickaxe, m_fire, m_frost, m_lightning, m_poison, m_spirit; public void Modify(float multiplier) { } }
     public struct DamageModPair { public DamageType m_type; public DamageModifier m_modifier; }
     [System.Flags] public enum DamageType { Blunt = 1, Slash = 2, Pierce = 4 }
-    public enum DamageModifier { Normal, Resistant }
+    public enum DamageModifier { Normal, Resistant, Weak }
 }

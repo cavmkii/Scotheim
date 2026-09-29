@@ -82,45 +82,51 @@ Everything is made at the black forge except the Sìth set, the Faerie Flag and 
 | Cairngorm | Rare, above 70 m in the Munros | Legendaries, staves, the Sìth crown | Smoky quartz from the Cairngorms, set in dirk hilts and plaid brooches. |
 | Rowan wood | Branches in the Caledonian Forest | Staves, the Sìth crown | Rowan is the Highland charm against witches and fairies. |
 
+**Balance.** Armour sits 10–15 % below its Ashlands equivalent, and each set bonus makes up for it with utility that suits a playstyle. Weapons aren't copies of Ashlands gear: some hit harder, some hit lighter but carry an effect, and some are built for control or parrying. Level-1 numbers below are set exactly; upgrades scale like their donor's. The log's `Stats …` lines show the final values.
+
 **Weapons and shields**
 
-| Weapon | Type (skill) | Looks like | Stats from | Changes | Boosted by |
-|---|---|---|---|---|---|
-| Claymore | 2H sword (Swords) | Krom | Slayer | — | Freedom |
-| Wallace sword *(leg.)* | 2H sword | Krom | Slayer | ×1.2 damage, ×1.5 weight and durability, −5 % move | Freedom |
-| Claidheamh Soluis *(leg.)* | 1H sword | Mistwalker | Nidhogg | ×1.1 damage; elemental becomes spirit | Freedom |
-| Bruce's axe *(leg.)* | 1H axe (Axes) | Jotun Bane | Berzerkr axe | ×1.15 damage; elemental becomes slash | Freedom |
-| Sparth | 2H axe (Axes) | Black metal battleaxe | Skullsplittur (Mistlands) | ×1.3 damage; elemental becomes slash | Freedom |
-| Caber | 2H club (Clubs) | Stagbreaker | Demolisher (Mistlands) | ×1.3 damage, ×1.5 knockback | Freedom |
-| Lochaber axe | Atgeir (Polearms) | Black metal atgeir | Himminafl (Mistlands) | ×1.3 damage; elemental becomes slash | Schiltron |
-| Ettrick bow | Bow | Huntsman bow | Ashlands bow | elemental becomes slash | Schiltron |
-| Targe | Round shield (Blocking) | Banded shield | Flametal shield | — | Schiltron |
-| Pictish shield | Buckler (Blocking) | Bronze buckler | Carapace buckler (Mistlands) | ×1.3 block | Schiltron |
-| Pictish spear | Spear | Bronze spear | Splitner | elemental becomes slash | Woad |
-| Pictish crossbow | Crossbow | Arbalest | Ripper | elemental becomes slash | Woad |
-| Dirk | Knife | Black metal knife | Skoll and Hati (Mistlands) | ×1.4 damage | Woad |
-| Staff of the Cailleach | Elemental staff (frost) | Staff of ice shards | same (Mistlands) | ×1.4 damage | Glamour |
-| Seer's stone | Blood magic staff | Staff of protection | same | ward strength comes from Blood magic skill | Glamour |
+| Weapon | Skill | Level 1 | Role | Boosted by |
+|---|---|---|---|---|
+| Claymore | Swords (2H) | 190 slash, stagger ×1.2 | Out-hits Slayer (170) | Freedom |
+| Wallace sword *(leg.)* | Swords (2H) | 215 slash, stagger ×1.5, knockback ×1.5, −10 % move | Biggest single hits | Freedom |
+| Claidheamh Soluis *(leg.)* | Swords (1H) | 110 slash + 45 spirit + 20 fire | Undead and charred killer | Freedom |
+| Bruce's axe *(leg.)* | Axes (1H) | 180 slash, stagger ×1.5 | The one blow | Freedom |
+| Sparth | Axes (2H) | 140 slash + 35 poison | Bleeds | Freedom |
+| Caber | Clubs (2H) | 150 blunt, 450 knockback, stagger ×2 | Crowd control | Freedom |
+| Lochaber axe | Polearms | 90 pierce + 40 slash; **Hooked** | Opens enemies up | Schiltron |
+| Ettrick bow | Bows | 90 pierce (+ arrow) | Harder than the Ashlands bow | Schiltron |
+| Targe | Blocking | 105 block, parry ×1.25 | Parrying | Schiltron |
+| Pictish shield | Blocking | 90 block, weight 2, no move penalty | Light and mobile | Schiltron |
+| Pictish spear | Spears | 115 pierce; **Pinned** | Slows | Woad |
+| Pictish crossbow | Crossbows | 190 pierce (+ bolt); **Pinned** | Stops prey and chasers | Woad |
+| Dirk | Knives | 45 slash + 45 pierce + 30 poison | Stealth opener | Woad |
+| Staff of the Cailleach | Elemental magic | 36 frost per shard | Slows crowds | Glamour |
+| Seer's stone | Blood magic | ward; strength from Blood magic skill | Protection | Glamour |
+
+On-hit effects: **Hooked** leaves the target weak to slash and pierce for 8 s. **Pinned** slows it by 30 % for 6 s.
 
 **Armour sets.** Head, chest and legs make a set; wearing all three gives the bonus.
 
-| Set | Pieces (looks like) | Stats from | Changes | Set bonus |
-|---|---|---|---|---|
-| **Pictish** | Silver chain (Dverger circlet), jerkin (leather tunic), trews (leather pants) | Ask (Ashlands medium) | ×0.75 armour, half weight, no move penalty, plus each Fenris piece's movement speed | **Woad**: Sneak, Spears, Knives, Crossbows +20; −15 % run stamina drain; plus the Fenris set bonus's running effects |
-| **Clansman** | Blue bonnet (leather helmet), léine (rag tunic), kilt (rag pants) | Ask | ×0.9 armour, 60 % weight, no move penalty | **Freedom**: Swords, Axes, Clubs +20; +30 % stamina regen |
-| **Man-at-arms** | Knapskull (padded helmet), brigandine (iron scale) *or* acton (padded cuirass), chausses (iron greaves) | Flametal (Ashlands heavy); acton from the Ask chest | acton has no move penalty | **Schiltron**: Blocking, Polearms, Bows +20; resistant to pierce |
-| **Sìth** | Crown of the Sìth (Midsummer crown), robe and leggings (Eitr-weave) | Embla (Ashlands mage), including eitr regen | — | **Glamour**: Elemental and Blood magic +20, Sneak +15; +50 % eitr regen |
+| Set | Armour per piece | Pieces | Set bonus |
+|---|---|---|---|
+| **Pictish** | 18 (Ask is 28), +3 % move each | Silver chain, jerkin, trews | **Woad**: Sneak, Spears, Knives, Crossbows +20; −15 % run stamina; +25 % knife damage |
+| **Clansman** | 24, no move penalty | Blue bonnet, léine, kilt | **Freedom**: Swords, Axes, Clubs +20; +30 % stamina regen; +15 % health regen |
+| **Man-at-arms** | 33 (Flametal is 38); acton 24, no move penalty | Knapskull, brigandine or acton, chausses | **Schiltron**: Blocking, Polearms, Bows +20; resistant to pierce; −25 % block stamina |
+| **Sìth** | 17 (Embla is 19), eitr regen kept | Crown, robe, leggings | **Glamour**: Elemental and Blood magic +20, Sneak +15; +50 % eitr regen; −15 % eitr cost |
 
-Vanilla sets give +15 to one or two skills; these give more on purpose, so a set is still worth wearing after its armour is outclassed. Valheim's tooltip lists only two skills per effect, so the others are named in the bonus text.
+Valheim's tooltip lists only two skills per effect, so the others are named in the bonus text.
 
 **Capes** stand alone:
 
-| Cape | Looks like | Stats from | Extra |
-|---|---|---|---|
-| Pictish cloak | Deer hide cape | Ash cape | +5 % movement speed |
-| Belted plaid | Troll hide cape | Ash cape | Worn effect: −15 % run and jump stamina |
-| Saltire cape | Linen cape | Ash cape | — |
-| Faerie Flag | Feather cape | Feather cape | Resistant to pierce; keeps the slow fall |
+| Cape | Armour | Extra |
+|---|---|---|
+| Pictish cloak | 10 | +5 % movement speed |
+| Belted plaid | 10 | Worn effect: −15 % run and jump stamina |
+| Saltire cape | 10 | — |
+| Faerie Flag | 6 | Resistant to pierce; slow fall |
+
+Some of these effects use game fields whose names couldn't be checked here: the on-hit effect, stagger, knife damage, block stamina and eitr cost. Scotheim sets those by name at load and logs `Game field check: …` lines. If one isn't found, that single effect is skipped with a warning, and nothing else breaks.
 
 On the sources:
 

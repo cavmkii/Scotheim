@@ -18,6 +18,7 @@ namespace Scotheim.Content
         sealed class SetSpec
         {
             public string Id, Name, Tooltip, Icon;
+            public float Duration; // 0 = while worn (set bonuses); otherwise seconds, for on-hit effects
             public Action<SE_ScotSet> Configure;
         }
 
@@ -36,6 +37,9 @@ namespace Scotheim.Content
                     se.AddSkill(Skills.SkillType.Knives, 20f);
                     se.AddSkill(Skills.SkillType.Crossbows, 20f);
                     se.m_runStaminaDrainModifier = -0.15f;
+                    // +25 % knife damage: the dirk opens from stealth.
+                    GameFields.TrySet(se, (int)Skills.SkillType.Knives, "m_modifyAttackSkill");
+                    GameFields.TrySet(se, 1.25f, "m_damageModifier");
                 },
             },
             new SetSpec
@@ -48,6 +52,7 @@ namespace Scotheim.Content
                     se.m_skillLevel2 = Skills.SkillType.Axes; se.m_skillLevelModifier2 = 20f;
                     se.AddSkill(Skills.SkillType.Clubs, 20f);
                     se.m_staminaRegenMultiplier = 1.3f;
+                    se.m_healthRegenMultiplier = 1.15f;
                 },
             },
             new SetSpec
@@ -63,6 +68,8 @@ namespace Scotheim.Content
                     {
                         new HitData.DamageModPair { m_type = HitData.DamageType.Pierce, m_modifier = HitData.DamageModifier.Resistant },
                     };
+                    // Blocking costs a quarter less stamina.
+                    GameFields.TrySet(se, -0.25f, "m_blockStaminaUseModifier", "m_blockStaminaModifier");
                 },
             },
             new SetSpec
@@ -75,7 +82,26 @@ namespace Scotheim.Content
                     se.m_skillLevel2 = Skills.SkillType.BloodMagic; se.m_skillLevelModifier2 = 20f;
                     se.AddSkill(Skills.SkillType.Sneak, 15f);
                     se.m_eitrRegenMultiplier = 1.5f;
+                    // Spells cost 15 % less eitr.
+                    GameFields.TrySet(se, -0.15f, "m_eitrUseModifier", "m_eitrCostModifier", "m_eitrUsageModifier");
                 },
+            },
+            // --- Put on whatever a weapon hits.
+            new SetSpec
+            {
+                Id = "hooked", Name = "Hooked", Icon = "SetEffect_DeepNorthMediumArmor", Duration = 8f,
+                Tooltip = "Pulled off balance: weak to slash and pierce.",
+                Configure = se => se.m_mods = new List<HitData.DamageModPair>
+                {
+                    new HitData.DamageModPair { m_type = HitData.DamageType.Slash, m_modifier = HitData.DamageModifier.Weak },
+                    new HitData.DamageModPair { m_type = HitData.DamageType.Pierce, m_modifier = HitData.DamageModifier.Weak },
+                },
+            },
+            new SetSpec
+            {
+                Id = "pinned", Name = "Pinned", Icon = "SetEffect_TrollArmor", Duration = 6f,
+                Tooltip = "A point in the leg: moving slower.",
+                Configure = se => se.m_speedModifier = -0.3f,
             },
             // Not a set bonus: worn with the belted plaid.
             new SetSpec
@@ -120,7 +146,7 @@ namespace Scotheim.Content
                 woad.m_speedModifier += fenris.m_speedModifier;
                 taken.Add("speed " + fenris.m_speedModifier.ToString("+0%;-0%"));
             }
-            if (taken.Count == 0) Plugin.Log.LogWarning("Woad: the Fenris set bonus has no running effect to borrow.");
+            if (taken.Count == 0) Plugin.Log.LogInfo("Woad: the Fenris set bonus itself has no running effect; the Pictish pieces carry the Fenris pieces' movement speed instead.");
             else Plugin.Log.LogInfo("Woad: added from the Fenris set bonus: " + string.Join(", ", taken.ToArray()) + ".");
         }
 
@@ -151,6 +177,7 @@ namespace Scotheim.Content
                     var icon = PrefabManager.Cache.GetPrefab<StatusEffect>(spec.Icon);
                     if (icon != null) se.m_icon = icon.m_icon;
                     else Plugin.Log.LogWarning("Set bonus " + spec.Name + " has no icon: " + spec.Icon + " not found.");
+                    if (spec.Duration > 0f) se.m_ttl = spec.Duration;
                     spec.Configure(se);
                     if (spec.Id == "pictish") BorrowFenrisRun(se);
                     // Valheim's tooltip lists the first two skills; name the rest in the text.

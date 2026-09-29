@@ -127,8 +127,8 @@ capes_in_sets = [n for n, sid in re.findall(r'Name = "(Scot_\w+)"[^\n]*Set = "(\
 check(not capes_in_sets, "capes stand outside the sets" + (": " + ", ".join(capes_in_sets) if capes_in_sets else ""))
 for n, sid in re.findall(r'Name = "(Scot_\w+)"[^\n]*Set = "(\w+)"', gear_src):
     by_set.setdefault(sid, []).append(n)
-worn = set(re.findall(r'EquipEffect = "(\w+)"', gear_src))
-check(worn <= set_ids and set(by_set) == set_ids - worn, "every set has pieces and a bonus; every worn effect exists (" + ", ".join(sorted(set_ids)) + ")")
+worn = set(re.findall(r'(?:EquipEffect|OnHit) = "(\w+)"', gear_src))
+check(worn <= set_ids and set(by_set) == set_ids - worn, "every set has pieces and a bonus; every worn and on-hit effect exists (" + ", ".join(sorted(set_ids)) + ")")
 for sid, names in sorted(by_set.items()):
     check(any(l.startswith("Helm") for l in (gear[n][0] for n in names)) and
           any(l.endswith("Legs") for l in (gear[n][0] for n in names)) and
