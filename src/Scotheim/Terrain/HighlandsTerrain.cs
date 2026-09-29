@@ -60,6 +60,9 @@ namespace Scotheim.Terrain
         /// </summary>
         public const float VanillaShore = -2f;
 
+        /// <summary>Vanilla ground below this counts as open water when scoring sites.</summary>
+        const float OpenWater = -8f;
+
         readonly float centerX, centerY;
         readonly float forestThreshold;
 
@@ -136,7 +139,9 @@ namespace Scotheim.Terrain
             float plain = EllipseDistance(x, y);
             if (plain > 1.6f + 1.4f * s.CoastRoughness) return vanillaAltitude;
             float d = CoastDistance(x, y, plain);
-            float weight = SmoothStep(1.6f, 1.25f, d) * SmoothStep(VanillaShore, VanillaShore - 28f, vanillaAltitude);
+            // Full lift below ~-14 m. Real Valheim sea floor near land sits around -20 to -35 m (measured
+            // in game), so a deeper cut-off would leave the island half-risen in ordinary open water.
+            float weight = SmoothStep(1.6f, 1.25f, d) * SmoothStep(VanillaShore, VanillaShore - 12f, vanillaAltitude);
             if (weight <= 0f) return vanillaAltitude;
 
             // Lowland interior at ~28 m, falling to the coast around d = 1, with massifs rising out
@@ -262,12 +267,15 @@ namespace Scotheim.Terrain
 
         static float Footprint(HighlandsSettings s, Func<float, float, float> vanillaAltitude, float cx, float cy)
         {
-            // The footprint ellipse grown by 50% (the shelf plus a moat); fraction that is deep water.
+            // The footprint ellipse grown by 50% (the shelf plus a moat); fraction that is clearly open
+            // water rather than vanilla land, beach or shallows. Real Valheim ocean is shallow (median
+            // around -23 m near land), so a "deep water" test can't tell sites apart; overlap with
+            // vanilla land is what actually breaks the island up.
             int water = 0, total = 0;
             SampleFootprint(s, cx, cy, (x, y) =>
             {
                 total++;
-                if (vanillaAltitude(x, y) < -20f) water++;
+                if (vanillaAltitude(x, y) < OpenWater) water++;
             });
             return total == 0 ? 0f : water / (float)total;
         }
