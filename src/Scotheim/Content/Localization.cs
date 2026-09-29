@@ -25,6 +25,22 @@ namespace Scotheim.Content
             { "Scot_WashersShroud", new[] { "Washer's shroud", "Linen she was washing at the ford. You don't ask whose." } },
             { "Scot_GiantHeartstone", new[] { "Giant's heartstone", "Warm, and heavier than its size." } },
             { "Scot_TartanCloth", new[] { "Tartan cloth", "Wool woven in a sett and dyed with blaeberry." } },
+            { "Scot_Claymore", new[] { "Claymore", "Claidheamh mòr, the great sword. Two hands and a long reach." } },
+            { "Scot_Dirk", new[] { "Dirk", "A long, single-edged knife, worn at the belt and drawn close in." } },
+            { "Scot_LochaberAxe", new[] { "Lochaber axe", "A cleaver of a blade on a long shaft, with a hook for pulling riders down." } },
+            { "Scot_Targe", new[] { "Targe", "Wood faced with hide and studded with iron. Small enough to fight behind." } },
+            { "Scot_Knapskull", new[] { "Knapskull", "A plain steel cap." } },
+            { "Scot_Acton", new[] { "Acton", "A quilted jack of wool and tartan. Light, and it doesn't slow you." } },
+            { "Scot_Brigandine", new[] { "Brigandine", "Steel plates riveted inside a cloth coat." } },
+            { "Scot_BruceAxe", new[] { "Bruce's axe", "At Bannockburn the Bruce split Henry de Bohun's helm with one blow and broke the shaft doing it. Or so Barbour wrote sixty years on." } },
+            { "Scot_ClaidheamhSoluis", new[] { "Claidheamh Soluis", "The Sword of Light of the West Highland tales, won from a giant. It burns the dead." } },
+            { "Scot_WallaceSword", new[] { "Wallace sword", "Longer than a man is tall, and slow. Nothing stands up after it lands." } },
+            { "Scot_FairyFlag", new[] { "Fairy Flag", "Faded silk from the Sìth, kept by the MacLeods. Unfurled, it is said to turn a battle." } },
+            { "Scot_PictishSpear", new[] { "Pictish spear", "The weapon the symbol stones show most." } },
+            { "Scot_PictishShield", new[] { "Pictish shield", "A small shield with a silver boss, like those carved at Aberlemno." } },
+            { "Scot_PictishChain", new[] { "Pictish silver chain", "Heavy silver links. Nobody knows quite how they were worn; here, on the head." } },
+            { "Scot_PictishJerkin", new[] { "Pictish jerkin", "Hide and silver. No Pictish clothing survives, so this is a guess." } },
+            { "Scot_PictishTrews", new[] { "Pictish trews", "Wool and hide, cut for running. A guess, like the jerkin." } },
         };
 
         static readonly Dictionary<string, string> CreatureText = new Dictionary<string, string>
@@ -47,7 +63,11 @@ namespace Scotheim.Content
 
         internal static void Register()
         {
-            var english = new Dictionary<string, string>();
+            var english = new Dictionary<string, string>
+            {
+                // Pictish set bonus. "Picti", the painted ones, is a Roman name; whether they painted or tattooed is disputed.
+                { "se_scot_woad", "Woad" },
+            };
             foreach (var entry in ItemText)
             {
                 english[ItemName(entry.Key).Substring(1)] = entry.Value[0];

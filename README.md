@@ -58,12 +58,46 @@ Items, also Jötunn clones. Each keeps its base item's model and icon for now:
 | Raw / roast mutton | Sheep; cooking station | Food: 55 health, 18 stamina, 4 regen, 30 min |
 | Raw / roast Highland beef | Highland cow; cooking station | Food: 65 health, 22 stamina, 5 regen, 30 min |
 | Blaeberries | Blaeberry bushes in the Caledonian Forest | Food: 15 health, 45 stamina, 15 min; dye for tartan |
-| Tartan cloth | Workbench: 4 wool + 2 blaeberries | Nothing yet (armour set planned) |
-| Highland hide, pine marten pelt, Sìth pelt, kelpie mane, washer's shroud, giant's heartstone | Drops | Nothing yet (gear planned) |
+| Tartan cloth | Workbench: 4 wool + 2 blaeberries | Gear |
+| Highland hide, pine marten pelt, Sìth pelt, giant's heartstone, washer's shroud | Drops | Gear |
+| Kelpie mane | Each-uisge | Nothing yet |
 
 The food values are my estimate of Mistlands-tier food, not copied from the game. Valheim's "blueberries" already look like bilberries (*Vaccinium myrtillus*), which is what a blaeberry is, so the blaeberry bush is a copy of the blueberry bush that yields the Scots-named item.
 
 Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tamed like boars. Being boars underneath, they also charge when provoked.
+
+### Weapons and armour
+
+All are made at the black forge. Each is a clone of a vanilla item that **looks** right, with its numbers copied at load time from a Mistlands item (the **stat donor**) and scaled. Balance therefore follows the game's own Mistlands values. Attacks and animations stay the look item's, so the dirk swings like a knife and the Lochaber axe like an atgeir.
+
+| Piece | Looks like | Stats from | Changes | Recipe (quality 1) |
+|---|---|---|---|---|
+| Claymore | Krom | Krom | — | 20 black metal, 10 iron, 3 Highland hide, 2 tartan |
+| Dirk | Black metal knife | Skoll and Hati | — | 8 black metal, 4 Yggdrasil wood, 2 marten pelt |
+| Lochaber axe | Black metal atgeir | Himminafl | lightning damage becomes slash | 10 Yggdrasil wood, 20 black metal, 10 iron, 2 Highland hide |
+| Targe | Banded shield | Carapace shield | — | 10 fine wood, 4 iron, 4 Highland hide, 1 tartan |
+| Knapskull | Padded helmet | Carapace helmet | — | 10 iron, 6 black metal, 2 marten pelt |
+| Acton | Padded cuirass | Carapace breastplate | 80 % armour, 60 % weight, no movement penalty | 6 tartan, 10 wool, 4 Highland hide |
+| Brigandine | Iron scale mail | Carapace breastplate | 115 % armour, 130 % weight | 20 black metal, 10 iron, 4 tartan, 4 Highland hide |
+| Bruce's axe | Jotun Bane | Jotun Bane | 130 % damage, poison becomes slash | 2 giant's heartstone, 20 black metal, 6 Yggdrasil wood, 2 Highland hide |
+| Claidheamh Soluis | Mistwalker | Mistwalker | 120 % damage, frost becomes spirit | 3 giant's heartstone, 4 Sìth pelt, 20 black metal, 10 eitr |
+| Wallace sword | Krom | Krom | 130 % damage, 150 % weight and durability, −5 % movement | 2 giant's heartstone, 30 black metal, 15 iron, 4 tartan, 4 Highland hide |
+| Fairy Flag (cape) | Linen cape | Linen cape | resistant to pierce | 3 washer's shroud, 2 Sìth pelt, 10 linen thread, 4 red jute |
+| Pictish spear | Bronze spear | Carapace spear | — | 8 Yggdrasil wood, 10 black metal, 2 silver |
+| Pictish shield | Bronze buckler | Carapace buckler | — | 8 fine wood, 3 Highland hide, 2 silver |
+| Pictish silver chain (head) | Dverger circlet | Carapace helmet | 60 % armour, half weight | 20 silver, 1 giant's heartstone |
+| Pictish jerkin | Leather tunic | Carapace breastplate | 70 % armour, half weight, no movement penalty | 6 Highland hide, 6 scale hide, 4 silver |
+| Pictish trews | Leather pants | Carapace greaves | 70 % armour, half weight, no movement penalty | 10 wool, 4 Highland hide, 2 silver |
+
+Upgrades cost roughly half the base materials per level. The Pictish chain, jerkin and trews form a set; wearing all three gives **Woad**, a renamed copy of the troll leather set's sneak bonus. The other pieces give no set bonus.
+
+On the sources:
+
+- **Bruce's axe.** Robert the Bruce killing Henry de Bohun with an axe at Bannockburn (1314) is in Barbour's *The Brus* (1370s).
+- **Claidheamh Soluis.** The Sword of Light recurs in the Gaelic tales J. F. Campbell collected in *Popular Tales of the West Highlands* (1860–62).
+- **Wallace sword.** The two-hander at the Wallace Monument in Stirling; its link to Wallace himself is traditional rather than established.
+- **Fairy Flag.** The Bratach Sìth is a real flag kept by the MacLeods at Dunvegan. Its victory-bringing powers are legend.
+- **Pictish set.** Only the spear, the small shield and the silver chains have evidence behind them: carved stones such as Aberlemno, and the massive silver chains. No Pictish clothing survives, so the jerkin and trews are guesses. The chain is worn on the head because Valheim has no neck slot. That the Picts painted or tattooed themselves is a Roman claim ("Picti", the painted ones) and is disputed; the item descriptions say so.
 
 ## How it fits into the world
 
@@ -71,7 +105,7 @@ Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tam
 - **Additive.** The island only rises out of water deeper than a few metres. Vanilla land and the water just off its beaches keep their vanilla biome and terrain. If a vanilla islet sits inside the footprint, the Highlands wrap around it.
 - **Biomes.** Custom biomes come from [Expand World Data](https://thunderstore.io/c/valheim/p/JereKuusela/Expand_World_Data/), a soft dependency. Scotheim writes `expand_biomes_scotheim.yaml`, `expand_vegetation_scotheim.yaml`, `expand_clutter_scotheim.yaml` and `expand_spawns_scotheim.yaml` into `BepInEx/config/expand_world/`. The sources are in `src/Scotheim/Data/`. Scotheim finds the biomes by their identifiers (`highland_moor`, `caledonian_forest`, `munros`). Without EWD, the island uses vanilla Meadows, Black Forest and Mountain, with their vanilla vegetation and creatures.
 - **Your edits stick.** A data file is replaced only when it's missing, or when it's an unedited copy of what an earlier Scotheim wrote (compared by fingerprint, ignoring line endings). If you've edited one, it's kept, and the new default is written beside it as `*.yaml.new`. EWD doesn't load `.new` files; merge from them by hand.
-- **Spawns need EWD's spawn data.** Set `Spawn data = true` in `expand_world_data.cfg`; otherwise EWD ignores `expand_spawns*.yaml` and nothing spawns on the Highlands. EWD 1.73's `Drop data` setting does nothing on its own: that version has no drop files. Drops are set on the Jötunn clones instead.
+- **Spawns need EWD's spawn data.** Set `Spawn data = true` in `expand_world_data.cfg`; otherwise EWD ignores `expand_spawns*.yaml` and nothing spawns on the Highlands. **Fix EWD's own dump when you do:** its `expand_spawns.yaml` writes the four `Fimbulvinter - …` entries with no `biome`, and EWD 1.73 reads a missing biome as *every* biome (`DataManager.ToBiomes`), so meteors, Jotuns and Elakingar start spawning everywhere. Add `biome: None` to those four entries. EWD 1.73's `Drop data` setting does nothing on its own: that version has no drop files. Drops are set on the Jötunn clones instead.
 
 ## Status
 
@@ -96,7 +130,7 @@ What has been verified:
 
 Still unverified:
 
-- that it builds against the real game. In particular, five game fields the content code sets were written from memory: `Character.m_health`, `Pickable.m_itemPrefab`, `Procreation.m_offspring`, `Growup.m_grownPrefab` and the `m_food*` fields on items. A wrong name shows up as a compile error;
+- that it builds against the real game. In particular, the gear code uses item stat fields and `HitData.DamageTypes.Modify` written from memory (`tests/Content/ValheimStub.cs` lists them). A wrong name shows up as a compile error. The five fields the creature code sets compiled and loaded in the game;
 - creature balance, and spawn rates in play;
 - how deep real Valheim ocean is around the chosen site. This decides how fully the island rises; the log reports the fraction of open ocean;
 - how the vegetation densities look in game;
@@ -105,7 +139,8 @@ Still unverified:
 ## Known limitations
 
 - **New worlds only.** Every player and the server need the mod with identical settings; the log prints a `signature` to compare. EWD syncs its YAML from the server.
-- **No ores yet**, and the folklore materials have no recipes yet.
+- **No ores yet.** The kelpie mane has no use yet.
+- **Gear looks vanilla.** Each piece keeps its look item's model and icon; in particular, the Wallace sword is no bigger than Krom.
 - **Stand-in creatures.** Clones look, move and attack exactly like their base, and a scaled creature's ragdoll drops back to normal size when it dies. Clones also carry the base's trophy drop.
 - **Clients and server must match.** Jötunn enforces this: everyone needs Scotheim with the same minor version.
 - **Map forest dots on the moor.** EWD shades a custom biome's map with its terrain biome (Meadows for the moor), so the map draws forest dots there even where there are no trees.

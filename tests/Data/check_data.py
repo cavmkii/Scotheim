@@ -17,6 +17,7 @@ root = Path(__file__).resolve().parents[2]
 data = root / "src/Scotheim/Data"
 content = (root / "src/Scotheim/Content/HighlandContent.cs").read_text(encoding="utf-8")
 localization = (root / "src/Scotheim/Content/Localization.cs").read_text(encoding="utf-8")
+gear_src = (root / "src/Scotheim/Content/Gear.cs").read_text(encoding="utf-8")
 ref = root / "reference"
 
 fails = 0
@@ -57,6 +58,7 @@ vegetation = yaml.safe_load((data / "expand_vegetation_scotheim.yaml").read_text
 
 items = dict(re.findall(r'Name = "(Scot_\w+)", Base = "(\w+)"', content.split("ItemSpec[] Items")[1].split("static void AddItems")[0]))
 creatures = dict(re.findall(r'Name = "(Scot_\w+)", Base = "(\w+)"', content.split("CreatureSpec[] Creatures")[1]))
+gear = {n: (look, donor) for n, look, donor in re.findall(r'Name = "(Scot_\w+)", Look = "(\w+)", Donor = "(\w+)"', gear_src)}
 prefabs = {"Scot_BlaeberryBush"} if 'CreateClonedPrefab("Scot_BlaeberryBush", "BlueberryBush")' in content else set()
 
 # --- spawns
@@ -98,7 +100,15 @@ bad = sorted(n for n in dropped | eaten if n not in items and n not in vanilla_i
 check(not bad, "drops, recipes and food name real items" + (": " + ", ".join(bad) if bad else ""))
 stations = set(re.findall(r'"(piece_\w+)"', content))
 check(stations <= vanilla_prefabs, "crafting stations exist (" + ", ".join(sorted(stations)) + ")")
-for kind, defined in (("item", items), ("creature", creatures)):
+# --- gear
+bad = sorted({v for pair in gear.values() for v in pair} - vanilla_items)
+check(len(gear) == 16 and not bad, "%d gear pieces; looks and stat donors are vanilla items" % len(gear) + (": " + ", ".join(bad) if bad else ""))
+needed = set(re.findall(r'Req\("(\w+)"', gear_src))
+bad = sorted(n for n in needed if n not in items and n not in vanilla_items)
+check(not bad, "gear recipes name real items (" + ", ".join(sorted(needed)) + ")" + (": missing " + ", ".join(bad) if bad else ""))
+forge = re.search(r'const string Forge = "(\w+)"', gear_src).group(1)
+check(forge in vanilla_prefabs, "gear crafting station exists (" + forge + ")")
+for kind, defined in (("item", items), ("creature", creatures), ("gear piece", gear)):
     missing = sorted(n for n in defined if '{ "%s", ' % n not in localization)
     check(not missing, "every %s has English text" % kind + (": " + ", ".join(missing) if missing else ""))
 
