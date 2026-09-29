@@ -28,9 +28,11 @@ public class CharacterDrop : UnityEngine.MonoBehaviour { public class Drop { } }
 public class SpawnSystem : UnityEngine.MonoBehaviour { public class SpawnData { } }
 public class CookingStation : UnityEngine.MonoBehaviour { public class ItemConversion { } }
 public class Heightmap { public enum Biome { None = 0 } public enum BiomeArea { Edge = 1 } }
-public class StatusEffect : UnityEngine.ScriptableObject { }
+public class StatusEffect : UnityEngine.ScriptableObject { public string m_name; }
 public class HitData
 {
     public struct DamageTypes { public float m_damage, m_blunt, m_slash, m_pierce, m_chop, m_pickaxe, m_fire, m_frost, m_lightning, m_poison, m_spirit; public void Modify(float multiplier) { } }
-    public struct DamageModPair { }
+    public struct DamageModPair { public DamageType m_type; public DamageModifier m_modifier; }
+    [System.Flags] public enum DamageType { Blunt = 1, Slash = 2, Pierce = 4 }
+    public enum DamageModifier { Normal, Resistant }
 }

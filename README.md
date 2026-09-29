@@ -59,8 +59,8 @@ Items, also Jötunn clones. Each keeps its base item's model and icon for now:
 | Raw / roast Highland beef | Highland cow; cooking station | Food: 65 health, 22 stamina, 5 regen, 30 min |
 | Blaeberries | Blaeberry bushes in the Caledonian Forest | Food: 15 health, 45 stamina, 15 min; dye for tartan |
 | Tartan cloth | Workbench: 4 wool + 2 blaeberries | Gear |
-| Highland hide, pine marten pelt, Sìth pelt, kelpie mane, giant's heartstone | Drops | Gear |
-| Washer's shroud | Bean-nighe | Nothing yet |
+| Highland hide, pine marten pelt, Sìth pelt, giant's heartstone, washer's shroud | Drops | Gear |
+| Kelpie mane | Each-uisge | Nothing yet |
 
 The food values are my estimate of Mistlands-tier food, not copied from the game. Valheim's "blueberries" already look like bilberries (*Vaccinium myrtillus*), which is what a blaeberry is, so the blaeberry bush is a copy of the blueberry bush that yields the Scots-named item.
 
@@ -79,13 +79,25 @@ All are made at the black forge. Each is a clone of a vanilla item that **looks*
 | Knapskull | Padded helmet | Carapace helmet | — | 10 iron, 6 black metal, 2 marten pelt |
 | Acton | Padded cuirass | Carapace breastplate | 80 % armour, 60 % weight, no movement penalty | 6 tartan, 10 wool, 4 Highland hide |
 | Brigandine | Iron scale mail | Carapace breastplate | 115 % armour, 130 % weight | 20 black metal, 10 iron, 4 tartan, 4 Highland hide |
-| Gáe Bulg | Carapace spear | Carapace spear | 130 % damage, +30 poison | 6 kelpie mane, 20 black metal, 8 Yggdrasil wood |
-| Claíomh Solais | Mistwalker | Mistwalker | 120 % damage, frost becomes spirit | 3 giant's heartstone, 4 Sìth pelt, 20 black metal, 10 eitr |
+| Bruce's axe | Jotun Bane | Jotun Bane | 130 % damage, poison becomes slash | 2 giant's heartstone, 20 black metal, 6 Yggdrasil wood, 2 Highland hide |
+| Claidheamh Soluis | Mistwalker | Mistwalker | 120 % damage, frost becomes spirit | 3 giant's heartstone, 4 Sìth pelt, 20 black metal, 10 eitr |
 | Wallace sword | Krom | Krom | 130 % damage, 150 % weight and durability, −5 % movement | 2 giant's heartstone, 30 black metal, 15 iron, 4 tartan, 4 Highland hide |
+| Fairy Flag (cape) | Linen cape | Linen cape | resistant to pierce | 3 washer's shroud, 2 Sìth pelt, 10 linen thread, 4 red jute |
+| Pictish spear | Bronze spear | Carapace spear | — | 8 Yggdrasil wood, 10 black metal, 2 silver |
+| Pictish shield | Bronze buckler | Carapace buckler | — | 8 fine wood, 3 Highland hide, 2 silver |
+| Pictish silver chain (head) | Dverger circlet | Carapace helmet | 60 % armour, half weight | 20 silver, 1 giant's heartstone |
+| Pictish jerkin | Leather tunic | Carapace breastplate | 70 % armour, half weight, no movement penalty | 6 Highland hide, 6 scale hide, 4 silver |
+| Pictish trews | Leather pants | Carapace greaves | 70 % armour, half weight, no movement penalty | 10 wool, 4 Highland hide, 2 silver |
 
-Upgrades cost roughly half the base materials per level. The pieces don't give set bonuses.
+Upgrades cost roughly half the base materials per level. The Pictish chain, jerkin and trews form a set; wearing all three gives **Woad**, a renamed copy of the troll leather set's sneak bonus. The other pieces give no set bonus.
 
-On the sources: the Gáe Bulg and Claíomh Solais come from the shared Gaelic (mostly Irish-recorded) tradition. The Gáe Bulg is tied to Scotland through Scáthach's school on Skye. The Wallace sword is the two-hander at the Wallace Monument; its link to Wallace himself is traditional rather than established.
+On the sources:
+
+- **Bruce's axe.** Robert the Bruce killing Henry de Bohun with an axe at Bannockburn (1314) is in Barbour's *The Brus* (1370s).
+- **Claidheamh Soluis.** The Sword of Light recurs in the Gaelic tales J. F. Campbell collected in *Popular Tales of the West Highlands* (1860–62).
+- **Wallace sword.** The two-hander at the Wallace Monument in Stirling; its link to Wallace himself is traditional rather than established.
+- **Fairy Flag.** The Bratach Sìth is a real flag kept by the MacLeods at Dunvegan. Its victory-bringing powers are legend.
+- **Pictish set.** Only the spear, the small shield and the silver chains have evidence behind them: carved stones such as Aberlemno, and the massive silver chains. No Pictish clothing survives, so the jerkin and trews are guesses. The chain is worn on the head because Valheim has no neck slot. That the Picts painted or tattooed themselves is a Roman claim ("Picti", the painted ones) and is disputed; the item descriptions say so.
 
 ## How it fits into the world
 
@@ -127,7 +139,7 @@ Still unverified:
 ## Known limitations
 
 - **New worlds only.** Every player and the server need the mod with identical settings; the log prints a `signature` to compare. EWD syncs its YAML from the server.
-- **No ores yet.** The washer's shroud has no use yet.
+- **No ores yet.** The kelpie mane has no use yet.
 - **Gear looks vanilla.** Each piece keeps its look item's model and icon; in particular, the Wallace sword is no bigger than Krom.
 - **Stand-in creatures.** Clones look, move and attack exactly like their base, and a scaled creature's ragdoll drops back to normal size when it dies. Clones also carry the base's trophy drop.
 - **Clients and server must match.** Jötunn enforces this: everyone needs Scotheim with the same minor version.

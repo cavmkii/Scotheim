@@ -19,6 +19,7 @@ namespace Scotheim.Content
         {
             public string Name, Look, Donor;
             public float Damage = 1f, Armor = 1f, Weight = 1f, Durability = 1f;
+            public bool Set; // part of the Pictish set (bonus: Woad)
             public Action<ItemDrop.ItemData.SharedData> Tweak;
             public RequirementConfig[] Recipe;
         }
@@ -53,12 +54,15 @@ namespace Scotheim.Content
                 Recipe = new[] { Req("BlackMetal", 20, 10), Req("Iron", 10, 5), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
 
             // --- legendary
-            // Cú Chulainn's barbed spear, learned from Scáthach on Skye; in the tale it was made from a sea beast's bone.
-            new GearSpec { Name = "Scot_GaeBulg", Look = "SpearCarapace", Donor = "SpearCarapace", Damage = 1.3f,
-                Tweak = s => { s.m_damages.m_poison += 30f; s.m_damagesPerLevel.m_poison += 5f; },
-                Recipe = new[] { Req("Scot_KelpieMane", 6, 3), Req("BlackMetal", 20, 10), Req("YggdrasilWood", 8, 4) } },
-            // The Sword of Light of Gaelic folktales, usually won from a giant: the donor's frost becomes spirit.
-            new GearSpec { Name = "Scot_ClaiomhSolais", Look = "SwordMistwalker", Donor = "SwordMistwalker", Damage = 1.2f,
+            // Robert the Bruce's axe at Bannockburn (1314): one blow killed Henry de Bohun and broke the shaft
+            // (Barbour, The Brus, 1370s). A plain steel axe: the donor's poison becomes slash.
+            new GearSpec { Name = "Scot_BruceAxe", Look = "AxeJotunBane", Donor = "AxeJotunBane", Damage = 1.3f,
+                Tweak = s => { s.m_damages.m_slash += s.m_damages.m_poison; s.m_damages.m_poison = 0f;
+                               s.m_damagesPerLevel.m_slash += s.m_damagesPerLevel.m_poison; s.m_damagesPerLevel.m_poison = 0f; },
+                Recipe = new[] { Req("Scot_GiantHeartstone", 2, 1), Req("BlackMetal", 20, 10), Req("YggdrasilWood", 6, 3), Req("Scot_HighlandHide", 2, 1) } },
+            // The claidheamh soluis of J. F. Campbell's Popular Tales of the West Highlands (1860-62), usually won
+            // from a giant: the donor's frost becomes spirit.
+            new GearSpec { Name = "Scot_ClaidheamhSoluis", Look = "SwordMistwalker", Donor = "SwordMistwalker", Damage = 1.2f,
                 Tweak = s => { s.m_damages.m_spirit += s.m_damages.m_frost; s.m_damages.m_frost = 0f;
                                s.m_damagesPerLevel.m_spirit += s.m_damagesPerLevel.m_frost; s.m_damagesPerLevel.m_frost = 0f; },
                 Recipe = new[] { Req("Scot_GiantHeartstone", 3, 1), Req("Scot_SithPelt", 4, 2), Req("BlackMetal", 20, 10), Req("Eitr", 10, 5) } },
@@ -66,10 +70,34 @@ namespace Scotheim.Content
             new GearSpec { Name = "Scot_WallaceSword", Look = "THSwordKrom", Donor = "THSwordKrom", Damage = 1.3f, Weight = 1.5f, Durability = 1.5f,
                 Tweak = s => s.m_movementModifier -= 0.05f,
                 Recipe = new[] { Req("Scot_GiantHeartstone", 2, 1), Req("BlackMetal", 30, 15), Req("Iron", 15, 5), Req("Scot_TartanCloth", 4, 2), Req("Scot_HighlandHide", 4, 2) } },
+            // The Bratach Sìth of the MacLeods, kept at Dunvegan; said to bring victory when unfurled.
+            // As a cape: the donor's numbers, plus resistance to pierce.
+            new GearSpec { Name = "Scot_FairyFlag", Look = "CapeLinen", Donor = "CapeLinen",
+                Tweak = s => s.m_damageModifiers.Add(new HitData.DamageModPair { m_type = HitData.DamageType.Pierce, m_modifier = HitData.DamageModifier.Resistant }),
+                Recipe = new[] { Req("Scot_WashersShroud", 3, 1), Req("Scot_SithPelt", 2, 1), Req("LinenThread", 10, 5), Req("JuteRed", 4, 2) } },
+
+            // --- Pictish: light and quick, after the Aberlemno stone's bareheaded spearmen with small shields.
+            new GearSpec { Name = "Scot_PictishSpear", Look = "SpearBronze", Donor = "SpearCarapace",
+                Recipe = new[] { Req("YggdrasilWood", 8, 4), Req("BlackMetal", 10, 5), Req("Silver", 2, 1) } },
+            new GearSpec { Name = "Scot_PictishShield", Look = "ShieldBronzeBuckler", Donor = "ShieldCarapaceBuckler",
+                Recipe = new[] { Req("FineWood", 8, 4), Req("Scot_HighlandHide", 3, 1), Req("Silver", 2, 1) } },
+            new GearSpec { Name = "Scot_PictishChain", Look = "HelmetDverger", Donor = "HelmetCarapace", Armor = 0.6f, Weight = 0.5f, Set = true,
+                Recipe = new[] { Req("Silver", 20, 10), Req("Scot_GiantHeartstone", 1, 0) } },
+            new GearSpec { Name = "Scot_PictishJerkin", Look = "ArmorLeatherChest", Donor = "ArmorCarapaceChest", Armor = 0.7f, Weight = 0.5f, Set = true,
+                Tweak = s => s.m_movementModifier = 0f,
+                Recipe = new[] { Req("Scot_HighlandHide", 6, 3), Req("ScaleHide", 6, 3), Req("Silver", 4, 2) } },
+            new GearSpec { Name = "Scot_PictishTrews", Look = "ArmorLeatherLegs", Donor = "ArmorCarapaceLegs", Armor = 0.7f, Weight = 0.5f, Set = true,
+                Tweak = s => s.m_movementModifier = 0f,
+                Recipe = new[] { Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 4, 2), Req("Silver", 2, 1) } },
         };
+
+        // Pictish set bonus: a copy of the troll leather set's "Sneaky", renamed.
+        const string SetName = "scot_pictish";
+        const int SetSize = 3;
 
         internal static void Add()
         {
+            var woad = AddWoad();
             foreach (var spec in Items)
             {
                 try
@@ -96,6 +124,12 @@ namespace Scotheim.Content
                     var s = item.ItemDrop.m_itemData.m_shared;
                     CopyStats(donor.m_itemData.m_shared, s, spec);
                     if (spec.Tweak != null) spec.Tweak(s);
+                    if (spec.Set && woad != null)
+                    {
+                        s.m_setName = SetName;
+                        s.m_setSize = SetSize;
+                        s.m_setStatusEffect = woad;
+                    }
                     ItemManager.Instance.AddItem(item);
                 }
                 catch (Exception e)
@@ -103,6 +137,21 @@ namespace Scotheim.Content
                     Plugin.Log.LogError("Couldn't add " + spec.Name + ": " + e);
                 }
             }
+        }
+
+        static StatusEffect AddWoad()
+        {
+            var troll = PrefabManager.Cache.GetPrefab<StatusEffect>("SetEffect_TrollArmor");
+            if (troll == null)
+            {
+                Plugin.Log.LogWarning("Pictish set bonus skipped: SetEffect_TrollArmor not found.");
+                return null;
+            }
+            var woad = UnityEngine.Object.Instantiate(troll);
+            woad.name = "SetEffect_ScotWoad";
+            woad.m_name = "$se_scot_woad";
+            ItemManager.Instance.AddStatusEffect(new CustomStatusEffect(woad, false));
+            return woad;
         }
 
         // Numbers only. Attacks, animations and item type stay the look's, so a knife still swings like a knife.

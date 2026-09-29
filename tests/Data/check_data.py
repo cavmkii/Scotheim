@@ -102,7 +102,7 @@ stations = set(re.findall(r'"(piece_\w+)"', content))
 check(stations <= vanilla_prefabs, "crafting stations exist (" + ", ".join(sorted(stations)) + ")")
 # --- gear
 bad = sorted({v for pair in gear.values() for v in pair} - vanilla_items)
-check(len(gear) == 10 and not bad, "%d gear pieces; looks and stat donors are vanilla items" % len(gear) + (": " + ", ".join(bad) if bad else ""))
+check(len(gear) == 16 and not bad, "%d gear pieces; looks and stat donors are vanilla items" % len(gear) + (": " + ", ".join(bad) if bad else ""))
 needed = set(re.findall(r'Req\("(\w+)"', gear_src))
 bad = sorted(n for n in needed if n not in items and n not in vanilla_items)
 check(not bad, "gear recipes name real items (" + ", ".join(sorted(needed)) + ")" + (": missing " + ", ".join(bad) if bad else ""))
