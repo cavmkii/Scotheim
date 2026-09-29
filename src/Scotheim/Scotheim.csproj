@@ -27,4 +27,16 @@
     <Reference Include="BepInEx"><HintPath>$(BepInExDir)\BepInEx.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="0Harmony"><HintPath>$(BepInExDir)\0Harmony.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
+
+  <!-- Also produce bin\<Config>\Scotheim.zip (just the DLL) for mod managers such as Vortex. -->
+  <Target Name="PackageForModManagers" AfterTargets="Build">
+    <PropertyGroup>
+      <PackageDir>$(OutDir)package\</PackageDir>
+      <PackageZip>$(OutDir)..\Scotheim.zip</PackageZip>
+    </PropertyGroup>
+    <RemoveDir Directories="$(PackageDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(PackageDir)" />
+    <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(PackageZip)" Overwrite="true" />
+    <Message Importance="high" Text="Mod manager package: $([System.IO.Path]::GetFullPath('$(PackageZip)'))" />
+  </Target>
 </Project>
