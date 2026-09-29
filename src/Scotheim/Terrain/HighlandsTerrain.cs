@@ -2,14 +2,16 @@ using System;
 
 namespace Scotheim.Terrain
 {
+    public enum HighlandBiome { None, Moor, Forest, Munros }
+
     /// <summary>
-    /// The terrain transform, in two stages.
+    /// The Highlands landmass: a new island raised out of open ocean, holding three biomes.
     ///
-    /// Stage A (<see cref="CarveBase"/>) edits Valheim's base height field, which is what the game
-    /// uses to decide biomes: above 50 m of base altitude is Mountain. Carving glens here means glen
-    /// floors drop out of the Mountain biome and become Meadows or Black Forest (depending on the
-    /// distance ring). That gives bare hills with wooded, habitable glens between them. Vanilla's
-    /// own biome height functions all build on the base height, so they inherit the glens for free.
+    /// Stage A (<see cref="LandBase"/>, <see cref="CarveBase"/>) edits Valheim's base height field:
+    /// the island is blended in over the sea floor, then glens are carved into it. Nothing changes
+    /// outside the island, so vanilla land is untouched. <see cref="Classify"/> then assigns the
+    /// biomes from that carved base: Munros above 50 m, Caledonian Forest in glens and patches on
+    /// the lower ground, Moor elsewhere.
     ///
     /// Stage B (<see cref="ShapeMountain"/>, <see cref="ShapeMoorland"/>, <see cref="ShapeForest"/>,
     /// <see cref="ApplyLochs"/>) reshapes the final per-biome height: rounded munros with corries,
@@ -46,10 +48,25 @@ namespace Scotheim.Terrain
         readonly float corrieDirBase;
         readonly float lochThreshold, lochanThreshold, drumlinThreshold;
 
-        public HighlandsTerrain(HighlandsSettings settings, int worldSeed)
+        /// <summary>Base altitude below which vanilla assigns Ocean.</summary>
+        public const float OceanThreshold = -26f;
+
+        /// <summary>
+        /// Vanilla ground above this (its land and the water just off its beaches) is never raised
+        /// or reassigned; the landmass only rises out of water deeper than this.
+        /// </summary>
+        public const float VanillaShore = -2f;
+
+        readonly float centerX, centerY;
+        readonly float forestThreshold;
+
+        public HighlandsTerrain(HighlandsSettings settings, int worldSeed, float landmassX, float landmassY)
         {
             s = settings;
             seed = worldSeed;
+            centerX = landmassX;
+            centerY = landmassY;
+            forestThreshold = Quantile(Fbm2Quantiles, 1f - settings.ForestCover);
             double g = settings.GrainAzimuth * Math.PI / 180.0;
             alongX = (float)Math.Sin(g);
             alongY = (float)Math.Cos(g);
@@ -62,6 +79,166 @@ namespace Scotheim.Terrain
         }
 
         public HighlandsSettings Settings { get { return s; } }
+        public float CenterX { get { return centerX; } }
+        public float CenterY { get { return centerY; } }
+
+        // ---------------------------------------------------------------- landmass
+
+        /// <summary>
+        /// Distance from the landmass centre in ellipse units (1 = the nominal coast), elongated
+        /// along the grain like the real Highlands. No noise; cheap enough for early-outs.
+        /// </summary>
+        float EllipseDistance(float x, float y)
+        {
+            float dx = x - centerX, dy = y - centerY;
+            float u = (dx * alongX + dy * alongY) / s.LandmassLength;
+            float v = (dx * acrossX + dy * acrossY) / s.LandmassWidth;
+            return (float)Math.Sqrt(u * u + v * v);
+        }
+
+        /// <summary>Ellipse distance with a ragged coast: headlands, bays and offshore islets.</summary>
+        float CoastDistance(float x, float y, float plain)
+        {
+            return plain
+                + s.CoastRoughness * Noise.Fbm2(x / 1100f, y / 1100f, seed + 61)
+                + 0.5f * s.CoastRoughness * Noise.Perlin(x / 300f, y / 300f, seed + 62);
+        }
+
+        /// <summary>
+        /// Glen floor height at a point: the along-glen floor noise, dropping below sea level near
+        /// the coast so glens that reach the shore flood as sea lochs.
+        /// </summary>
+        float EffectiveFloor(float x, float y, float floorNoise)
+        {
+            float floor = GlenFloor(floorNoise);
+            float coast = SmoothStep(0.5f, 0.95f, CoastDistance(x, y, EllipseDistance(x, y)));
+            return Lerp(floor, -s.LochDepth - 3f, coast);
+        }
+
+        /// <summary>1 on the landmass and its shelf, fading to 0 in open ocean. Stage B only runs where this is above 0.5.</summary>
+        public float LandWeight(float x, float y)
+        {
+            float plain = EllipseDistance(x, y);
+            if (plain > 1.6f + 1.4f * s.CoastRoughness) return 0f;
+            return SmoothStep(1.6f, 1.25f, CoastDistance(x, y, plain));
+        }
+
+        /// <summary>
+        /// Stage A, first half: raise the landmass. Takes the vanilla base altitude and returns the
+        /// pre-glen altitude. Only rises out of deep water: where vanilla already has land or
+        /// shallows, it is left alone, so the Highlands add to the world without replacing anything.
+        /// </summary>
+        public float LandBase(float x, float y, float vanillaAltitude)
+        {
+            float plain = EllipseDistance(x, y);
+            if (plain > 1.6f + 1.4f * s.CoastRoughness) return vanillaAltitude;
+            float d = CoastDistance(x, y, plain);
+            float weight = SmoothStep(1.6f, 1.25f, d) * SmoothStep(VanillaShore, VanillaShore - 28f, vanillaAltitude);
+            if (weight <= 0f) return vanillaAltitude;
+
+            // Lowland interior at ~28 m, falling to the coast around d = 1, with massifs rising out
+            // of it in ridges along the grain. Massifs fade out towards the coast so it doesn't
+            // break into cliffs.
+            float profile = SmoothStep(1.15f, 0.3f, d);
+            float u = x * alongX + y * alongY, v = x * acrossX + y * acrossY;
+            float ridges = Noise.Fbm2(u / 1400f, v / 650f, seed + 63);
+            float massif = SmoothStep(-0.45f, 0.4f, ridges) * profile;
+            float island = -34f + 62f * (float)Math.Pow(profile, 0.7) + (s.LandmassCoreHeight - 28f) * massif;
+            float blended = Lerp(vanillaAltitude, island, weight);
+            return Math.Max(vanillaAltitude, blended);
+        }
+
+        /// <summary>
+        /// Which Highland biome a point belongs to, from its carved base altitude. None outside the
+        /// landmass, under the sea, or where vanilla already had land (that keeps its vanilla biome).
+        /// </summary>
+        public HighlandBiome Classify(float x, float y, float carvedBaseAltitude, float vanillaAltitude)
+        {
+            if (carvedBaseAltitude <= OceanThreshold || vanillaAltitude > VanillaShore) return HighlandBiome.None;
+            if (LandWeight(x, y) <= 0.5f) return HighlandBiome.None;
+            if (carvedBaseAltitude > MountainThreshold) return HighlandBiome.Munros;
+
+            // Caledonian pinewood survives in the glens and in patches on sheltered lower ground.
+            float floorNoise;
+            float glen = GlenShape(x, y, out floorNoise);
+            float patch = Noise.Fbm2(x / 650f, y / 650f, seed + 71);
+            float shelter = (1f - glen) * 0.35f;
+            return patch + shelter > forestThreshold ? HighlandBiome.Forest : HighlandBiome.Moor;
+        }
+
+        /// <summary>
+        /// Picks a landmass centre in open ocean. Candidates lie on rings in the configured distance
+        /// band; each is scored by the fraction of its footprint (plus a margin) that is deep water
+        /// in the vanilla base field, and ties go to the one nearest the preferred radius.
+        /// Deterministic for a given seed and settings, so every peer finds the same site.
+        /// </summary>
+        /// <returns>Fraction of the footprint that was open ocean (1 = no vanilla land touched).</returns>
+        public static float FindSite(HighlandsSettings s, Func<float, float, float> vanillaAltitude, out float siteX, out float siteY)
+        {
+            siteX = s.LandmassX;
+            siteY = s.LandmassY;
+            if (!s.LandmassAuto) return Footprint(s, vanillaAltitude, siteX, siteY);
+
+            float bestScore = -1f, chosenScore = 0f, bestRadiusError = float.MaxValue;
+            float margin = 1.35f * s.LandmassLength;
+            for (float r = s.LandmassMinRadius; r <= s.LandmassMaxRadius + 1f; r += 500f)
+            {
+                for (int a = 0; a < 72; a++)
+                {
+                    double angle = a * 5.0 * Math.PI / 180.0;
+                    float cx = (float)(Math.Sin(angle) * r), cy = (float)(Math.Cos(angle) * r);
+                    // Keep off the world edge and out of Ashlands (south) and Deep North (north),
+                    // which vanilla places beyond 12 km from points 4 km north and south of centre.
+                    if (r + margin > 9700f) continue;
+                    if (Dist(cx, cy, 0f, 4000f) + margin > 12000f) continue;
+                    if (Dist(cx, cy, 0f, -4000f) + margin > 12000f) continue;
+
+                    float score = Footprint(s, vanillaAltitude, cx, cy);
+                    float radiusError = Math.Abs(r - s.LandmassPreferredRadius);
+                    // Scores within 1% of the best so far count as equal; the preferred radius decides.
+                    bool clearlyBetter = score > bestScore + 0.01f;
+                    bool tieButCloser = score >= bestScore - 0.01f && radiusError < bestRadiusError;
+                    if (clearlyBetter || tieButCloser)
+                    {
+                        bestScore = Math.Max(bestScore, score);
+                        chosenScore = score;
+                        bestRadiusError = radiusError;
+                        siteX = cx;
+                        siteY = cy;
+                    }
+                }
+            }
+            return bestScore < 0f ? Footprint(s, vanillaAltitude, siteX, siteY) : chosenScore;
+        }
+
+        static float Footprint(HighlandsSettings s, Func<float, float, float> vanillaAltitude, float cx, float cy)
+        {
+            // Sample the footprint ellipse grown by 50% (the shelf plus a moat).
+            double g = s.GrainAzimuth * Math.PI / 180.0;
+            float ax = (float)Math.Sin(g), ay = (float)Math.Cos(g);
+            int water = 0, total = 0;
+            const int n = 14;
+            for (int i = -n; i <= n; i++)
+            {
+                for (int j = -n; j <= n; j++)
+                {
+                    float u = i / (float)n, v = j / (float)n;
+                    if (u * u + v * v > 1f) continue;
+                    float along = u * 1.5f * s.LandmassLength, across = v * 1.5f * s.LandmassWidth;
+                    float x = cx + along * ax + across * ay;
+                    float y = cy + along * ay - across * ax;
+                    total++;
+                    if (vanillaAltitude(x, y) < -20f) water++;
+                }
+            }
+            return total == 0 ? 0f : water / (float)total;
+        }
+
+        static float Dist(float ax, float ay, float bx, float by)
+        {
+            float dx = ax - bx, dy = ay - by;
+            return (float)Math.Sqrt(dx * dx + dy * dy);
+        }
 
         // ---------------------------------------------------------------- glens
 
@@ -72,7 +249,18 @@ namespace Scotheim.Terrain
         /// </summary>
         public float GlenShape(float x, float y, out float floorNoise)
         {
+            float main, side;
+            GlenDistances(x, y, out floorNoise, out main, out side);
+            return Math.Min(1f, Math.Min(main / s.GlenHalfWidth, side / s.TributaryHalfWidth));
+        }
+
+        /// <summary>
+        /// Distances (m) to the nearest main-glen and side-glen axes; float.MaxValue for a disabled set.
+        /// </summary>
+        void GlenDistances(float x, float y, out float floorNoise, out float main, out float side)
+        {
             floorNoise = Noise.Fbm2(x / FloorScale, y / FloorScale, seed + 3);
+            main = side = float.MaxValue;
 
             float wx = WarpAmount * Noise.Perlin(x / WarpScale, y / WarpScale, seed + 11);
             float wy = WarpAmount * Noise.Perlin(x / WarpScale + 31.7f, y / WarpScale - 12.3f, seed + 12);
@@ -80,24 +268,38 @@ namespace Scotheim.Terrain
             float py = y + wy;
 
             // Main glens follow the grain: stretch the noise along it so zero-contours run long and straight.
-            float u = px * alongX + py * alongY;
-            float v = px * acrossX + py * acrossY;
-            float shape = 1f;
             if (s.GlenHalfWidth > 0f)
             {
-                float d1 = DistanceToZero(u / s.GlenLength, v / s.GlenSpacing, 1f / s.GlenLength, 1f / s.GlenSpacing, seed + 1);
-                shape = Math.Min(shape, d1 / s.GlenHalfWidth);
+                float u = px * alongX + py * alongY;
+                float v = px * acrossX + py * acrossY;
+                main = DistanceToZero(u / s.GlenLength, v / s.GlenSpacing, 1f / s.GlenLength, 1f / s.GlenSpacing, seed + 1);
             }
 
             // Tributaries: isotropic and sparse, so the network isn't all parallel lines. Where two glens
-            // meet, the min() leaves a crease, so keep these few (they also eat Mountain area fast).
+            // meet, the min() leaves a crease, so keep these few.
             if (s.TributaryHalfWidth > 0f)
             {
                 float t = 1f / s.TributarySpacing;
-                float d2 = DistanceToZero(px * t, py * t, t, t, seed + 2);
-                shape = Math.Min(shape, d2 / s.TributaryHalfWidth);
+                side = DistanceToZero(px * t, py * t, t, t, seed + 2);
             }
-            return shape;
+        }
+
+        // Steepest glen wall we aim for: tan(35 degrees).
+        const float MaxWallSlope = 0.70f;
+
+        /// <summary>
+        /// Glen shape (0 on the axis, 1 at the shoulder) for a trough <paramref name="depth"/> metres
+        /// deep. The profile's steepest wall is about 1.5 * depth / width, and the effective width comes
+        /// out ~0.7x nominal, so a fixed width makes deep glens cliff-sided. Each glen is widened until
+        /// that stays under MaxWallSlope (deeper ice cut wider troughs too). Widening each set before
+        /// taking the nearer one keeps the result continuous where main and side glens meet.
+        /// </summary>
+        float TroughShape(float main, float side, float depth)
+        {
+            float minWidth = 1.5f * depth / (MaxWallSlope * 0.7f);
+            float a = main == float.MaxValue ? float.MaxValue : main / Math.Max(s.GlenHalfWidth, minWidth);
+            float b = side == float.MaxValue ? float.MaxValue : side / Math.Max(s.TributaryHalfWidth, minWidth);
+            return Math.Min(a, b);
         }
 
         /// <summary>
@@ -121,13 +323,7 @@ namespace Scotheim.Terrain
             return Lerp(s.GlenFloorMin, s.GlenFloorMax, SmoothStep(-0.35f, 0.35f, floorNoise));
         }
 
-        public float RadialFade(float x, float y)
-        {
-            float r = (float)Math.Sqrt(x * x + y * y);
-            return 1f - SmoothStep(s.GlenMaxRadius - 500f, s.GlenMaxRadius, r);
-        }
-
-        /// <summary>Stage A: carve glacial troughs into base altitude. Floors stay above the swamp band.</summary>
+        /// <summary>Stage A, second half: carve glacial troughs into the raised landmass.</summary>
         public float CarveBase(float x, float y, float altitude)
         {
             return Carve(x, y, altitude, altitude, false);
@@ -142,14 +338,14 @@ namespace Scotheim.Terrain
         float Carve(float x, float y, float altitude, float rawBaseAltitude, bool withLochs)
         {
             if (s.GlenStrength <= 0f) return altitude;
-            float strength = s.GlenStrength * RadialFade(x, y);
+            float strength = s.GlenStrength * LandWeight(x, y);
             if (strength <= 0f) return altitude;
 
-            float floorNoise;
-            float shape = GlenShape(x, y, out floorNoise);
+            float floorNoise, main, side;
+            GlenDistances(x, y, out floorNoise, out main, out side);
+            float floor = EffectiveFloor(x, y, floorNoise);
+            float shape = TroughShape(main, side, Math.Max(altitude, rawBaseAltitude) - floor);
             if (shape >= 1f) return altitude;
-
-            float floor = GlenFloor(floorNoise);
             float relief = SmoothStep(floor + 4f, floor + 24f, rawBaseAltitude);
             if (withLochs)
                 floor = Lerp(floor, -s.LochDepth, LochMask(floor, floorNoise, rawBaseAltitude));
@@ -170,7 +366,7 @@ namespace Scotheim.Terrain
         /// Fraction of the way from the original surface down to the floor: 1 on the axis, 0 past the
         /// shoulder. Power-law floor (z ~ |x|^b near the axis); the outer power flattens the slope to
         /// zero at the shoulder, so it doesn't read as a crease, while keeping the steepest part of the
-        /// wall at about 1.5 * depth / half-width (roughly 35-40 degrees at default settings).
+        /// wall at about 1.5 * depth / half-width, which <see cref="TroughShape"/> keeps near 35 degrees.
         /// </summary>
         float CarveProfile(float shape)
         {
@@ -187,14 +383,15 @@ namespace Scotheim.Terrain
         public float ApplyLochs(float x, float y, float altitude, float rawBaseAltitude)
         {
             if (s.GlenStrength <= 0f || s.LochFrequency <= 0f) return altitude;
-            float strength = s.GlenStrength * RadialFade(x, y);
+            float strength = s.GlenStrength * LandWeight(x, y);
             if (strength <= 0f) return altitude;
 
-            float floorNoise;
-            float shape = GlenShape(x, y, out floorNoise);
+            float floorNoise, main, side;
+            GlenDistances(x, y, out floorNoise, out main, out side);
+            float floor = EffectiveFloor(x, y, floorNoise);
+            // Same width as stage A used for this surface, so the two carves compose exactly.
+            float shape = TroughShape(main, side, rawBaseAltitude - floor);
             if (shape >= 1f) return altitude;
-
-            float floor = GlenFloor(floorNoise);
             float mask = LochMask(floor, floorNoise, rawBaseAltitude);
             if (mask <= 0f) return altitude;
             float relief = SmoothStep(floor + 4f, floor + 24f, rawBaseAltitude);
@@ -219,7 +416,7 @@ namespace Scotheim.Terrain
             float massif = excess > 0f ? MountainThreshold + excess * s.MassifLift : rawBaseAltitude;
             // Domes only on the body of the massif; at biome edges, stay close to base height so the
             // game's corner blending has nothing abrupt to smooth over.
-            float domeWeight = SmoothStep(0f, 50f, excess);
+            float domeWeight = SmoothStep(0f, 70f, excess);
 
             float h = massif;
             if (domeWeight > 0f)

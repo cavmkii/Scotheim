@@ -1,62 +1,81 @@
 # Scotheim
 
-A BepInEx mod for Valheim that reshapes Meadows, Black Forest and Mountains to look like the Scottish Highlands.
+A BepInEx mod for Valheim that adds a Scottish Highlands landmass: a new island raised out of open ocean, with three biomes of its own. Vanilla land isn't touched.
 
-![before/after, synthetic terrain](docs/preview.png)
+![before/after, synthetic world](docs/preview.png)
 
-*Preview of the transform on a synthetic, vanilla-like base field (6 km across, north up). This is not a real seed; see [Status](#status).*
+*A synthetic, vanilla-like world (6 km across, north up) before and after. This is not a real seed; see [Status](#status).*
 
-## What it does
+![three seeds](docs/preview-seeds.png)
 
-| Highland landform | How it's made | Where |
-|---|---|---|
-| **Glens** (glacial U-troughs) | Carved into the game's *base height*, trending NE–SW (Caledonian grain, ~040°). Cross-profile follows a power law z ∝ \|x\|^b, b = 2 by default. | Everywhere within 7 km of centre |
-| **Ribbon lochs** | Overdeepened stretches of glen floor pushed below sea level | Deep glens only |
-| **Munros** | Rounded domes on a lifted massif, summits soft-capped with tanh. Vanilla's jagged mountain relief is discarded. | Mountain |
-| **Corries** | Bowls cut into the NE flank of about half the summits, open downslope | Mountain |
-| **Moorland** | Broad rolling relief, hummocks, lochans on low ground; broadleaf trees thinned | Meadows |
-| **Drumlins, Caledonian pine** | Elongated hills aligned with the grain; spruce thinned, Scots pine increased | Black Forest |
+## The three biomes
 
-The key design choice is carving glens into `GetBaseHeight`. That is the field Valheim uses to choose biomes (base altitude > 50 m means Mountain). So a glen floor stops being Mountain and becomes Meadows or Black Forest, whichever the distance ring gives. You get bare, cold hills with habitable, wooded glens between them, and biome assignment, rivers and the minimap all stay consistent with the terrain.
+| Biome | Where | Terrain | Borrowed from vanilla (for now) |
+|---|---|---|---|
+| **Highland Moor** | Open ground below 50 m | Rolling relief, hummocks, lochans | Heights: Meadows. Ground texture: Plains heath. Vegetation: Meadows |
+| **Caledonian Forest** | Glen floors and sheltered patches on low ground | Drumlins aligned NE–SW, hummocky moraine | Black Forest |
+| **Munros** | Base height above 50 m | Rounded domes, NE-facing corries, soft-capped summits | Mountain |
 
-![zoomed: glen with ribbon loch, rounded munros](docs/preview-zoom.png)
+The landscape between them:
 
-## Costs and caveats
+- **Glens** are U-shaped troughs trending NE–SW, the Great Glen / Caledonian grain at about 040°. Each glen widens with its depth so walls stay near 35°.
+- **Ribbon lochs** form where glen floors drop below sea level.
+- **Sea lochs** form where glens reach the coast.
+- The island is an ellipse along the grain, 4 × 2.3 km by default, with a ragged coast and NE–SW massifs rising from a ~28 m lowland. It comes to about 5 km² of new land, split roughly a third per biome.
 
-- **New worlds only.** Valheim regenerates terrain from the seed, but saves objects in zones you've visited. On an existing world, explored areas get floating or buried trees and buildings.
-- **Every player and the server need the mod with identical terrain settings.** Each peer generates its own ground. The log prints a `Terrain signature` hash that players can compare.
-- **Less Mountain biome.** On synthetic terrain the defaults cut Mountain area by about 25% (17→13%, 27.5→20.5%, 27→20% across three seeds). That means less silver and fewer wolves, and Moder's altar competes for less space. To trade it back, raise `Glens.Spacing` or lower `Glens.HalfWidth`.
-- **Lower hills.** Summits cap at ~140–160 m above sea instead of vanilla's taller spikes. Real munros are low and rounded relative to their spacing, but in game this reads as "smaller mountains".
-- **One water plane.** Valheim has a single sea level at y = 30, so every loch sits at sea level. There are no lochans in corries or on high moor.
-- **Glen floors never drop below 20 m.** Anything lower in the 2–6 km ring risks turning into Swamp. Lochs are cut into the final height, not the biome height, to get around that.
-- **Mod compatibility.** Scotheim reads the *unpatched* `GetBaseHeight` via a Harmony reverse patch. Mods that postfix it (e.g. Expand World Size's altitude settings) are ignored in that read. Mods that replace biome heights (Expand World Data, Better Continents) will probably fight with it.
-- **Wall steepness.** Glen width uses a first-order distance estimate that runs ~0.6–0.8× the configured `HalfWidth`. Big glens reach 35–40°. About 0.1–0.4% of land exceeds 40° in the previews, versus ~0.02% on the synthetic "vanilla" (real vanilla mountains are steeper than my stand-in).
+## How it fits into the world
+
+- **Placement.** The site is chosen from the world seed: the most open deep-ocean spot 5–8.5 km from the centre, clear of the Ashlands and Deep North. Every peer computes the same site. You can also set the position by hand.
+- **Additive.** The island only rises out of water deeper than a few metres. Vanilla land and the water just off its beaches keep their vanilla biome and terrain. If a vanilla islet sits inside the footprint, the Highlands wrap around it.
+- **Biomes.** Custom biomes come from [Expand World Data](https://thunderstore.io/c/valheim/p/JereKuusela/Expand_World_Data/), a soft dependency. Scotheim writes `BepInEx/config/expand_world/expand_biomes_scotheim.yaml` the first time it runs, and never overwrites it afterwards. It finds the biomes by their identifiers (`highland_moor`, `caledonian_forest`, `munros`). Without EWD, the island uses vanilla Meadows, Black Forest and Mountain.
 
 ## Status
 
-**Not yet run in the game.** What has been verified:
+**Not yet run in the game.**
 
-- The terrain math runs offline through `tools/Preview`, on the same source files the plugin compiles, over a synthetic base field. The previews and all the numbers above come from there.
-- The Harmony patches have been run for real (HarmonyX 2.10 under Mono) against stub Valheim types that mirror the real method shapes (`tests/Harness`). That covers patch targets, positional argument binding, the reverse patch, menu/Plains passthrough, thread-safety of parallel evaluation, and non-compounding vegetation scaling.
-- Method and field names (`GetBaseHeight`, `GetBiomeHeight`, `m_world`, `ZoneSystem.m_vegetation`, …) were checked against current open-source world-gen mods, not against the game assembly, which I didn't have.
+What has been verified:
 
-Still unverified: that the plugin builds against the real `assembly_valheim.dll`; how the terrain looks with Valheim's actual base field; performance; and the vegetation prefab names. The plugin logs any rule that matches nothing.
+- **Terrain math.** Run offline by `tools/Preview`, on the same source files the plugin compiles, over a synthetic world. The images and numbers here come from that.
+- **Harmony patches.** Run for real (HarmonyX 2.10 under Mono) in `tests/Harness`, against stub Valheim types and a stub of EWD's `BiomeManager`, including EWD's swap of a custom biome for its terrain biome. Checks:
+  - the island is raised, and vanilla land and far ocean stay untouched;
+  - the right biome is assigned with and without EWD;
+  - IDs are picked up when EWD syncs names;
+  - heights are reshaped even after EWD's swap;
+  - parallel evaluation is deterministic;
+  - the YAML file is written.
+- **Names and signatures.** Game and EWD names and signatures were checked against Expand World Data 1.73's source, not against the game assembly.
+
+Still unverified:
+
+- that it builds against the real game;
+- how deep real Valheim ocean is around the chosen site. This decides how fully the island rises; the log reports the fraction of open ocean;
+- environment names (`Misty`, `LightRain`, `Heath clear`, `DeepForest Mist`, `Snow`, `SnowStorm`, …) and terrain colours in the YAML;
+- performance.
+
+## Known limitations
+
+- **New worlds only.** Every player and the server need the mod with identical settings; the log prints a `signature` to compare. EWD syncs its YAML from the server.
+- **Temporary vanilla spawns and vegetation.** `nature` borrows vanilla for now, so the Moor spawns Meadows plants (and probably Meadows creatures). Munros get Mountain vegetation, which likely includes silver. Custom vegetation, materials and enemies are the next step.
+- **One water plane.** Valheim has a single sea level, so every loch sits at sea level.
+- **Munros snow.** Mountain ground texture is snow-covered everywhere, not only on the tops.
+- **Steep ground.** 0.2–1.7% of Highland land is steeper than 40° in the previews, mostly where the island meets vanilla islets.
+- **Editing biome YAML.** Restart the world afterwards so biome IDs and terrain agree.
 
 ## Build and install
 
-1. Install BepInEx 5 for Valheim (BepInExPack_Valheim).
+1. Install BepInEx 5 for Valheim, plus Expand World Data on the server and every client.
 2. `dotnet build src/Scotheim -c Release -p:ValheimDir="<path to Valheim>"`
 3. Copy `src/Scotheim/bin/Release/netstandard2.1/Scotheim.dll` to `<Valheim>/BepInEx/plugins/`.
-4. Start the game once to generate `BepInEx/config/cavmkii.scotheim.cfg`, then create a new world.
+4. Start the game once to generate `BepInEx/config/cavmkii.scotheim.cfg` and the EWD biome file, then create a new world. The log reports where the Highlands landed.
 
-## Tuning
-
-The config is grouped into Glens, Mountains, Moorland and Forest; every entry has a description. To see an effect before loading the game:
+## Previewing changes
 
 ```sh
 mcs -out:preview.exe tools/Preview/Preview.cs src/Scotheim/Terrain/*.cs
-mono preview.exe out 12345 6000 900          # dir, seed, window size (m), pixels
-python3 tools/Preview/render.py out          # -> out/preview.png (needs numpy, Pillow)
+mono preview.exe out 12345 6000 700      # dir, seed, window (m), pixels; centred on the landmass
+python3 tools/Preview/render.py out      # -> out/preview.png (needs numpy, Pillow)
 ```
 
-The preview uses `HighlandsSettings` defaults, so edit those to try values there.
+The preview uses the defaults in `HighlandsSettings`, so edit those to try values.
+
+Patch tests: `CSC=<Roslyn csc.exe> HARMONY_DIR=<HarmonyX + MonoMod dlls> tests/Harness/run.sh`

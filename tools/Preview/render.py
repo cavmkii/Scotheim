@@ -10,7 +10,11 @@ px, size, _, _ = open(out / "meta.txt").read().split()
 px, size = int(px), float(size)
 cell = size / px
 
-BIOME_TINT = {1: (150, 170, 95), 8: (70, 100, 60), 4: (150, 145, 140)}
+# Vanilla stand-ins are washed out so the Highlands stand out.
+BIOME_TINT = {
+    1: (175, 185, 150), 8: (135, 150, 125), 4: (180, 178, 175),        # vanilla Meadows, Black Forest, Mountain
+    101: (150, 120, 125), 108: (55, 90, 55), 104: (150, 150, 145),     # Highland Moor, Caledonian Forest, Munros
+}
 
 
 def shade(h):
@@ -46,7 +50,7 @@ canvas.paste(before, (pad, pad))
 canvas.paste(after, (px + pad * 2, pad))
 d = ImageDraw.Draw(canvas)
 d.text((pad, 12), f"before (synthetic vanilla-like)   {size/1000:.1f} km across, N up", fill=(0, 0, 0))
-d.text((px + pad * 2, 12), "after (Scotheim)   grey=Mountain  dark green=Black Forest  olive=Meadows", fill=(0, 0, 0))
+d.text((px + pad * 2, 12), "after: heather=Highland Moor  green=Caledonian Forest  grey=Munros  pale=vanilla", fill=(0, 0, 0))
 canvas.save(out / "preview.png")
 
 for name, h in (("before", hb), ("after", ha)):
