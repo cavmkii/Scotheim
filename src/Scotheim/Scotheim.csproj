@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!--
     Build: dotnet build -c Release -p:ValheimDir="C:\Program Files (x86)\Steam\steamapps\common\Valheim"
-    Needs BepInEx 5 installed into that Valheim folder (e.g. BepInExPack_Valheim).
+    Needs BepInEx 5 installed into that Valheim folder (e.g. BepInExPack_Valheim). Jötunn comes from NuGet.
     Output: bin/Release/netstandard2.1/Scotheim.dll -> copy to <Valheim>/BepInEx/plugins/
   -->
   <PropertyGroup>
@@ -10,6 +10,9 @@
     <RootNamespace>Scotheim</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- JotunnLib ships only a net462 build; like assembly_valheim, it loads fine under the game's Mono. -->
+    <AssetTargetFallback>$(AssetTargetFallback);net462</AssetTargetFallback>
+    <NoWarn>$(NoWarn);NU1701</NoWarn>
     <ValheimDir Condition="'$(ValheimDir)' == ''">C:\Program Files (x86)\Steam\steamapps\common\Valheim</ValheimDir>
     <ManagedDir>$(ValheimDir)\valheim_Data\Managed</ManagedDir>
     <BepInExDir>$(ValheimDir)\BepInEx\core</BepInExDir>
@@ -26,6 +29,12 @@
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="BepInEx"><HintPath>$(BepInExDir)\BepInEx.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="0Harmony"><HintPath>$(BepInExDir)\0Harmony.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Only the compile-time Jotunn.dll: the package's build props would add references to publicized
+         game assemblies that exist only after Jötunn's own prebuild step. Players install Jötunn separately. -->
+    <PackageReference Include="JotunnLib" Version="2.30.2" ExcludeAssets="build;buildTransitive" PrivateAssets="all" />
   </ItemGroup>
 
   <!-- Also produce bin\<Config>\Scotheim.zip (just the DLL) for mod managers such as Vortex. -->

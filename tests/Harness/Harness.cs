@@ -28,13 +28,28 @@ static class Harness
 
         var yaml = Path.Combine(configDir, "expand_biomes_scotheim.yaml");
         var vegYaml = Path.Combine(configDir, "expand_vegetation_scotheim.yaml");
+        var spawnYaml = Path.Combine(configDir, "expand_spawns_scotheim.yaml");
         Check(File.Exists(yaml) && new[] { "biome: highland_moor", "biome: caledonian_forest", "biome: munros" }.All(File.ReadAllText(yaml).Contains)
             && File.Exists(vegYaml) && File.ReadAllText(vegYaml).Contains("prefab: Pinetree_01")
-            && File.ReadAllText(Path.Combine(configDir, "expand_clutter_scotheim.yaml")).Contains("prefab: instanced_meadows_grass"),
-            "biome, vegetation and clutter YAML written for Expand World Data");
+            && File.ReadAllText(Path.Combine(configDir, "expand_clutter_scotheim.yaml")).Contains("prefab: instanced_meadows_grass")
+            && File.Exists(spawnYaml) && File.ReadAllText(spawnYaml).Contains("prefab: Scot_Sheep"),
+            "biome, vegetation, clutter and spawn YAML written for Expand World Data");
+        var shipped = File.ReadAllText(vegYaml);
+        var writeDefaults = typeof(ExpandWorld).GetMethod("WriteDefaultFiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
         File.WriteAllText(vegYaml, "# edited");
-        typeof(ExpandWorld).GetMethod("WriteDefaultFiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static).Invoke(null, null);
-        Check(File.ReadAllText(vegYaml) == "# edited", "existing YAML is never overwritten");
+        writeDefaults.Invoke(null, null);
+        Check(File.ReadAllText(vegYaml) == "# edited" && File.ReadAllText(vegYaml + ".new") == shipped,
+            "edited YAML is kept; the new default goes to .new");
+
+        // An unedited file from an earlier release (CRLF, as a Windows checkout would embed it) is upgraded.
+        File.WriteAllText(yaml, OldBiomesYaml.Replace("\n", "\r\n"));
+        writeDefaults.Invoke(null, null);
+        string current;
+        using (var reader = new StreamReader(typeof(ExpandWorld).Assembly.GetManifestResourceStream("Scotheim.Data.expand_biomes_scotheim.yaml")))
+            current = reader.ReadToEnd();
+        Check(File.ReadAllText(yaml) == current,
+            "unedited YAML from an older release is replaced (" + ExpandWorld.Fingerprint(OldBiomesYaml) + ")");
 
         var world = new World { m_seed = 12345 };
         var wg = new WorldGenerator(world);
@@ -127,4 +142,56 @@ static class Harness
         Console.WriteLine(fails == 0 ? "ALL PASS" : fails + " FAILED");
         return fails;
     }
+
+    // expand_biomes_scotheim.yaml as the first release wrote it (Patches/ExpandWorld.cs before 332d834).
+        const string OldBiomesYaml =
+@"# Scotheim's Highland biomes for Expand World Data.
+# Scotheim writes this file only if it's missing, so edit freely; delete it to get the defaults back.
+# Scotheim finds the biomes by their 'biome' identifiers below, so keep those.
+# After editing, restart the world so biome IDs and terrain agree.
+
+- biome: highland_moor
+  name: Highland Moor
+  terrain: Meadows
+  nature: Meadows
+  colorTerrain: 0, 0, 0, 1
+  colorMap: 0.53, 0.46, 0.44, 1
+  environments:
+  - environment: Misty
+    weight: 2
+  - environment: LightRain
+    weight: 2
+  - environment: Rain
+    weight: 1
+  - environment: Heath clear
+    weight: 1
+
+- biome: caledonian_forest
+  name: Caledonian Forest
+  terrain: BlackForest
+  nature: BlackForest
+  colorTerrain: 0, 0, 1, 0
+  colorMap: 0.24, 0.32, 0.2, 1
+  environments:
+  - environment: DeepForest Mist
+    weight: 2
+  - environment: Rain
+    weight: 1
+  - environment: LightRain
+    weight: 1
+
+- biome: munros
+  name: Munros
+  terrain: Mountain
+  nature: Mountain
+  colorTerrain: 0, 1, 0, 0
+  colorMap: 0.6, 0.6, 0.58, 1
+  environments:
+  - environment: Snow
+    weight: 2
+  - environment: SnowStorm
+    weight: 1
+  - environment: Misty
+    weight: 1
+";
 }

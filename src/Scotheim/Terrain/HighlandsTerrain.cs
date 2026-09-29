@@ -276,20 +276,16 @@ namespace Scotheim.Terrain
                 return chosen;
             }
 
-            // Coarse pass over every candidate at full size (conservative for smaller islands).
+            // Coarse pass over every candidate at full size (conservative for smaller islands). The
+            // edge limits are checked per island below, so small islands can sit further out.
             var candidates = new List<LandmassSite>();
-            float margin = 1.3f * s.LandmassLength;
             for (float r = s.LandmassMinRadius; r <= s.LandmassMaxRadius + 1f; r += 500f)
             {
-                if (r + margin > 9700f) continue;
                 for (int a = 0; a < 72; a++)
                 {
                     double angle = a * 5.0 * Math.PI / 180.0;
                     float cx = (float)(Math.Sin(angle) * r), cy = (float)(Math.Cos(angle) * r);
-                    // Keep out of Ashlands (south) and Deep North (north), which vanilla places beyond
-                    // 12 km from points 4 km north and south of centre.
-                    if (Dist(cx, cy, 0f, 4000f) + margin > 12000f) continue;
-                    if (Dist(cx, cy, 0f, -4000f) + margin > 12000f) continue;
+                    if (OffLimits(s, cx, cy, s.LandmassMinScale)) continue;
                     foreach (float turn in new[] { 0f, -15f, 15f, -30f, 30f })
                     {
                         var c = new LandmassSite { X = cx, Y = cy, Azimuth = s.GrainAzimuth + turn, Radius = r, Turn = Math.Abs(turn) };
@@ -308,7 +304,7 @@ namespace Scotheim.Terrain
                 foreach (var c in candidates)
                 {
                     if (considered >= 20) break;
-                    if (Crowds(s, c, scale, chosen)) continue;
+                    if (OffLimits(s, c.X, c.Y, scale) || Crowds(s, c, scale, chosen)) continue;
                     considered++;
                     var sized = new LandmassSite { X = c.X, Y = c.Y, Azimuth = c.Azimuth, Radius = c.Radius, Turn = c.Turn, Scale = scale };
                     sized.OpenWater = Footprint(s, vanillaAltitude, sized, 14);
@@ -318,6 +314,20 @@ namespace Scotheim.Terrain
                 chosen.Add(best);
             }
             return chosen;
+        }
+
+        /// <summary>
+        /// True if an island of this size here would reach the world edge (vanilla's ocean ring beyond
+        /// ~10 km), the Ashlands (south) or the Deep North (north). Vanilla places those two beyond 12 km
+        /// from points 4 km north and south of centre.
+        /// </summary>
+        static bool OffLimits(HighlandsSettings s, float cx, float cy, float scale)
+        {
+            float reach = 1.3f * s.LandmassLength * scale;
+            if (Dist(cx, cy, 0f, 0f) + reach > 9800f) return true;
+            if (Dist(cx, cy, 0f, 4000f) + reach > 12000f) return true;
+            if (Dist(cx, cy, 0f, -4000f) + reach > 12000f) return true;
+            return false;
         }
 
         /// <summary>True if an island of this size at this candidate would sit too close to one already placed.</summary>

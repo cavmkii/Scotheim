@@ -1,5 +1,5 @@
 # Scotheim's Highland biomes for Expand World Data (checked against EWD 1.73 / Valheim 1.0.16).
-# Scotheim writes this file only if it's missing, so edit freely; delete it to get the defaults back.
+# Edit freely: Scotheim only replaces this file while it's unedited. Once edited, new defaults go to a .new file beside it.
 # Scotheim finds the biomes by their 'biome' identifiers below, so keep those.
 # After editing, restart the world so biome IDs and terrain agree.
 #
