@@ -70,7 +70,9 @@ namespace Scotheim.Content
             // Highland raw materials: gear is made from these and the drops above, nothing from other biomes.
             new ItemSpec { Name = "Scot_BogIronOre", Base = "IronOre" },
             new ItemSpec { Name = "Scot_BogIron", Base = "Iron" },
-            new ItemSpec { Name = "Scot_Hacksilver", Base = "Silver" },
+            // Hacksilver is scrap (like the Swamp's scrap iron); the smelter turns it into Pictish silver bars.
+            new ItemSpec { Name = "Scot_Hacksilver", Base = "IronScrap" },
+            new ItemSpec { Name = "Scot_PictishSilver", Base = "Silver" },
             new ItemSpec { Name = "Scot_BogOak", Base = "RoundLog" },
             new ItemSpec { Name = "Scot_Cairngorm", Base = "Crystal" },
             new ItemSpec { Name = "Scot_RowanWood", Base = "FineWood" },
@@ -129,6 +131,11 @@ namespace Scotheim.Content
             ItemManager.Instance.AddItemConversion(new CustomItemConversion(new SmelterConversionConfig
             {
                 Station = "smelter", FromItem = "Scot_BogIronOre", ToItem = "Scot_BogIron",
+            }));
+            // Hacksilver melts down into bars, as the Picts recast Roman plate into their chains.
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(new SmelterConversionConfig
+            {
+                Station = "smelter", FromItem = "Scot_Hacksilver", ToItem = "Scot_PictishSilver",
             }));
 
             Gear.Add();
@@ -214,9 +221,9 @@ namespace Scotheim.Content
             new CreatureSpec { Name = "Scot_Fuath", Base = "Troll", Health = 1500 },
             new CreatureSpec { Name = "Scot_HillGiant", Base = "StoneGolem", Health = 2600, Scale = 1.25f,
                 Drops = new[] { Drop("Scot_GiantHeartstone", 1, 1), Drop("Crystal", 8, 12) } },
-            // Redcaps hoard: hacksilver instead of the goblin's black metal scrap.
+            // Redcaps hoard scrap: hacksilver instead of the goblin's black metal scrap, and only rarely a bar.
             new CreatureSpec { Name = "Scot_Redcap", Base = "Goblin", Health = 220, Scale = 0.8f,
-                Drops = new[] { Drop("Scot_Hacksilver", 1, 3), Drop("Coins", 10, 20, 50f) } },
+                Drops = new[] { Drop("Scot_Hacksilver", 1, 3), Drop("Scot_PictishSilver", 1, 1, 10f), Drop("Coins", 10, 20, 50f) } },
         };
 
         static void AddCreatures()

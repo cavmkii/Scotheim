@@ -44,7 +44,7 @@ Every creature is a [Jötunn](https://thunderstore.io/c/valheim/p/ValheimModding
 | Cat-sìth | Ulv | Forest at night | 450 | 1.3 | Sìth pelt |
 | Bean-nighe | Wraith, 0.85× | Loch and lochan shores at night | 450 (100) | 1.8 | Washer's shroud, chain |
 | Each-uisge | Abomination, 0.9× | Loch shores, uncommon | 2200 (800) | 1.8 | Kelpie mane (2–3) |
-| Redcap | Goblin, 0.8× | Forest at night, groups of 2–4 | 220 (70) | 2.0 | Hacksilver, coins |
+| Redcap | Goblin, 0.8× | Forest at night, groups of 2–4 | 220 (70) | 2.0 | Hacksilver (scrap), rarely a Pictish silver bar, coins |
 | Fuath | Troll | Forest, rare | 1500 (600) | 1.6 | vanilla troll drops |
 | Hill giant | Stone golem, 1.25× | Munros above 90 m | 2600 (800) | 1.5 | Giant's heartstone, crystal |
 
@@ -77,7 +77,7 @@ Everything is made at the black forge except the Sìth set, the Faerie Flag and 
 | Material | Where | Use | Basis |
 |---|---|---|---|
 | Bog iron ore → bog iron | Nodules at loch and lochan edges; smelt in the vanilla smelter | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore. |
-| Hacksilver | Redcaps (1–3); rare hoards on moor and in forest | Pictish gear | Pictish silver was largely cut-up Roman silver (the Traprain Law and Gaulcross hoards). |
+| Hacksilver → Pictish silver | Redcaps (1–3, and a 10 % chance of one bar); rare hoards on moor and in forest; smelt in the vanilla smelter | Pictish gear | Pictish silver was largely cut-up Roman silver (the Traprain Law and Gaulcross hoards), melted and recast. |
 | Bog oak | Pulled from the open moor | Shafts, bows, shields, the caber | Oak preserved black in peat. |
 | Cairngorm | Rare, above 70 m in the Munros | Legendaries, staves, the Sìth crown | Smoky quartz from the Cairngorms, set in dirk hilts and plaid brooches. |
 | Rowan wood | Branches in the Caledonian Forest | Staves, the Sìth crown | Rowan is the Highland charm against witches and fairies. |
