@@ -115,12 +115,7 @@ for i in range(12):
 circle.append(row("Scot_CairngormPickable", 0, 0.1, 0, chance=0.5))
 write("scotheim_stonecircle", "A ring of standing stones.", circle)
 
-# Symbol stones: one Pictish symbol stone each; each variant has its own text (see Content/Places.cs).
-for n in range(1, 6):
-    write("scotheim_symbolstone%d" % n, "A Pictish symbol stone.", [])
-    path = OUT / ("scotheim_symbolstone%d.blueprint" % n)
-    path.write_text(path.read_text(encoding="utf-8").rstrip("\n") + "\n" + row("Scot_SymbolStone%d" % n, 0, 0, 0) + "\n",
-                    encoding="utf-8", newline="\n")
+# Symbol stones are no longer blueprints: they copy the vanilla runestone location (Content/Places.cs).
 
 # Summit cairn: one heap of stones (Scot_SummitCairn, a copy of the vanilla stone_pile) at its natural size.
 # Use it to bag the hill (Content/Bagging.cs); its world position identifies the hill. Kept small on purpose:

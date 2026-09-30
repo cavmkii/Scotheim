@@ -212,7 +212,11 @@ for f in sorted(data.glob("*.blueprint")):
         elif fields[0] not in vanilla_prefabs and fields[0] not in own:
             missing.add(fields[0])
 check(not missing, "blueprints use real prefabs" + (": " + ", ".join(sorted(missing)) if missing else ""))
-unplaced = sorted({l["prefab"] for l in locations} - blueprint_names)
+cloned = {"scotheim_runestone%d" % (n + 1) for n in range(5)} if "scotheim_runestone" in places_src else set()
+base = re.search(r'CreateClonedLocation\(name, "(\w+)"\)', places_src)
+check(base and "Location" in prefab_components.get(base.group(1), set()) and "RuneStone" in prefab_components.get(base.group(1), set()),
+      "runestone locations copy a vanilla location with a RuneStone" + (" (" + base.group(1) + ")" if base else ""))
+unplaced = sorted({l["prefab"] for l in locations} - blueprint_names - cloned)
 check(not unplaced, "every location has a blueprint" + (": " + ", ".join(unplaced) if unplaced else ""))
 ew = (root / "src/Scotheim/Patches/ExpandWorld.cs").read_text(encoding="utf-8")
 unwritten = sorted(n + ".blueprint" for n in blueprint_names if n + ".blueprint" not in ew)

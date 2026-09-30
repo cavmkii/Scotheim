@@ -64,8 +64,9 @@
   groups: scotheim_place
   awayFrom:
   - scotheim_place, 400
-# Pictish symbol stones: lore markers, five texts.
-- prefab: scotheim_symbolstone1
+# Pictish symbol stones: lore markers, five texts. Copies of the vanilla Meadows runestone location (glowing
+# runes), made in Content/Places.cs rather than blueprints.
+- prefab: scotheim_runestone1
   biome: highland_moor, caledonian_forest
   quantity: 4
   minAltitude: 2
@@ -76,7 +77,7 @@
   groups: scotheim_stone
   awayFrom:
   - scotheim_stone, 300
-- prefab: scotheim_symbolstone2
+- prefab: scotheim_runestone2
   biome: highland_moor, caledonian_forest
   quantity: 4
   minAltitude: 2
@@ -87,7 +88,7 @@
   groups: scotheim_stone
   awayFrom:
   - scotheim_stone, 300
-- prefab: scotheim_symbolstone3
+- prefab: scotheim_runestone3
   biome: highland_moor, caledonian_forest
   quantity: 4
   minAltitude: 2
@@ -98,7 +99,7 @@
   groups: scotheim_stone
   awayFrom:
   - scotheim_stone, 300
-- prefab: scotheim_symbolstone4
+- prefab: scotheim_runestone4
   biome: highland_moor, caledonian_forest, munros
   quantity: 4
   minAltitude: 2
@@ -109,7 +110,7 @@
   groups: scotheim_stone
   awayFrom:
   - scotheim_stone, 300
-- prefab: scotheim_symbolstone5
+- prefab: scotheim_runestone5
   biome: highland_moor, munros
   quantity: 4
   minAltitude: 2

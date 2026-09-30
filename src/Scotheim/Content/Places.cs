@@ -55,6 +55,8 @@ namespace Scotheim.Content
             var standing = Stone("Scot_StandingStone");
             if (standing != null) PrefabManager.Instance.AddPrefab(standing);
 
+            // The first symbol stones were heath pillars placed by blueprint. They're no longer placed (see
+            // AddRunestones), but stay registered so worlds that already have them still load them.
             for (int i = 0; i < SymbolStones.Length; i++)
             {
                 var stone = Stone("Scot_SymbolStone" + (i + 1));
@@ -79,6 +81,54 @@ namespace Scotheim.Content
                     }
                 }
                 PrefabManager.Instance.AddPrefab(stone);
+            }
+        }
+
+        /// <summary>
+        /// The symbol stones, as copies of the vanilla Meadows lore runestone location: same slab and glowing runes, so
+        /// they're as easy to spot as the vanilla ones, with Scotheim's texts. The copies are disabled here and
+        /// placed only by expand_locations_scotheim.yaml; otherwise they'd keep the vanilla stone's Meadows placement.
+        /// </summary>
+        internal static void AddRunestones()
+        {
+            ZoneManager.OnVanillaLocationsAvailable -= AddRunestones;
+            var runeType = Type.GetType("RuneStone, assembly_valheim");
+            for (int i = 0; i < SymbolStones.Length; i++)
+            {
+                var name = "scotheim_runestone" + (i + 1);
+                try
+                {
+                    var location = ZoneManager.Instance.CreateClonedLocation(name, "Runestone_Meadows");
+                    if (location == null || location.Prefab == null)
+                    {
+                        Plugin.Log.LogWarning("Skipped " + name + ": Runestone_Meadows wasn't found.");
+                        continue;
+                    }
+                    GameFields.TrySet(location.ZoneLocation, false, "m_enable");
+                    GameFields.TrySet(location.ZoneLocation, 0, "m_quantity");
+                    var rune = runeType != null ? location.Prefab.GetComponentInChildren(runeType, true) : null;
+                    if (rune == null)
+                    {
+                        Plugin.Log.LogWarning("Skipped " + name + ": no RuneStone in Runestone_Meadows.");
+                        continue;
+                    }
+                    // Vanilla lore stones pick a random text from this list, which would replace ours.
+                    var random = GameFields.Get(rune, "m_randomTexts") as System.Collections.IList;
+                    if (random != null) random.Clear();
+                    GameFields.TrySet(rune, "Pictish symbol stone", "m_name");
+                    GameFields.TrySet(rune, SymbolStones[i][0], "m_topic");
+                    GameFields.TrySet(rune, SymbolStones[i][1], "m_text");
+                    if (i == 3) // "Mirror and comb" points to the Grey Man: reading it marks his altar, like a vegvisir
+                    {
+                        GameFields.TrySet(rune, GreyMan.Location, "m_locationName");
+                        GameFields.TrySet(rune, "$piece_scot_greymanaltar_pin", "m_pinName");
+                        GameFields.TrySet(rune, "Boss", "m_pinType");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Plugin.Log.LogError("Couldn't add " + name + ": " + e);
+                }
             }
         }
 
