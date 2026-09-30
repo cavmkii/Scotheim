@@ -75,15 +75,16 @@ namespace Scotheim.Content
             new SetSpec
             {
                 Id = "sith", Name = "Glamour", Icon = "SetEffect_MageArmor",
-                Tooltip = "The Sìth's glamour: eitr comes quicker, and eyes slide off you.",
+                Tooltip = "The Sìth's glamour: eitr comes quicker, and eyes slide off you. Sneaking costs less stamina.",
                 Configure = se =>
                 {
                     se.m_skillLevel = Skills.SkillType.ElementalMagic; se.m_skillLevelModifier = 20f;
                     se.m_skillLevel2 = Skills.SkillType.BloodMagic; se.m_skillLevelModifier2 = 20f;
                     se.AddSkill(Skills.SkillType.Sneak, 15f);
                     se.m_eitrRegenMultiplier = 1.5f;
-                    // Spells cost 15 % less eitr.
-                    GameFields.TrySet(se, -0.15f, "m_eitrUseModifier", "m_eitrCostModifier", "m_eitrUsageModifier");
+                    // Sneaking costs a quarter less stamina. (The game has no eitr-cost field for status effects;
+                    // an in-game field listing showed only eitr regen, up-front and over-time.)
+                    GameFields.TrySet(se, -0.25f, "m_sneakStaminaUseModifier");
                 },
             },
             // --- Put on whatever a weapon hits.
