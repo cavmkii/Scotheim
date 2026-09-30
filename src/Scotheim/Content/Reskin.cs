@@ -55,7 +55,9 @@ namespace Scotheim.Content
             // materials
             { "Scot_Wool", Tint(1.05f, 1f, 0.88f) },
             { "Scot_BogIronOre", Tint(1f, 0.6f, 0.4f) },
-            { "Scot_Hacksilver", Tint(1.25f, 1.3f, 1.4f) },       // scrap iron's look, made silvery
+            { "Scot_Hacksilver", Tint(1.25f, 1.3f, 1.4f) },
+            { "Scot_Peat", Tint(0.65f, 0.45f, 0.3f) },            // brown turf, not coal
+            { "Scot_UisgeBeatha", Tint(1.25f, 0.85f, 0.45f) },    // amber       // scrap iron's look, made silvery
             { "Scot_BogIron", Tint(0.6f, 0.52f, 0.46f) },
             { "Scot_BogOak", Tint(0.3f, 0.26f, 0.22f) },
             { "Scot_Cairngorm", Tint(0.6f, 0.45f, 0.3f) },        // smoky quartz

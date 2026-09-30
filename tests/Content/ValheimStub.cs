@@ -24,6 +24,7 @@ public class Pickable : UnityEngine.MonoBehaviour { public UnityEngine.GameObjec
 public class Procreation : UnityEngine.MonoBehaviour { public UnityEngine.GameObject m_offspring; }
 public class Growup : UnityEngine.MonoBehaviour { public UnityEngine.GameObject m_grownPrefab; }
 public class Recipe : UnityEngine.ScriptableObject { }
+public class Piece : UnityEngine.MonoBehaviour { public class Requirement { } public enum PieceCategory { Misc } }
 public class CharacterDrop : UnityEngine.MonoBehaviour { public class Drop { } }
 public class SpawnSystem : UnityEngine.MonoBehaviour { public class SpawnData { } }
 public class CookingStation : UnityEngine.MonoBehaviour { public class ItemConversion { } }

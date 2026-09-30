@@ -92,7 +92,7 @@ check(not veg_vanilla, "vegetation vanilla prefabs exist" + (": " + ", ".join(ve
 
 bad = sorted({b for _, b, _ in pickables} - vanilla_prefabs) + sorted({i for _, _, i in pickables} - set(items))
 check(not bad, "%d pickables copy real prefabs and yield Scotheim items" % len(pickables) + (": " + ", ".join(bad) if bad else ""))
-unplaced = sorted(prefabs - {v["prefab"] for v in vegetation})
+unplaced = sorted(p for p in prefabs - {v["prefab"] for v in vegetation} if not p.startswith("Scot_Pickable_"))  # crops are planted
 check(not unplaced, "every pickable is placed in the vegetation file" + (": " + ", ".join(unplaced) if unplaced else ""))
 
 # --- content
@@ -117,9 +117,10 @@ needed = set(re.findall(r'Req\("(\w+)"', gear_src))
 # Only what the Highlands yield: Scotheim items, plus vanilla items Highland trees, rocks and creatures drop
 # (hill wolves: wolf fang and pelt; fuath: troll hide; hill giants: crystal; bean-nighe: chain; red deer: deer hide).
 HIGHLAND_VANILLA = {"Wood", "FineWood", "RoundLog", "Resin", "Stone", "Flint", "DeerHide", "WolfPelt", "WolfFang",
-                    "TrollHide", "Crystal", "Chain", "Coins"}
+                    "TrollHide", "Crystal", "Chain", "Coins", "Raspberry"}
+needed |= set(re.findall(r'RequirementConfig\("(\w+)"', content))
 foreign = sorted(n for n in needed if not n.startswith("Scot_") and n not in HIGHLAND_VANILLA)
-check(not foreign, "gear recipes use only Highland materials" + (": foreign " + ", ".join(foreign) if foreign else ""))
+check(not foreign, "all recipes use only Highland materials" + (": foreign " + ", ".join(foreign) if foreign else ""))
 bad = sorted(n for n in needed if n not in items and n not in vanilla_items)
 check(not bad, "gear recipes name real items (" + ", ".join(sorted(needed)) + ")" + (": missing " + ", ".join(bad) if bad else ""))
 stations = set(re.findall(r'const string \w+ = "((?:piece_|blackforge)\w*)"', gear_src)) | set(re.findall(r'Station = "(\w+)"', gear_src))
@@ -198,12 +199,12 @@ check(not unwritten, "every blueprint is written on startup" + (": " + ", ".join
 # holding that version get the new default only as a .new file.
 import hashlib, subprocess
 ew = (root / "src/Scotheim/Patches/ExpandWorld.cs").read_text(encoding="utf-8")
-shipped = {k: set(v.split('", "')) for k, v in re.findall(r'\{ (?:FileName|"(expand_\w+\.yaml)"), new\[\] \{ "([^}]*)" \} \}', ew) if k} 
+shipped = {k: set(v.split('", "')) for k, v in re.findall(r'\{ (?:FileName|"(\w+\.(?:yaml|blueprint))"), new\[\] \{ "([^}]*)" \} \}', ew) if k}
 shipped["expand_biomes_scotheim.yaml"] = set(re.search(r'\{ FileName, new\[\] \{ "([^}]*)" \} \}', ew).group(1).split('", "'))
 def fingerprint(text):
     return hashlib.sha256(text.replace("\r", "").encode("utf-8")).hexdigest()[:16]
 try:
-    for f in sorted((data).glob("expand_*.yaml")):
+    for f in sorted(list(data.glob("expand_*.yaml")) + list(data.glob("*.blueprint"))):
         rel = "src/Scotheim/Data/" + f.name
         current = fingerprint(f.read_text(encoding="utf-8"))
         commits = subprocess.run(["git", "log", "--format=%H", "--", rel], cwd=root, capture_output=True, text=True).stdout.split()

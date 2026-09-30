@@ -31,6 +31,13 @@ namespace Scotheim.Content
             { "Scot_BogOak", new[] { "Bog oak", "Oak that lay in the peat for thousands of years. Black, and hard as iron." } },
             { "Scot_Cairngorm", new[] { "Cairngorm", "Smoky quartz from the high tops. It goes on a dirk hilt or a plaid brooch." } },
             { "Scot_RowanWood", new[] { "Rowan wood", "Rowan keeps witches and the Sìth at bay. Usually." } },
+            { "Scot_Bere", new[] { "Bere", "The old barley of the north: short, hardy and quick to ripen. Plant it with the cultivator." } },
+            { "Scot_Peat", new[] { "Peat", "Cut from the moor and dried. It gives the whisky its smoke." } },
+            { "Scot_WhiskyWash", new[] { "Whisky wash", "Malted bere and peat smoke in water. Leave it in the fermenter." } },
+            { "Scot_UisgeBeatha", new[] { "Uisge-beatha", "The water of life. Keeps the cold out on the high tops." } },
+            { "Scot_Haggis", new[] { "Haggis", "Mutton, bere and suet, boiled in a bag. Better than it sounds." } },
+            { "Scot_Cranachan", new[] { "Cranachan", "Raspberries, toasted bere and a dram. A harvest pudding." } },
+            { "Scot_Bannock", new[] { "Bannock", "A flat round of bere, baked on a girdle." } },
             { "Scot_TartanCloth", new[] { "Tartan cloth", "Wool woven in a sett and dyed with blaeberry." } },
             { "Scot_Claymore", new[] { "Claymore", "Claidheamh mòr, the great sword. Two hands and a long reach." } },
             { "Scot_Dirk", new[] { "Dirk", "A long, single-edged knife, worn at the belt and drawn close in." } },
@@ -88,6 +95,10 @@ namespace Scotheim.Content
         {
             var english = new Dictionary<string, string>();
             foreach (var entry in Sets.English()) english[entry.Key] = entry.Value;
+            english["piece_scot_bere"] = "Bere";
+            english["piece_scot_bere_desc"] = "Plant bere. It grows on the open moor.";
+            english["se_scot_uisgebeatha"] = "Uisge-beatha";
+            english["se_scot_uisgebeatha_tooltip"] = "Warm to the bones: no freezing, and stamina comes back quicker.";
             foreach (var entry in ItemText)
             {
                 english[ItemName(entry.Key).Substring(1)] = entry.Value[0];

@@ -9,6 +9,6 @@ out="$(mktemp -d)"
 csc() { mono "$CSC" -nologo -langversion:7.3 -nowarn:1701,1702 "$@"; }
 csc -target:library -out:"$out/BepInEx.dll" -r:"$UNITY_DIR/UnityEngine.CoreModule.dll" "$here/BepInExStub.cs"
 csc -target:library -out:"$out/assembly_valheim.dll" -r:"$UNITY_DIR/UnityEngine.CoreModule.dll" "$here/ValheimStub.cs"
-csc -target:library -out:"$out/content.dll" -r:"$UNITY_DIR/UnityEngine.CoreModule.dll" -r:"$out/BepInEx.dll" \
+csc -target:library -out:"$out/content.dll" -r:"$UNITY_DIR/UnityEngine.CoreModule.dll" -r:"$UNITY_DIR/UnityEngine.AssetBundleModule.dll" -r:"$out/BepInEx.dll" \
   -r:"$out/assembly_valheim.dll" -r:"$JOTUNN_DLL" "$here/PluginShell.cs" "$here"/../../src/Scotheim/Content/*.cs
 echo "Content compiles against Jötunn."

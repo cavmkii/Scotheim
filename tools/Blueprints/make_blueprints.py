@@ -98,6 +98,7 @@ for layer, chance in enumerate([1.0, 0.7]):
     for z in (-0.75, 0.75):
         shieling.append(row("stone_wall_2x1_ruin", -2.25, layer, z, 90, chance=chance))
         shieling.append(row("stone_wall_2x1_ruin", 2.25, layer, z, 90, chance=chance))
+shieling += [row("Scot_WildBere", 3.5 + 0.8 * i, 0, -1.0 + 0.9 * (i % 2), chance=0.6) for i in range(3)]  # old croft rig
 shieling += [
     row("Scot_HacksilverCache", 0.5, 0.2, 0.0, chance=0.3),
     row("Scot_Spawner_Redcap", -0.5, 0.3, 0.0, chance=0.3),
