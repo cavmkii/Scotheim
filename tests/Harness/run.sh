@@ -10,12 +10,10 @@ here="$(cd "$(dirname "$0")" && pwd)"
 src="$here/../../src/Scotheim"
 out="$(mktemp -d)"
 mono_lib="${MONO_LIB:-/usr/lib/mono/4.5}"
+resources=()
+for f in "$src"/Data/*.yaml "$src"/Data/*.blueprint; do resources+=("-resource:$f,Scotheim.Data.$(basename "$f")"); done
 mono "$CSC" -nologo -langversion:7.3 -nowarn:1701,1702 -out:"$out/harness.exe" \
-  -r:"$HARMONY_DIR/0Harmony.dll" -r:"$mono_lib/Facades/netstandard.dll" -r:"$mono_lib/System.Core.dll" \
-  -resource:"$src/Data/expand_biomes_scotheim.yaml",Scotheim.Data.expand_biomes_scotheim.yaml \
-  -resource:"$src/Data/expand_vegetation_scotheim.yaml",Scotheim.Data.expand_vegetation_scotheim.yaml \
-  -resource:"$src/Data/expand_clutter_scotheim.yaml",Scotheim.Data.expand_clutter_scotheim.yaml \
-  -resource:"$src/Data/expand_spawns_scotheim.yaml",Scotheim.Data.expand_spawns_scotheim.yaml \
+  "${resources[@]}" -r:"$HARMONY_DIR/0Harmony.dll" -r:"$mono_lib/Facades/netstandard.dll" -r:"$mono_lib/System.Core.dll" \
   "$here/Stubs.cs" "$here/Harness.cs" "$src/Plugin.cs" "$src"/Patches/*.cs "$src"/Terrain/*.cs
 cp "$HARMONY_DIR"/*.dll "$out/"
 mono "$out/harness.exe"

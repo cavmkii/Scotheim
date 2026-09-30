@@ -117,9 +117,10 @@ namespace Scotheim.Patches
         internal static void WriteDefaultFiles()
         {
             if (!Present) return;
-            var dir = Path.Combine(Paths.ConfigPath, "expand_world");
             foreach (var name in DataFiles)
             {
+                // Blueprints go to EWD's blueprint folder (its "Blueprint folder" setting, PlanBuild by default).
+                var dir = Path.Combine(Paths.ConfigPath, name.EndsWith(".blueprint") ? "PlanBuild" : "expand_world");
                 try
                 {
                     string shipped;
@@ -169,6 +170,10 @@ namespace Scotheim.Patches
         static readonly string[] DataFiles =
         {
             FileName, "expand_vegetation_scotheim.yaml", "expand_clutter_scotheim.yaml", "expand_spawns_scotheim.yaml",
+            "expand_locations_scotheim.yaml",
+            "scotheim_broch.blueprint", "scotheim_crannog.blueprint", "scotheim_shieling.blueprint", "scotheim_stonecircle.blueprint",
+            "scotheim_symbolstone1.blueprint", "scotheim_symbolstone2.blueprint", "scotheim_symbolstone3.blueprint",
+            "scotheim_symbolstone4.blueprint", "scotheim_symbolstone5.blueprint",
         };
 
         // Fingerprints of every version earlier releases wrote (see git history of src/Scotheim/Data).

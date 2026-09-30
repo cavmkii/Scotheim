@@ -1,0 +1,122 @@
+# Scotheim's places to explore, for Expand World Data. Each prefab is a blueprint Scotheim writes to
+# BepInEx/config/PlanBuild (EWD's default "Blueprint folder"); the sources are in src/Scotheim/Data.
+# Edit freely: Scotheim only replaces this file while it's unedited. Once edited, new defaults go to a .new file beside it.
+# Locations are placed when a world is generated: use a new world, or EWD's `genloc` for unexplored areas.
+
+# Brochs: Iron Age drystone towers, here ruined and held by redcaps.
+- prefab: scotheim_broch
+  biome: highland_moor, caledonian_forest
+  quantity: 8
+  minAltitude: 3
+  maxAltitude: 45
+  maxTerrainDelta: 3
+  randomRotation: true
+  prioritized: true
+  exteriorRadius: 10
+  clearArea: true
+  levelArea: true
+  discoverLabel: Broch
+  groups: scotheim_place
+  awayFrom:
+  - scotheim_place, 400
+# Crannogs: round houses on timber piles in lochs.
+- prefab: scotheim_crannog
+  biome: highland_moor, caledonian_forest
+  quantity: 8
+  minAltitude: -6
+  maxAltitude: -1
+  maxTerrainDelta: 4
+  snapToWater: true
+  randomRotation: true
+  prioritized: true
+  exteriorRadius: 8
+  levelArea: false
+  discoverLabel: Crannog
+  groups: scotheim_place
+  awayFrom:
+  - scotheim_place, 300
+# Shielings: summer huts on the hill grazing.
+- prefab: scotheim_shieling
+  biome: caledonian_forest, munros
+  quantity: 20
+  minAltitude: 15
+  maxAltitude: 75
+  maxTerrainDelta: 3
+  randomRotation: true
+  exteriorRadius: 5
+  clearArea: true
+  levelArea: true
+  groups: scotheim_place
+  awayFrom:
+  - scotheim_place, 150
+# Stone circles.
+- prefab: scotheim_stonecircle
+  biome: highland_moor
+  quantity: 6
+  minAltitude: 3
+  maxAltitude: 40
+  maxTerrainDelta: 2
+  randomRotation: true
+  exteriorRadius: 10
+  clearArea: true
+  levelArea: true
+  discoverLabel: Stone circle
+  groups: scotheim_place
+  awayFrom:
+  - scotheim_place, 400
+# Pictish symbol stones: lore markers, five texts.
+- prefab: scotheim_symbolstone1
+  biome: highland_moor, caledonian_forest
+  quantity: 4
+  minAltitude: 2
+  maxAltitude: 60
+  maxTerrainDelta: 3
+  randomRotation: true
+  exteriorRadius: 3
+  groups: scotheim_stone
+  awayFrom:
+  - scotheim_stone, 300
+- prefab: scotheim_symbolstone2
+  biome: highland_moor, caledonian_forest
+  quantity: 4
+  minAltitude: 2
+  maxAltitude: 60
+  maxTerrainDelta: 3
+  randomRotation: true
+  exteriorRadius: 3
+  groups: scotheim_stone
+  awayFrom:
+  - scotheim_stone, 300
+- prefab: scotheim_symbolstone3
+  biome: highland_moor, caledonian_forest
+  quantity: 4
+  minAltitude: 2
+  maxAltitude: 60
+  maxTerrainDelta: 3
+  randomRotation: true
+  exteriorRadius: 3
+  groups: scotheim_stone
+  awayFrom:
+  - scotheim_stone, 300
+- prefab: scotheim_symbolstone4
+  biome: highland_moor, caledonian_forest, munros
+  quantity: 4
+  minAltitude: 2
+  maxAltitude: 90
+  maxTerrainDelta: 3
+  randomRotation: true
+  exteriorRadius: 3
+  groups: scotheim_stone
+  awayFrom:
+  - scotheim_stone, 300
+- prefab: scotheim_symbolstone5
+  biome: highland_moor, munros
+  quantity: 4
+  minAltitude: 2
+  maxAltitude: 90
+  maxTerrainDelta: 3
+  randomRotation: true
+  exteriorRadius: 3
+  groups: scotheim_stone
+  awayFrom:
+  - scotheim_stone, 300

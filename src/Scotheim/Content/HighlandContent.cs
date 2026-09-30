@@ -260,6 +260,7 @@ namespace Scotheim.Content
             // Clones still breed into and grow up as the vanilla creature until relinked.
             Relink(added, "Scot_Sheep", "Scot_Lamb");
             Relink(added, "Scot_HighlandCow", "Scot_HighlandCalf");
+            Places.Add(added);
         }
 
         static void Relink(Dictionary<string, GameObject> added, string adult, string young)

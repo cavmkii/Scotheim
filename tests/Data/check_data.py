@@ -46,6 +46,10 @@ PRESERVED = {"maxSpawned", "spawnInterval", "spawnDistance"}
 
 vanilla_items = lines(ref / "jotunn-valheim-1.0.7/items.txt")
 vanilla_prefabs = lines(ref / "jotunn-valheim-1.0.7/prefabs.txt")
+prefab_components = {}
+for l in (ref / "jotunn-valheim-1.0.7/prefab-components.txt").read_text(encoding="utf-8").splitlines():
+    name, _, comps = l.partition(": ")
+    prefab_components[name] = set(comps.split(", "))
 characters = {}
 for l in (ref / "jotunn-valheim-1.0.7/characters.txt").read_text(encoding="utf-8").splitlines():
     name, _, comps = l.partition(": ")
@@ -150,6 +154,45 @@ reskin = (root / "src/Scotheim/Content/Reskin.cs").read_text(encoding="utf-8")
 names = set(re.findall(r'\{ "(Scot_\w+)", (?:Tint|TartanLook)', reskin))
 unknown = sorted(names - set(creatures) - set(items) - set(gear))
 check(not unknown, "%d reskins name real Scotheim things" % len(names) + (": unknown " + ", ".join(unknown) if unknown else ""))
+
+# --- places: EWD location keys (1.73 location/LocationData.cs) and blueprint contents
+LOCATION_FIELDS = set("""prefab enabled dungeon biome biomeArea altBiome quantity minDistance maxDistance minAltitude maxAltitude
+prioritized centerFirst unique randomSeed pregenerate group groups groupMax awayFrom closeTo minDistanceFromSimilar
+maxDistanceFromSimilar discoverLabel iconAlways iconPlaced randomRotation randomCardinal slopeRotation snapToWater
+minTerrainDelta maxTerrainDelta inForest forestTresholdMin forestTresholdMax offset groundOffset data objectData objectSwap
+dungeonObjectData dungeonObjectSwap locationObjectData locationObjectSwap objects commands exteriorRadius clearArea
+randomDamage noBuild noBuildDungeon levelArea levelRadius levelBorder paint paintRadius paintBorder scaleMin scaleMax
+scaleUniform minVegetation maxVegetation surroundCheckVegetation surroundCheckDistance surroundCheckLayers
+surroundBetterThanAverage relaxableunique relaxable relaxableamount""".split())
+locations = yaml.safe_load((data / "expand_locations_scotheim.yaml").read_text(encoding="utf-8"))
+bad_keys = sorted({k for l in locations for k in l} - LOCATION_FIELDS)
+check(not bad_keys, "location keys are EWD 1.73 location fields" + (": unknown " + ", ".join(bad_keys) if bad_keys else ""))
+used = {b.strip() for l in locations for b in l["biome"].split(",")}
+check(used <= biomes, "location biomes are Scotheim biomes")
+places_src = (root / "src/Scotheim/Content/Places.cs").read_text(encoding="utf-8")
+spawners = re.findall(r'new\[\] \{ "(Scot_Spawner_\w+)", "(\w+)", "(Scot_\w+)" \}', places_src)
+bad = [s for s in spawners if s[1] not in vanilla_prefabs or s[2] not in creatures or "CreatureSpawner" not in prefab_components.get(s[1], set())]
+check(spawners and not bad, "%d spawners copy vanilla CreatureSpawners and spawn Scotheim creatures" % len(spawners) + (": " + str(bad) if bad else ""))
+stones = {"Scot_StandingStone"} | {"Scot_SymbolStone%d" % (i + 1) for i in range(places_src.count('new[] { "') - len(spawners))}
+own = set(prefabs) | {s[0] for s in spawners} | stones | {"piece_bpcenterpoint"}
+blueprint_names = set()
+missing = set()
+for f in sorted(data.glob("*.blueprint")):
+    blueprint_names.add(f.stem)
+    for line in f.read_text(encoding="utf-8").splitlines():
+        if not line or line.startswith("#"):
+            continue
+        fields = line.split(";")
+        if len(fields) != 15:
+            missing.add(f.name + ": malformed row")
+        elif fields[0] not in vanilla_prefabs and fields[0] not in own:
+            missing.add(fields[0])
+check(not missing, "blueprints use real prefabs" + (": " + ", ".join(sorted(missing)) if missing else ""))
+unplaced = sorted({l["prefab"] for l in locations} - blueprint_names)
+check(not unplaced, "every location has a blueprint" + (": " + ", ".join(unplaced) if unplaced else ""))
+ew = (root / "src/Scotheim/Patches/ExpandWorld.cs").read_text(encoding="utf-8")
+unwritten = sorted(n + ".blueprint" for n in blueprint_names if n + ".blueprint" not in ew)
+check(not unwritten, "every blueprint is written on startup" + (": " + ", ".join(unwritten) if unwritten else ""))
 
 # --- data file upgrades: every version a release wrote must be listed in ExpandWorld.Shipped, or players
 # holding that version get the new default only as a .new file.

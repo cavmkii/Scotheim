@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <!-- Written into BepInEx/config/expand_world/ on first run (see Patches/ExpandWorld.cs). -->
-    <EmbeddedResource Include="Data\*.yaml" LogicalName="Scotheim.Data.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Data\*.yaml;Data\*.blueprint" LogicalName="Scotheim.Data.%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>
