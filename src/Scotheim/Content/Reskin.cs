@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Jotunn.Managers;
 using UnityEngine;
@@ -20,13 +21,14 @@ namespace Scotheim.Content
         sealed class Look
         {
             public Color Tint = Color.white;
-            public bool Tartan;
+            public bool Tartan, Fleece; // replace the texture outright (a tint can't lighten a dark texture)
             public Look(float r, float g, float b) { Tint = new Color(r, g, b, 1f); }
             public Look() { }
         }
 
         static Look Tint(float r, float g, float b) => new Look(r, g, b);
         static Look TartanLook() => new Look { Tartan = true };
+        static Look FleeceLook() => new Look { Fleece = true };
 
         static readonly Dictionary<string, Look> Creatures = new Dictionary<string, Look>
         {
@@ -35,8 +37,10 @@ namespace Scotheim.Content
             { "Scot_BeanNighe", Tint(1.25f, 1.25f, 1.3f) },       // pale
             { "Scot_HighlandCow", Tint(1.15f, 0.6f, 0.35f) },     // ginger. KITBASH later: lox body and horns; needs a cow model
             { "Scot_HighlandCalf", Tint(1.15f, 0.6f, 0.35f) },
-            { "Scot_Sheep", Tint(1.6f, 1.5f, 1.3f) },             // cream fleece. KITBASH later: a boar; needs a sheep model
-            { "Scot_Lamb", Tint(1.6f, 1.5f, 1.3f) },
+            // A tint only turned the dark boar light brown, so the texture is replaced with a generated fleece.
+            // KITBASH later: still a boar's shape (tusks included); needs a sheep model.
+            { "Scot_Sheep", FleeceLook() },
+            { "Scot_Lamb", FleeceLook() },
             { "Scot_RedDeer", Tint(1.15f, 0.8f, 0.65f) },         // redder coat
             { "Scot_PineMarten", Tint(0.55f, 0.4f, 0.3f) },       // dark brown. KITBASH later: a hare; needs a marten model
             { "Scot_HillWolf", Tint(0.85f, 0.8f, 0.72f) },        // grey-brown
@@ -85,8 +89,25 @@ namespace Scotheim.Content
 
         internal static void Creature(string name, GameObject prefab)
         {
+            LogParts(name, prefab);
             Look look;
             if (Creatures.TryGetValue(name, out look)) Apply(name, prefab, look);
+        }
+
+        // The model's parts, for planning what to hide or attach later (e.g. a boar's tusks on the sheep).
+        static void LogParts(string name, GameObject prefab)
+        {
+            var parts = new List<string>();
+            foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer.GetType().Name == "ParticleSystemRenderer") continue;
+                var materials = new List<string>();
+                foreach (var m in renderer.sharedMaterials) if (m != null) materials.Add(m.name);
+                var skinned = renderer as SkinnedMeshRenderer;
+                parts.Add(renderer.name + (renderer.gameObject.activeSelf ? "" : " (off)") + " [" + string.Join(", ", materials.ToArray()) + "]" +
+                    (skinned != null && skinned.rootBone != null ? " root " + skinned.rootBone.name + ", " + skinned.bones.Length + " bones" : ""));
+            }
+            Plugin.Log.LogInfo("Parts " + name + ": " + string.Join("; ", parts.ToArray()));
         }
 
         /// <summary>Recolours an item, including the skin overlay armour uses, and renders it a new icon.</summary>
@@ -113,7 +134,7 @@ namespace Scotheim.Content
                 for (int i = 0; i < materials.Length; i++)
                 {
                     if (materials[i] == null) continue;
-                    if (!materials[i].HasProperty("_Color") && !(look.Tartan && materials[i].HasProperty("_MainTex"))) { untintable++; continue; }
+                    if (!materials[i].HasProperty("_Color") && !((look.Tartan || look.Fleece) && materials[i].HasProperty("_MainTex"))) { untintable++; continue; }
                     materials[i] = Recolour(materials[i], look, allowTexture: true);
                     changed++;
                 }
@@ -133,7 +154,54 @@ namespace Scotheim.Content
                 copy.mainTextureScale = new Vector2(3f, 3f);
                 if (copy.HasProperty("_Color")) copy.color = Color.white;
             }
+            if (look.Fleece && allowTexture && copy.HasProperty("_MainTex"))
+            {
+                copy.mainTexture = Fleece();
+                copy.mainTextureScale = Vector2.one;
+                copy.mainTextureOffset = Vector2.zero;
+                if (copy.HasProperty("_Color")) copy.color = Color.white;
+            }
             return copy;
+        }
+
+        static Texture2D fleece;
+
+        // Cream wool: two octaves of smoothed value noise for clumps, and darker hollows between curls.
+        static Texture2D Fleece()
+        {
+            if (fleece != null) return fleece;
+            const int size = 256;
+            var random = new System.Random(1745);
+            Func<int, float[,]> grid = cells =>
+            {
+                var g = new float[cells + 1, cells + 1];
+                for (int i = 0; i <= cells; i++) for (int j = 0; j <= cells; j++) g[i, j] = (float)random.NextDouble();
+                for (int i = 0; i <= cells; i++) { g[i, cells] = g[i, 0]; g[cells, i] = g[0, i]; } // tile seamlessly
+                return g;
+            };
+            var coarse = grid(16);
+            var fine = grid(64);
+            Func<float[,], int, int, int, float> sample = (g, cells, x, y) =>
+            {
+                float fx = x * cells / (float)size, fy = y * cells / (float)size;
+                int ix = (int)fx, iy = (int)fy;
+                float tx = Mathf.SmoothStep(0f, 1f, fx - ix), ty = Mathf.SmoothStep(0f, 1f, fy - iy);
+                float a = Mathf.Lerp(g[ix, iy], g[ix + 1, iy], tx), b = Mathf.Lerp(g[ix, iy + 1], g[ix + 1, iy + 1], tx);
+                return Mathf.Lerp(a, b, ty);
+            };
+            var wool = new Color(0.9f, 0.86f, 0.76f);
+            var pixels = new Color[size * size];
+            for (int y = 0; y < size; y++)
+                for (int x = 0; x < size; x++)
+                {
+                    float n = 0.65f * sample(coarse, 16, x, y) + 0.35f * sample(fine, 64, x, y);
+                    float shade = 0.72f + 0.34f * Mathf.Pow(n, 0.8f);
+                    pixels[y * size + x] = new Color(wool.r * shade, wool.g * shade, wool.b * shade, 1f);
+                }
+            fleece = new Texture2D(size, size, TextureFormat.RGBA32, true) { name = "scot_fleece", wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Bilinear };
+            fleece.SetPixels(pixels);
+            fleece.Apply(true);
+            return fleece;
         }
 
         // A dark Government-style sett in Black Watch colours (blue, black, green), woven as a 2/2 twill:

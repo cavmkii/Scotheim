@@ -113,7 +113,7 @@ On-hit effects: **Hooked** leaves the target weak to slash and pierce for 8 s. *
 | **Pictish** | 18 (Ask is 28), +3 % move each | Silver chain, jerkin, trews | **Woad**: Sneak, Spears, Knives, Crossbows +20; −15 % run stamina; +25 % knife damage |
 | **Clansman** | 24, no move penalty | Blue bonnet, léine, kilt | **Freedom**: Swords, Axes, Clubs +20; +30 % stamina regen; +15 % health regen |
 | **Man-at-arms** | 33 (Flametal is 38); acton 24, no move penalty | Knapskull, brigandine or acton, chausses | **Schiltron**: Blocking, Polearms, Bows +20; resistant to pierce; −25 % block stamina |
-| **Sìth** | 17 (Embla is 19), eitr regen kept | Crown, robe, leggings | **Glamour**: Elemental and Blood magic +20, Sneak +15; +50 % eitr regen; −15 % eitr cost |
+| **Sìth** | 17 (Embla is 19), eitr regen kept | Crown, robe, leggings | **Glamour**: Elemental and Blood magic +20, Sneak +15; +50 % eitr regen; −25 % sneak stamina |
 
 Valheim's tooltip lists only two skills per effect, so the others are named in the bonus text.
 
@@ -126,7 +126,7 @@ Valheim's tooltip lists only two skills per effect, so the others are named in t
 | Saltire cape | 10 | — |
 | Faerie Flag | 6 | Resistant to pierce; slow fall |
 
-Some of these effects use game fields whose names couldn't be checked here: the on-hit effect, stagger, knife damage, block stamina and eitr cost. Scotheim sets those by name at load and logs `Game field check: …` lines. If one isn't found, that single effect is skipped with a warning, and nothing else breaks.
+Some of these effects use game fields whose names couldn't be checked here: the on-hit effect, stagger, knife damage, block stamina and sneak stamina. (Glamour was meant to cut eitr cost, but the game has no such field for status effects.) Scotheim sets those by name at load and logs `Game field check: …` lines. If one isn't found, that single effect is skipped with a warning, and nothing else breaks.
 
 On the sources:
 
@@ -146,7 +146,7 @@ Until there are proper models, the clones are recoloured at load time (`Content/
 
 - **Creatures:**
   - Cù-sìth dark green, Cat-sìth black, bean-nighe pale;
-  - Highland cattle ginger, sheep cream;
+  - Highland cattle ginger; sheep get a generated cream fleece texture in place of the boar's (a tint couldn't lighten it);
   - red deer redder, pine martens dark brown;
   - hill giants mossy, the fuath blue-green, redcaps red, the each-uisge kelp-dark.
 - **Materials:** bog iron dark, bog oak black, cairngorm smoky, the heartstone ember-red, Highland hide ginger, the Sìth pelt green.
