@@ -164,13 +164,13 @@ EWD places these when a world is generated, from blueprints Scotheim writes into
 | **Shieling** (20) | Forest and lower Munros | A roofless stone hut; sometimes a redcap or a little hacksilver | Summer huts on the hill grazing |
 | **Stone circle** (6) | Moor | Twelve standing stones, some fallen, sometimes a cairngorm in the middle | Circles such as Callanish (Lewis) and those around Clava |
 | **Pictish symbol stone** (20, five texts) | Moor, forest, Munros | A readable stone hinting at brochs, crannogs, the each-uisge, the boss and Munro bagging | Class I symbol stones; each text says the symbols' meaning is unknown |
-| **Summit cairn** (up to 24) | Munros, above 65 m | A cone of piled stone inside a low kerb, ringed by nine standing stones; use the capstone to bag the hill (see Munro bagging below) | The Clava cairns near Inverness (Balnuaran of Clava), and the custom of adding a stone to a summit cairn |
+| **Summit cairn** (up to 24) | Munros, above 65 m | A small heap of stones (a copy of the vanilla stone pile) to add a stone to; see Munro bagging below | The custom of adding a stone to a summit cairn |
 
 Places only appear in newly generated areas: use a new world, or EWD's `genloc` command for unexplored ground. Crannog floors and posts are ordinary build pieces, so they can be taken apart for wood. The walls of brochs and shielings are ruin pieces that can't.
 
 ### Munro bagging
 
-Use the capstone on top of a summit cairn to add a stone and bag that hill. The tally is kept on the character, separately for each world (by world seed), and each cairn counts once. Bagging 12 makes the character a **Compleatist**: +15 Run skill, 15% less stamina for running and jumping, and half fall damage, for as long as the character plays that world. The effect is re-applied every few seconds if it's missing, for example after death.
+Use a summit cairn to add a stone and bag that hill. The tally is kept on the character, separately for each world (by world seed), and each cairn counts once. Bagging 12 makes the character a **Compleatist**: +15 Run skill, 15% less stamina for running and jumping, and half fall damage, for as long as the character plays that world. The effect is re-applied every few seconds if it's missing, for example after death.
 
 The target is 12 rather than every cairn because how many EWD places depends on the terrain. In the first real world tested, asking for 30 cairns above 70 m on gentle ground placed only 16, and the failed attempts added 37 s to world generation. Cairns may now stand on steeper ground, lower down, and 24 are asked for. EWD's log says how many it placed ("placed N out of 24"). If it's below 12, lower `minAltitude` or the `awayFrom` distance for `scotheim_cairn` in `expand_locations_scotheim.yaml`.
 
