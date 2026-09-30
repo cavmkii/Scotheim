@@ -11,7 +11,7 @@ public class ItemDrop : UnityEngine.MonoBehaviour
         public SharedData m_shared;
         public class SharedData
         {
-            public string m_name; public float m_food, m_foodStamina, m_foodRegen, m_foodBurnTime;
+            public string m_name; public UnityEngine.Sprite[] m_icons; public float m_food, m_foodStamina, m_foodRegen, m_foodBurnTime;
             public HitData.DamageTypes m_damages, m_damagesPerLevel;
             public float m_blockPower, m_blockPowerPerLevel, m_deflectionForce, m_timedBlockBonus, m_armor, m_armorPerLevel;
             public float m_maxDurability, m_durabilityPerLevel, m_weight, m_movementModifier, m_attackForce, m_eitrRegenModifier;

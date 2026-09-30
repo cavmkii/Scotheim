@@ -141,6 +141,12 @@ for kind, defined in (("item", items), ("creature", creatures), ("gear piece", g
     missing = sorted(n for n in defined if '{ "%s", ' % n not in localization)
     check(not missing, "every %s has English text" % kind + (": " + ", ".join(missing) if missing else ""))
 
+# --- reskins: every recoloured name is a real Scotheim creature, item or gear piece
+reskin = (root / "src/Scotheim/Content/Reskin.cs").read_text(encoding="utf-8")
+names = set(re.findall(r'\{ "(Scot_\w+)", (?:Tint|TartanLook)', reskin))
+unknown = sorted(names - set(creatures) - set(items) - set(gear))
+check(not unknown, "%d reskins name real Scotheim things" % len(names) + (": unknown " + ", ".join(unknown) if unknown else ""))
+
 # --- data file upgrades: every version a release wrote must be listed in ExpandWorld.Shipped, or players
 # holding that version get the new default only as a .new file.
 import hashlib, subprocess

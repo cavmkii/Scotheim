@@ -199,6 +199,7 @@ namespace Scotheim.Content
                         s.m_setSize = Sets.Size;
                         s.m_setStatusEffect = bonus;
                     }
+                    Reskin.Item(spec.Name, item.ItemPrefab, s);
                     ItemManager.Instance.AddItem(item);
                     Plugin.Log.LogInfo(Describe(spec, s));
                 }
