@@ -24,6 +24,18 @@ namespace Scotheim.Content
         internal const string DefeatKey = "defeated_scot_greyman";
         internal const int Heartstones = 3;
         internal static StatusEffect Dread;
+        static GameObject bossPrefab;
+        static ItemDrop heartstone;
+        static bool altarBuilt;
+
+        // Jötunn announces creatures before items, so the altar is built by whichever of these runs second.
+        internal static void ItemsReady(System.Collections.Generic.Dictionary<string, CustomItem> added)
+        {
+            CustomItem item;
+            if (added.TryGetValue("Scot_GiantHeartstone", out item)) heartstone = item.ItemDrop;
+            else Plugin.Log.LogWarning("The Grey Man can't be summoned: Scot_GiantHeartstone wasn't added.");
+            TryAddAltar();
+        }
 
         /// <summary>Called once the boss creature exists: makes it a boss and builds its altar and dread.</summary>
         internal static void Add(GameObject boss)
@@ -36,7 +48,15 @@ namespace Scotheim.Content
             boss.AddComponent<GreyManDread>();
 
             AddDread();
-            AddAltar(boss);
+            bossPrefab = boss;
+            TryAddAltar();
+        }
+
+        static void TryAddAltar()
+        {
+            if (altarBuilt || bossPrefab == null || heartstone == null) return;
+            altarBuilt = true;
+            AddAltar(bossPrefab);
         }
 
         static void AddDread()
@@ -58,11 +78,16 @@ namespace Scotheim.Content
         {
             // The Deep North boss room's offering altar is a standalone prefab with a working OfferingBowl.
             var altar = PrefabManager.Instance.CreateClonedPrefab("Scot_GreyManAltar", "offeraltar_FrozenKing_bossroom");
-            var bowl = altar != null ? altar.GetComponent("OfferingBowl") : null;
-            var heartstone = PrefabManager.Instance.GetPrefab("Scot_GiantHeartstone");
-            if (bowl == null || heartstone == null)
+            if (altar == null)
             {
-                Plugin.Log.LogWarning("The Grey Man can't be summoned: offeraltar_FrozenKing_bossroom, its OfferingBowl or the heartstone is missing.");
+                Plugin.Log.LogWarning("The Grey Man can't be summoned: offeraltar_FrozenKing_bossroom wasn't found.");
+                return;
+            }
+            var bowlType = Type.GetType("OfferingBowl, assembly_valheim");
+            var bowl = bowlType != null ? altar.GetComponentInChildren(bowlType, true) : null; // may sit on a child
+            if (bowl == null)
+            {
+                Plugin.Log.LogWarning("The Grey Man can't be summoned: offeraltar_FrozenKing_bossroom has no OfferingBowl.");
                 return;
             }
             // ConditionalObject shows or hides parts by world state in the boss room; out here it could hide the altar.
@@ -70,7 +95,7 @@ namespace Scotheim.Content
             if (conditional != null) UnityEngine.Object.DestroyImmediate(conditional);
             GameFields.TrySet(bowl, "$piece_scot_greymanaltar", "m_name");
             GameFields.TrySet(bowl, "$piece_scot_greymanaltar_use", "m_useItemText");
-            GameFields.TrySetObject(bowl, heartstone.GetComponent<ItemDrop>(), "m_bossItem");
+            GameFields.TrySetObject(bowl, heartstone, "m_bossItem");
             GameFields.TrySet(bowl, Heartstones, "m_bossItems");
             GameFields.TrySetObject(bowl, boss, "m_bossPrefab");
             GameFields.TrySet(bowl, false, "m_useItemStands");

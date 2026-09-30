@@ -192,6 +192,7 @@ namespace Scotheim.Content
             AddPickable(added, "Scot_Pickable_Bere", "Pickable_Barley", "Scot_Bere");
             Croft.Add(added);
             Midges.Add(added);
+            GreyMan.ItemsReady(added);
         }
 
         static void AddCooking(string station, string from, string to, float time)
