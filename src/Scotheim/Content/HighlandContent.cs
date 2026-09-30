@@ -18,6 +18,7 @@ namespace Scotheim
         {
             Content.Bagging.Tick();
             Content.Midges.Tick();
+            Content.Sluagh.Tick();
         }
     }
 }

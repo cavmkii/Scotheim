@@ -117,6 +117,7 @@ namespace Scotheim.Patches
         internal static void WriteDefaultFiles()
         {
             if (!Present) return;
+            RemoveRetiredFiles();
             foreach (var name in DataFiles)
             {
                 // Blueprints go to EWD's blueprint folder (its "Blueprint folder" setting, PlanBuild by default).
@@ -157,6 +158,43 @@ namespace Scotheim.Patches
             }
         }
 
+        // Files earlier Scotheims wrote that are no longer used, with every version shipped. An unedited copy is
+        // deleted; an edited one is left alone with a warning.
+        static readonly Dictionary<string, string[]> Retired = new Dictionary<string, string[]>
+        {
+            // EWD 1.73's "Event data" breaks its own startup on this game version; the Sluagh raid is in code now.
+            { "expand_events_scotheim.yaml", new[] { "73dd3b0fe656aa0c" } },
+            // Symbol stones copy the vanilla runestone location now (Content/Places.cs).
+            { "scotheim_symbolstone1.blueprint", new[] { "f8d04c6497aa417e" } },
+            { "scotheim_symbolstone2.blueprint", new[] { "44c167ee296a390a" } },
+            { "scotheim_symbolstone3.blueprint", new[] { "d30279e6b2fe9d01" } },
+            { "scotheim_symbolstone4.blueprint", new[] { "78c4921345d38de7" } },
+            { "scotheim_symbolstone5.blueprint", new[] { "761413ef9151cbea" } },
+        };
+
+        static void RemoveRetiredFiles()
+        {
+            foreach (var entry in Retired)
+            {
+                var dir = Path.Combine(Paths.ConfigPath, entry.Key.EndsWith(".blueprint") ? "PlanBuild" : "expand_world");
+                var path = Path.Combine(dir, entry.Key);
+                try
+                {
+                    if (!File.Exists(path)) continue;
+                    if (Array.IndexOf(entry.Value, Fingerprint(File.ReadAllText(path))) >= 0)
+                    {
+                        File.Delete(path);
+                        Plugin.Log.LogInfo("Removed " + path + " (no longer used by Scotheim).");
+                    }
+                    else Plugin.Log.LogWarning(path + " is no longer used by Scotheim but has local edits, so it was kept.");
+                }
+                catch (Exception e)
+                {
+                    Plugin.Log.LogError("Couldn't remove " + path + ": " + e.Message);
+                }
+            }
+        }
+
         /// <summary>SHA-256 prefix of the text with CRs dropped, so a Windows checkout's line endings don't count as edits.</summary>
         internal static string Fingerprint(string text)
         {
@@ -170,7 +208,7 @@ namespace Scotheim.Patches
         static readonly string[] DataFiles =
         {
             FileName, "expand_vegetation_scotheim.yaml", "expand_clutter_scotheim.yaml", "expand_spawns_scotheim.yaml",
-            "expand_locations_scotheim.yaml", "expand_events_scotheim.yaml",
+            "expand_locations_scotheim.yaml",
             "scotheim_broch.blueprint", "scotheim_crannog.blueprint", "scotheim_shieling.blueprint", "scotheim_stonecircle.blueprint",
             "scotheim_cairn.blueprint", "scotheim_greyman.blueprint",
         };
