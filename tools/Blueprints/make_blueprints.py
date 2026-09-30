@@ -121,3 +121,8 @@ for n in range(1, 6):
     path = OUT / ("scotheim_symbolstone%d.blueprint" % n)
     path.write_text(path.read_text(encoding="utf-8").rstrip("\n") + "\n" + row("Scot_SymbolStone%d" % n, 0, 0, 0) + "\n",
                     encoding="utf-8", newline="\n")
+
+# Summit cairn: one cairn to bag (Content/Bagging.cs). Its world position identifies the hill.
+# The squat scale is also set on the prefab; it's repeated here in case EWD writes the row's scale to the object.
+write("scotheim_cairn", "A summit cairn. Add a stone to bag the hill.",
+      [row("Scot_SummitCairn", 0, 0, 0, scale=(0.7, 0.3, 0.7))])

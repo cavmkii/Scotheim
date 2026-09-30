@@ -164,8 +164,17 @@ EWD places these when a world is generated, from blueprints Scotheim writes into
 | **Shieling** (20) | Forest and lower Munros | A roofless stone hut; sometimes a redcap or a little hacksilver | Summer huts on the hill grazing |
 | **Stone circle** (6) | Moor | Twelve standing stones, some fallen, sometimes a cairngorm in the middle | Circles such as Callanish (Lewis) and those around Clava |
 | **Pictish symbol stone** (20, five texts) | Moor, forest, Munros | A readable stone hinting at brochs, crannogs, the each-uisge, the boss and Munro bagging | Class I symbol stones; each text says the symbols' meaning is unknown |
+| **Summit cairn** (up to 30) | Munros, above 70 m | A cairn to add a stone to; see Munro bagging below | Summit cairns, and the custom of adding a stone |
 
 Places only appear in newly generated areas: use a new world, or EWD's `genloc` command for unexplored ground. Crannog floors and posts are ordinary build pieces, so they can be taken apart for wood. The walls of brochs and shielings are ruin pieces that can't.
+
+### Munro bagging
+
+Use a summit cairn to add a stone and bag that hill. The tally is kept on the character, separately for each world (by world seed), and each cairn counts once. Bagging 16 makes the character a **Compleatist**: +15 Run skill, 15% less stamina for running and jumping, and half fall damage, for as long as the character plays that world. The effect is re-applied every few seconds if it's missing, for example after death.
+
+The target is 16 rather than every cairn because how many EWD places depends on the terrain: in the terrain preview there's room for 30–35 at the configured spacing, but a real world may have fewer. EWD's log says how many it placed; if it's below 16, lower `minAltitude` or the `awayFrom` distance for `scotheim_cairn` in `expand_locations_scotheim.yaml`.
+
+The fall-damage field is set by name (`m_fallDamageModifier`); the log says whether it was found.
 
 ### Looks
 

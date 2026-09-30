@@ -13,6 +13,8 @@ namespace Scotheim
     public partial class Plugin
     {
         partial void RegisterContent() => Content.HighlandContent.Register();
+
+        void Update() => Content.Bagging.Tick();
     }
 }
 
@@ -290,6 +292,7 @@ namespace Scotheim.Content
             Relink(added, "Scot_Sheep", "Scot_Lamb");
             Relink(added, "Scot_HighlandCow", "Scot_HighlandCalf");
             Places.Add(added);
+            Bagging.Add();
         }
 
         static void Relink(Dictionary<string, GameObject> added, string adult, string young)

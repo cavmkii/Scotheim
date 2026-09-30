@@ -175,7 +175,10 @@ spawners = re.findall(r'new\[\] \{ "(Scot_Spawner_\w+)", "(\w+)", "(Scot_\w+)" \
 bad = [s for s in spawners if s[1] not in vanilla_prefabs or s[2] not in creatures or "CreatureSpawner" not in prefab_components.get(s[1], set())]
 check(spawners and not bad, "%d spawners copy vanilla CreatureSpawners and spawn Scotheim creatures" % len(spawners) + (": " + str(bad) if bad else ""))
 stones = {"Scot_StandingStone"} | {"Scot_SymbolStone%d" % (i + 1) for i in range(places_src.count('new[] { "') - len(spawners))}
-own = set(prefabs) | {s[0] for s in spawners} | stones | {"piece_bpcenterpoint"}
+bagging_src = (root / "src/Scotheim/Content/Bagging.cs").read_text(encoding="utf-8")
+cairns = set(re.findall(r'CreateClonedPrefab\("(Scot_\w+)", "(\w+)"\)', bagging_src))
+check(cairns and all(base in vanilla_prefabs for _, base in cairns), "summit cairns copy a vanilla prefab")
+own = set(prefabs) | {s[0] for s in spawners} | stones | {c for c, _ in cairns} | {"piece_bpcenterpoint"}
 blueprint_names = set()
 missing = set()
 for f in sorted(data.glob("*.blueprint")):

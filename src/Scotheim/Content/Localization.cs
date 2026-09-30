@@ -99,6 +99,8 @@ namespace Scotheim.Content
             english["piece_scot_bere_desc"] = "Plant bere. It grows on the open moor.";
             english["se_scot_uisgebeatha"] = "Uisge-beatha";
             english["se_scot_uisgebeatha_tooltip"] = "Warm to the bones: no freezing, and stamina comes back quicker.";
+            english["se_scot_compleatist"] = "Compleatist";
+            english["se_scot_compleatist_tooltip"] = "Every hill bagged. Surer on your feet: better running, less stamina spent running and jumping, and falls hurt less.";
             foreach (var entry in ItemText)
             {
                 english[ItemName(entry.Key).Substring(1)] = entry.Value[0];
