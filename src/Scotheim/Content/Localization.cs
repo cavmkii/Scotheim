@@ -24,6 +24,7 @@ namespace Scotheim.Content
             { "Scot_KelpieMane", new[] { "Kelpie mane", "Wet weed and horsehair. It never dries." } },
             { "Scot_WashersShroud", new[] { "Washer's shroud", "Linen she was washing at the ford. You don't ask whose." } },
             { "Scot_GiantHeartstone", new[] { "Giant's heartstone", "Warm, and heavier than its size." } },
+            { "Scot_TrophyGreyMan", new[] { "Grey Man trophy", "Proof that something did walk the high plateau." } },
             { "Scot_BogIronOre", new[] { "Bog iron ore", "Rusty lumps from the edge of a loch. Smelt it." } },
             { "Scot_BogIron", new[] { "Bog iron", "Soft, honest iron. Most Highland blades began as this." } },
             { "Scot_Hacksilver", new[] { "Hacksilver", "Cut-up silver plate, probably Roman once. Smelt it down." } },
@@ -89,6 +90,7 @@ namespace Scotheim.Content
             { "Scot_Fuath", "Fuath" },
             { "Scot_HillGiant", "Hill giant" },
             { "Scot_Redcap", "Redcap" },
+            { "Scot_GreyMan", "Am Fear Liath Mòr" },
         };
 
         internal static void Register()
@@ -99,6 +101,11 @@ namespace Scotheim.Content
             english["piece_scot_bere_desc"] = "Plant bere. It grows on the open moor.";
             english["se_scot_uisgebeatha"] = "Uisge-beatha";
             english["se_scot_uisgebeatha_tooltip"] = "Warm to the bones: no freezing, and stamina comes back quicker.";
+            english["se_scot_dread"] = "Dread";
+            english["se_scot_dread_tooltip"] = "Something tall is near. Your breath comes short and your legs feel heavy.";
+            english["piece_scot_greymanaltar"] = "Summit altar";
+            english["piece_scot_greymanaltar_use"] = "Offer giant's heartstones";
+            english["piece_scot_greymanaltar_pin"] = "Am Fear Liath Mòr";
             english["se_scot_compleatist"] = "Compleatist";
             english["se_scot_compleatist_tooltip"] = "Every hill bagged. Surer on your feet: better running, less stamina spent running and jumping, and falls hurt less.";
             foreach (var entry in ItemText)

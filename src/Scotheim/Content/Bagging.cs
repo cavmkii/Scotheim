@@ -20,6 +20,7 @@ namespace Scotheim.Content
         internal const int ToCompleat = 12; // expand_locations_scotheim.yaml asks for 24
         const string CountKey = "scotheim_cairns"; // global key "scotheim_cairns <n>", set by the server
         static float nextCount;
+        static bool warnedNoAltar;
         static StatusEffect compleatist;
         static float nextCheck;
 
@@ -133,7 +134,7 @@ namespace Scotheim.Content
             if (net == null || zones == null || !(GameFields.Call(net, "IsServer") as bool? ?? false)) return;
             var instances = GameFields.Get(zones, "m_locationInstances") as System.Collections.IDictionary;
             if (instances == null || instances.Count == 0) return;
-            int count = 0;
+            int count = 0, altars = 0;
             foreach (var instance in instances.Values)
             {
                 var location = GameFields.Get(instance, "m_location");
@@ -141,6 +142,13 @@ namespace Scotheim.Content
                 var name = prefab != null ? prefab.GetType().GetProperty("Name")?.GetValue(prefab, null) as string : null;
                 if (name == null && location != null) name = GameFields.Get(location, "m_prefabName") as string;
                 if (name == "scotheim_cairn") count++;
+                else if (name == GreyMan.Location) altars++;
+            }
+            if (altars == 0 && !warnedNoAltar)
+            {
+                warnedNoAltar = true;
+                Plugin.Log.LogWarning("No Grey Man altar was placed in this world, so he can't be summoned. Lower minAltitude for " +
+                    GreyMan.Location + " in expand_locations_scotheim.yaml and run genloc, or use a new world.");
             }
             if (count == 0 || count == PublishedCount()) return;
             GameFields.Call(zones, "SetGlobalKey", CountKey + " " + count);

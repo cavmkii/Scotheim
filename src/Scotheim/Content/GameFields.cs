@@ -21,7 +21,8 @@ namespace Scotheim.Content
             {
                 var field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (field == null) continue;
-                field.SetValue(target, field.FieldType.IsEnum ? Enum.ToObject(field.FieldType, value) : Convert.ChangeType(value, field.FieldType));
+                field.SetValue(target, !field.FieldType.IsEnum ? Convert.ChangeType(value, field.FieldType)
+                    : value is string ? Enum.Parse(field.FieldType, (string)value) : Enum.ToObject(field.FieldType, value));
                 Report(type.Name + "." + name + " found");
                 return true;
             }

@@ -163,7 +163,7 @@ EWD places these when a world is generated, from blueprints Scotheim writes into
 | **Crannog** (8) | In lochs, at water level | A timber platform on log piles with a ring of walls; a bean-nighe, sometimes an each-uisge, and hacksilver | Loch dwellings on artificial islets, e.g. those excavated on Loch Tay |
 | **Shieling** (20) | Forest and lower Munros | A roofless stone hut; sometimes a redcap or a little hacksilver | Summer huts on the hill grazing |
 | **Stone circle** (6) | Moor | Twelve standing stones, some fallen, sometimes a cairngorm in the middle | Circles such as Callanish (Lewis) and those around Clava |
-| **Pictish symbol stone** (20, five texts) | Moor, forest, Munros | A readable stone hinting at brochs, crannogs, the each-uisge, the boss and Munro bagging | Class I symbol stones; each text says the symbols' meaning is unknown |
+| **Pictish symbol stone** (20, five texts) | Moor, forest, Munros | A readable stone hinting at brochs, crannogs, the each-uisge, the boss and Munro bagging; stone 4 marks the boss altar on the map | Class I symbol stones |
 | **Summit cairn** (up to 24) | Munros, above 65 m | A small heap of stones (a copy of the vanilla stone pile) to add a stone to; see Munro bagging below | The custom of adding a stone to a summit cairn |
 
 Places only appear in newly generated areas: use a new world, or EWD's `genloc` command for unexplored ground. Crannog floors and posts are ordinary build pieces, so they can be taken apart for wood. The walls of brochs and shielings are ruin pieces that can't.
@@ -175,6 +175,17 @@ Use a summit cairn to add a stone and bag that hill. The tally is kept on the ch
 How many cairns EWD can place depends on the terrain: the first three test worlds got 16, 24 and 10 of the 24 asked for. So the server counts the cairns in its world and shares the number as the global key `scotheim_cairns <n>`, and Compleatist needs 12 or all of them, whichever is fewer. The log says "Summit cairns in this world: n". Running `genloc` later adds cairns and raises the count.
 
 The fall-damage field is set by name (`m_fallDamageModifier`); the log says whether it was found.
+
+### Am Fear Liath Mòr, the boss
+
+The Big Grey Man of Ben Macdui: a very tall grey figure said to walk the Cairngorm plateau, known mostly from the panic climbers felt there (J. Norman Collie's 1925 account is the best known). Here he's the Highlands' boss.
+
+- **Where**: a summit altar on Munro ground above 95 m, up to two per world, placed before other locations. Reading symbol stone 4 ("Mirror and comb") marks the nearest altar on the map. EWD can't choose the single highest summit, so "high" is the best it can do; the log warns if no altar could be placed.
+- **Summoning**: offer 3 giant's heartstones at the altar (hill giants drop them).
+- **The fight**: a boss health bar and music, 9,000 health (between the Seeker Queen and the Fader), on a Morgen body tinted grey and scaled up by 30%. Within 35 m of him you feel **Dread**: stamina regenerates 40% slower and you move 10% slower.
+- **Reward**: his trophy, 4–6 cairngorms, 6–10 Pictish silver and 1–2 heartstones back. Killing him sets the world key `defeated_scot_greyman`, which later content can build on.
+
+Not yet: a guardian power at an item stand, and a model of his own (KITBASH later).
 
 ### Looks
 

@@ -136,3 +136,19 @@
   groups: scotheim_cairn
   awayFrom:
   - scotheim_cairn, 200
+# The Grey Man's altar: on the high tops, as he walks Ben Macdui. Up to two per world, far apart and placed
+# first. EWD can't pick "the highest" summit, so it's any ground above 95 m; the log warns if none was placed.
+# Symbol stone 4 ("Mirror and comb") marks the nearest one on the map.
+- prefab: scotheim_greyman
+  biome: munros
+  quantity: 2
+  minAltitude: 95
+  maxTerrainDelta: 12
+  randomRotation: true
+  prioritized: true
+  exteriorRadius: 6
+  clearArea: true
+  discoverLabel: Am Fear Liath Mòr
+  groups: scotheim_greyman
+  awayFrom:
+  - scotheim_greyman, 1500

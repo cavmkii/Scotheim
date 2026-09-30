@@ -69,6 +69,7 @@ namespace Scotheim.Content
             new ItemSpec { Name = "Scot_KelpieMane", Base = "JuteBlue" },
             new ItemSpec { Name = "Scot_WashersShroud", Base = "LinenThread" },
             new ItemSpec { Name = "Scot_GiantHeartstone", Base = "Crystal" },
+            new ItemSpec { Name = "Scot_TrophyGreyMan", Base = "TrophyMorgen" },
             // Highland raw materials: gear is made from these and the drops above, nothing from other biomes.
             new ItemSpec { Name = "Scot_BogIronOre", Base = "IronOre" },
             new ItemSpec { Name = "Scot_BogIron", Base = "Iron" },
@@ -253,6 +254,11 @@ namespace Scotheim.Content
             new CreatureSpec { Name = "Scot_HillGiant", Base = "StoneGolem", Health = 2600, Scale = 1.25f,
                 Drops = new[] { Drop("Scot_GiantHeartstone", 1, 1), Drop("Crystal", 8, 12) } },
             // Redcaps hoard scrap: hacksilver instead of the goblin's black metal scrap, and only rarely a bar.
+            // The boss (Content/Boss.cs): summoned at the altar, never spawned. Morgen is Ashlands tier; the boss
+            // sits between the Seeker Queen (Mistlands) and the Fader in health.
+            new CreatureSpec { Name = "Scot_GreyMan", Base = "Morgen_NonSleeping", Health = 9000, Scale = 1.3f,
+                Drops = new[] { Drop("Scot_TrophyGreyMan", 1, 1), Drop("Scot_Cairngorm", 4, 6), Drop("Scot_PictishSilver", 6, 10),
+                    Drop("Scot_GiantHeartstone", 1, 2) } },
             new CreatureSpec { Name = "Scot_Redcap", Base = "Goblin", Health = 220, Scale = 0.8f,
                 Drops = new[] { Drop("Scot_Hacksilver", 1, 3), Drop("Scot_PictishSilver", 1, 1, 10f), Drop("Coins", 10, 20, 50f) } },
         };
@@ -293,6 +299,8 @@ namespace Scotheim.Content
             Relink(added, "Scot_HighlandCow", "Scot_HighlandCalf");
             Places.Add(added);
             Bagging.Add();
+            GameObject boss;
+            if (added.TryGetValue(GreyMan.Boss, out boss)) GreyMan.Add(boss);
         }
 
         static void Relink(Dictionary<string, GameObject> added, string adult, string young)
