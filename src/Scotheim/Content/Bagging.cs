@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
 using UnityEngine;
@@ -29,6 +31,15 @@ namespace Scotheim.Content
             var destructible = cairn.GetComponent("Destructible");
             if (destructible != null) Object.DestroyImmediate(destructible);
             cairn.transform.localScale = new Vector3(0.7f, 0.3f, 0.7f); // squat: a heap, not a pillar
+            // The game's RuneStone supplies hover and use (it implements Hoverable and Interactable for this
+            // game version); CairnPatches below replaces what it shows and does when a SummitCairn is present.
+            var runeType = System.Type.GetType("RuneStone, assembly_valheim");
+            if (runeType == null)
+            {
+                Plugin.Log.LogWarning("Munro bagging skipped: the game's RuneStone component wasn't found.");
+                return;
+            }
+            cairn.AddComponent(runeType);
             cairn.AddComponent<SummitCairn>();
             PrefabManager.Instance.AddPrefab(cairn);
 
@@ -86,8 +97,8 @@ namespace Scotheim.Content
         }
     }
 
-    /// <summary>A summit cairn: hover to see it, use it to add a stone and bag the hill.</summary>
-    public class SummitCairn : MonoBehaviour, Hoverable, Interactable
+    /// <summary>Marks a summit cairn; the cairn's RuneStone calls these through <see cref="CairnPatches"/>.</summary>
+    public class SummitCairn : MonoBehaviour
     {
         string Id
         {
@@ -98,9 +109,7 @@ namespace Scotheim.Content
             }
         }
 
-        public string GetHoverName() => "Summit cairn";
-
-        public string GetHoverText()
+        internal string HoverText()
         {
             var player = Player.m_localPlayer;
             var done = player != null && Bagging.Bagged(player).Contains(Id);
@@ -108,7 +117,7 @@ namespace Scotheim.Content
             return global::Localization.instance.Localize(text);
         }
 
-        public bool Interact(Humanoid user, bool hold, bool alt)
+        internal bool Interact(Humanoid user, bool hold)
         {
             if (hold) return false;
             var player = user as Player;
@@ -125,7 +134,51 @@ namespace Scotheim.Content
             player.Message(MessageHud.MessageType.Center, message);
             return true;
         }
+    }
 
-        public bool UseItem(Humanoid user, ItemDrop.ItemData item) => false;
+    /// <summary>
+    /// Hover text and use for summit cairns, taken over from the game's RuneStone. Found by name so the
+    /// game's exact member signatures don't have to be known here; a missing one is logged and skipped.
+    /// </summary>
+    static class CairnPatches
+    {
+        // A null target would make PatchAll throw and skip every later patch, so check first.
+        static bool Report(MethodBase method, string name)
+        {
+            if (method == null) Plugin.Log.LogWarning("Summit cairns can't be used: " + name + " wasn't found.");
+            return method != null;
+        }
+
+        [HarmonyPatch]
+        static class Hover
+        {
+            static MethodBase Target() => AccessTools.Method(AccessTools.TypeByName("RuneStone"), "GetHoverText");
+            static bool Prepare() => Report(Target(), "RuneStone.GetHoverText");
+            static MethodBase TargetMethod() => Target();
+
+            static bool Prefix(Component __instance, ref string __result)
+            {
+                var cairn = __instance.GetComponent<SummitCairn>();
+                if (cairn == null) return true;
+                __result = cairn.HoverText();
+                return false;
+            }
+        }
+
+        [HarmonyPatch]
+        static class Use
+        {
+            static MethodBase Target() => AccessTools.Method(AccessTools.TypeByName("RuneStone"), "Interact");
+            static bool Prepare() => Report(Target(), "RuneStone.Interact");
+            static MethodBase TargetMethod() => Target();
+
+            static bool Prefix(Component __instance, Humanoid __0, bool __1, ref bool __result)
+            {
+                var cairn = __instance.GetComponent<SummitCairn>();
+                if (cairn == null) return true;
+                __result = cairn.Interact(__0, __1);
+                return false;
+            }
+        }
     }
 }

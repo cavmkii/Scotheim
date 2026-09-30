@@ -278,4 +278,4 @@ Tests:
 
 - Patches: `CSC=<Roslyn csc.exe> HARMONY_DIR=<HarmonyX + MonoMod dlls> tests/Harness/run.sh`
 - Data names: `python3 tests/Data/check_data.py`
-- Content against Jötunn: `CSC=<csc.exe> JOTUNN_DLL=<Jotunn.dll> UNITY_DIR=<UnityEngine.Modules/lib/net45> tests/Content/run.sh`
+- Content against Jötunn: `CSC=<csc.exe> JOTUNN_DLL=<Jotunn.dll> UNITY_DIR=<UnityEngine.Modules/lib/net45> HARMONY_DLL=<0Harmony.dll> tests/Content/run.sh`
