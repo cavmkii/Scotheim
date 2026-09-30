@@ -8,7 +8,8 @@ here="$(cd "$(dirname "$0")" && pwd)"
 out="$(mktemp -d)"
 csc() { mono "$CSC" -nologo -langversion:7.3 -nowarn:1701,1702 "$@"; }
 csc -target:library -out:"$out/BepInEx.dll" -r:"$UNITY_DIR/UnityEngine.CoreModule.dll" "$here/BepInExStub.cs"
+csc -target:library -out:"$out/assembly_guiutils.dll" "$here/GuiUtilsStub.cs"
 csc -target:library -out:"$out/assembly_valheim.dll" -r:"$UNITY_DIR/UnityEngine.CoreModule.dll" "$here/ValheimStub.cs"
 csc -target:library -out:"$out/content.dll" -r:"$UNITY_DIR/UnityEngine.CoreModule.dll" -r:"$UNITY_DIR/UnityEngine.AssetBundleModule.dll" -r:"$out/BepInEx.dll" \
-  -r:"$out/assembly_valheim.dll" -r:"$JOTUNN_DLL" -r:"$HARMONY_DLL" "$here/PluginShell.cs" "$here"/../../src/Scotheim/Content/*.cs
+  -r:"$out/assembly_valheim.dll" -r:"$out/assembly_guiutils.dll" -r:"$JOTUNN_DLL" -r:"$HARMONY_DLL" "$here/PluginShell.cs" "$here"/../../src/Scotheim/Content/*.cs
 echo "Content compiles against Jötunn."
