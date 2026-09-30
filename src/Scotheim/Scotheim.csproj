@@ -17,13 +17,15 @@
 
   <ItemGroup>
     <!-- Written into BepInEx/config/expand_world/ on first run (see Patches/ExpandWorld.cs). -->
-    <EmbeddedResource Include="Data\*.yaml" LogicalName="Scotheim.Data.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="Data\*.yaml;Data\*.blueprint" LogicalName="Scotheim.Data.%(Filename)%(Extension)" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="assembly_valheim"><HintPath>$(ManagedDir)\assembly_valheim.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine"><HintPath>$(ManagedDir)\UnityEngine.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(ManagedDir)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <!-- Jötunn's CustomPiece constructors have AssetBundle overloads the compiler has to see. -->
+    <Reference Include="UnityEngine.AssetBundleModule"><HintPath>$(ManagedDir)\UnityEngine.AssetBundleModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="BepInEx"><HintPath>$(BepInExDir)\BepInEx.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="0Harmony"><HintPath>$(BepInExDir)\0Harmony.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>

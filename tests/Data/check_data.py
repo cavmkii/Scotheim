@@ -46,6 +46,10 @@ PRESERVED = {"maxSpawned", "spawnInterval", "spawnDistance"}
 
 vanilla_items = lines(ref / "jotunn-valheim-1.0.7/items.txt")
 vanilla_prefabs = lines(ref / "jotunn-valheim-1.0.7/prefabs.txt")
+prefab_components = {}
+for l in (ref / "jotunn-valheim-1.0.7/prefab-components.txt").read_text(encoding="utf-8").splitlines():
+    name, _, comps = l.partition(": ")
+    prefab_components[name] = set(comps.split(", "))
 characters = {}
 for l in (ref / "jotunn-valheim-1.0.7/characters.txt").read_text(encoding="utf-8").splitlines():
     name, _, comps = l.partition(": ")
@@ -88,7 +92,7 @@ check(not veg_vanilla, "vegetation vanilla prefabs exist" + (": " + ", ".join(ve
 
 bad = sorted({b for _, b, _ in pickables} - vanilla_prefabs) + sorted({i for _, _, i in pickables} - set(items))
 check(not bad, "%d pickables copy real prefabs and yield Scotheim items" % len(pickables) + (": " + ", ".join(bad) if bad else ""))
-unplaced = sorted(prefabs - {v["prefab"] for v in vegetation})
+unplaced = sorted(p for p in prefabs - {v["prefab"] for v in vegetation} if not p.startswith("Scot_Pickable_"))  # crops are planted
 check(not unplaced, "every pickable is placed in the vegetation file" + (": " + ", ".join(unplaced) if unplaced else ""))
 
 # --- content
@@ -113,9 +117,10 @@ needed = set(re.findall(r'Req\("(\w+)"', gear_src))
 # Only what the Highlands yield: Scotheim items, plus vanilla items Highland trees, rocks and creatures drop
 # (hill wolves: wolf fang and pelt; fuath: troll hide; hill giants: crystal; bean-nighe: chain; red deer: deer hide).
 HIGHLAND_VANILLA = {"Wood", "FineWood", "RoundLog", "Resin", "Stone", "Flint", "DeerHide", "WolfPelt", "WolfFang",
-                    "TrollHide", "Crystal", "Chain", "Coins"}
+                    "TrollHide", "Crystal", "Chain", "Coins", "Raspberry"}
+needed |= set(re.findall(r'RequirementConfig\("(\w+)"', content))
 foreign = sorted(n for n in needed if not n.startswith("Scot_") and n not in HIGHLAND_VANILLA)
-check(not foreign, "gear recipes use only Highland materials" + (": foreign " + ", ".join(foreign) if foreign else ""))
+check(not foreign, "all recipes use only Highland materials" + (": foreign " + ", ".join(foreign) if foreign else ""))
 bad = sorted(n for n in needed if n not in items and n not in vanilla_items)
 check(not bad, "gear recipes name real items (" + ", ".join(sorted(needed)) + ")" + (": missing " + ", ".join(bad) if bad else ""))
 stations = set(re.findall(r'const string \w+ = "((?:piece_|blackforge)\w*)"', gear_src)) | set(re.findall(r'Station = "(\w+)"', gear_src))
@@ -151,16 +156,58 @@ names = set(re.findall(r'\{ "(Scot_\w+)", (?:Tint|TartanLook)', reskin))
 unknown = sorted(names - set(creatures) - set(items) - set(gear))
 check(not unknown, "%d reskins name real Scotheim things" % len(names) + (": unknown " + ", ".join(unknown) if unknown else ""))
 
+# --- places: EWD location keys (1.73 location/LocationData.cs) and blueprint contents
+LOCATION_FIELDS = set("""prefab enabled dungeon biome biomeArea altBiome quantity minDistance maxDistance minAltitude maxAltitude
+prioritized centerFirst unique randomSeed pregenerate group groups groupMax awayFrom closeTo minDistanceFromSimilar
+maxDistanceFromSimilar discoverLabel iconAlways iconPlaced randomRotation randomCardinal slopeRotation snapToWater
+minTerrainDelta maxTerrainDelta inForest forestTresholdMin forestTresholdMax offset groundOffset data objectData objectSwap
+dungeonObjectData dungeonObjectSwap locationObjectData locationObjectSwap objects commands exteriorRadius clearArea
+randomDamage noBuild noBuildDungeon levelArea levelRadius levelBorder paint paintRadius paintBorder scaleMin scaleMax
+scaleUniform minVegetation maxVegetation surroundCheckVegetation surroundCheckDistance surroundCheckLayers
+surroundBetterThanAverage relaxableunique relaxable relaxableamount""".split())
+locations = yaml.safe_load((data / "expand_locations_scotheim.yaml").read_text(encoding="utf-8"))
+bad_keys = sorted({k for l in locations for k in l} - LOCATION_FIELDS)
+check(not bad_keys, "location keys are EWD 1.73 location fields" + (": unknown " + ", ".join(bad_keys) if bad_keys else ""))
+used = {b.strip() for l in locations for b in l["biome"].split(",")}
+check(used <= biomes, "location biomes are Scotheim biomes")
+places_src = (root / "src/Scotheim/Content/Places.cs").read_text(encoding="utf-8")
+spawners = re.findall(r'new\[\] \{ "(Scot_Spawner_\w+)", "(\w+)", "(Scot_\w+)" \}', places_src)
+bad = [s for s in spawners if s[1] not in vanilla_prefabs or s[2] not in creatures or "CreatureSpawner" not in prefab_components.get(s[1], set())]
+check(spawners and not bad, "%d spawners copy vanilla CreatureSpawners and spawn Scotheim creatures" % len(spawners) + (": " + str(bad) if bad else ""))
+stones = {"Scot_StandingStone"} | {"Scot_SymbolStone%d" % (i + 1) for i in range(places_src.count('new[] { "') - len(spawners))}
+bagging_src = (root / "src/Scotheim/Content/Bagging.cs").read_text(encoding="utf-8")
+cairns = set(re.findall(r'CreateClonedPrefab\("(Scot_\w+)", "(\w+)"\)', bagging_src))
+check(cairns and all(base in vanilla_prefabs for _, base in cairns), "summit cairns copy a vanilla prefab")
+own = set(prefabs) | {s[0] for s in spawners} | stones | {c for c, _ in cairns} | {"piece_bpcenterpoint"}
+blueprint_names = set()
+missing = set()
+for f in sorted(data.glob("*.blueprint")):
+    blueprint_names.add(f.stem)
+    for line in f.read_text(encoding="utf-8").splitlines():
+        if not line or line.startswith("#"):
+            continue
+        fields = line.split(";")
+        if len(fields) != 15:
+            missing.add(f.name + ": malformed row")
+        elif fields[0] not in vanilla_prefabs and fields[0] not in own:
+            missing.add(fields[0])
+check(not missing, "blueprints use real prefabs" + (": " + ", ".join(sorted(missing)) if missing else ""))
+unplaced = sorted({l["prefab"] for l in locations} - blueprint_names)
+check(not unplaced, "every location has a blueprint" + (": " + ", ".join(unplaced) if unplaced else ""))
+ew = (root / "src/Scotheim/Patches/ExpandWorld.cs").read_text(encoding="utf-8")
+unwritten = sorted(n + ".blueprint" for n in blueprint_names if n + ".blueprint" not in ew)
+check(not unwritten, "every blueprint is written on startup" + (": " + ", ".join(unwritten) if unwritten else ""))
+
 # --- data file upgrades: every version a release wrote must be listed in ExpandWorld.Shipped, or players
 # holding that version get the new default only as a .new file.
 import hashlib, subprocess
 ew = (root / "src/Scotheim/Patches/ExpandWorld.cs").read_text(encoding="utf-8")
-shipped = {k: set(v.split('", "')) for k, v in re.findall(r'\{ (?:FileName|"(expand_\w+\.yaml)"), new\[\] \{ "([^}]*)" \} \}', ew) if k} 
+shipped = {k: set(v.split('", "')) for k, v in re.findall(r'\{ (?:FileName|"(\w+\.(?:yaml|blueprint))"), new\[\] \{ "([^}]*)" \} \}', ew) if k}
 shipped["expand_biomes_scotheim.yaml"] = set(re.search(r'\{ FileName, new\[\] \{ "([^}]*)" \} \}', ew).group(1).split('", "'))
 def fingerprint(text):
     return hashlib.sha256(text.replace("\r", "").encode("utf-8")).hexdigest()[:16]
 try:
-    for f in sorted((data).glob("expand_*.yaml")):
+    for f in sorted(list(data.glob("expand_*.yaml")) + list(data.glob("*.blueprint"))):
         rel = "src/Scotheim/Data/" + f.name
         current = fingerprint(f.read_text(encoding="utf-8"))
         commits = subprocess.run(["git", "log", "--format=%H", "--", rel], cwd=root, capture_output=True, text=True).stdout.split()

@@ -59,6 +59,37 @@ namespace Scotheim.Content
             return false;
         }
 
+        /// <summary>Calls the first public or private method with this name whose parameters accept the arguments.</summary>
+        internal static object Call(object target, string name, params object[] args)
+        {
+            if (target == null) return null;
+            var type = target as Type ?? target.GetType();
+            var instance = target is Type ? null : target;
+            foreach (var method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (method.Name != name) continue;
+                var parameters = method.GetParameters();
+                if (parameters.Length < args.Length) continue;
+                var call = new object[parameters.Length];
+                bool fits = true;
+                for (int i = 0; i < parameters.Length && fits; i++)
+                {
+                    if (i < args.Length)
+                    {
+                        fits = args[i] == null ? !parameters[i].ParameterType.IsValueType : parameters[i].ParameterType.IsInstanceOfType(args[i]);
+                        call[i] = args[i];
+                    }
+                    else if (parameters[i].IsOptional) call[i] = parameters[i].DefaultValue;
+                    else fits = false;
+                }
+                if (!fits) continue;
+                Report(type.Name + "." + name + "() found");
+                return method.Invoke(instance, call);
+            }
+            Report(type.Name + ": no method " + name + " fits; that effect is skipped");
+            return null;
+        }
+
         internal static object Get(object target, string name)
         {
             var field = target?.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);

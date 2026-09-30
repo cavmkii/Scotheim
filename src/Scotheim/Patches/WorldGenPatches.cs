@@ -27,6 +27,9 @@ namespace Scotheim.Patches
         // Two slots, replaced atomically and read from heightmap worker threads. Two because the main
         // menu's world and the real world can both be generating while a game loads.
         static volatile Active latest, previous;
+
+        /// <summary>Seed of the last real (non-menu) world generated; used to keep per-world records apart.</summary>
+        internal static volatile int CurrentSeed;
         static readonly object buildLock = new object();
 
         /// <summary>The Highlands for this generator's world, or null to leave vanilla alone.</summary>
@@ -47,6 +50,7 @@ namespace Scotheim.Patches
                 if (previous != null && ReferenceEquals(previous.World, world)) return previous.Terrain;
 
                 HighlandsTerrain terrain = null;
+                if (!MenuRef(world)) CurrentSeed = SeedRef(world);
                 if (!MenuRef(world) && Plugin.Instance != null && Plugin.Instance.TerrainEnabled.Value)
                     terrain = Build(generator, SeedRef(world));
                 previous = latest;

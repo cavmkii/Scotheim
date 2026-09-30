@@ -34,6 +34,9 @@ static class Harness
             && File.ReadAllText(Path.Combine(configDir, "expand_clutter_scotheim.yaml")).Contains("prefab: instanced_meadows_grass")
             && File.Exists(spawnYaml) && File.ReadAllText(spawnYaml).Contains("prefab: Scot_Sheep"),
             "biome, vegetation, clutter and spawn YAML written for Expand World Data");
+        var broch = Path.Combine(Path.GetDirectoryName(configDir), "PlanBuild", "scotheim_broch.blueprint");
+        Check(File.Exists(Path.Combine(configDir, "expand_locations_scotheim.yaml")) && File.Exists(broch)
+            && File.ReadAllText(broch).Contains("stone_wall_2x1_ruin"), "locations YAML and blueprints written (blueprints to PlanBuild)");
         var shipped = File.ReadAllText(vegYaml);
         var writeDefaults = typeof(ExpandWorld).GetMethod("WriteDefaultFiles", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
 

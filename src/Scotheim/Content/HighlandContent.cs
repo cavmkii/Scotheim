@@ -13,6 +13,8 @@ namespace Scotheim
     public partial class Plugin
     {
         partial void RegisterContent() => Content.HighlandContent.Register();
+
+        void Update() => Content.Bagging.Tick();
     }
 }
 
@@ -76,6 +78,31 @@ namespace Scotheim.Content
             new ItemSpec { Name = "Scot_BogOak", Base = "RoundLog" },
             new ItemSpec { Name = "Scot_Cairngorm", Base = "Crystal" },
             new ItemSpec { Name = "Scot_RowanWood", Base = "FineWood" },
+            // Crofting and the still. Bere is the old Scottish barley; like vanilla barley it is its own seed.
+            new ItemSpec { Name = "Scot_Bere", Base = "Barley" },
+            new ItemSpec { Name = "Scot_Peat", Base = "Coal" },
+            new ItemSpec
+            {
+                Name = "Scot_WhiskyWash", Base = "MeadBaseFrostResist", Station = "piece_cauldron",
+                Recipe = new[] { new RequirementConfig("Scot_Bere", 10), new RequirementConfig("Scot_Peat", 2) },
+            },
+            new ItemSpec { Name = "Scot_UisgeBeatha", Base = "MeadFrostResist" },
+            // Foods (estimates for late-game food, not copied from the game).
+            new ItemSpec
+            {
+                Name = "Scot_Haggis", Base = "Sausages", Food = new Food(85, 30, 6, 2400), Station = "piece_cauldron", Amount = 2,
+                Recipe = new[] { new RequirementConfig("Scot_Mutton", 2), new RequirementConfig("Scot_Bere", 3) },
+            },
+            new ItemSpec
+            {
+                Name = "Scot_Cranachan", Base = "Salad", Food = new Food(35, 85, 4, 2400), Station = "piece_cauldron", Amount = 3,
+                Recipe = new[] { new RequirementConfig("Raspberry", 4), new RequirementConfig("Scot_Bere", 2), new RequirementConfig("Scot_UisgeBeatha", 1) },
+            },
+            new ItemSpec
+            {
+                Name = "Scot_Bannock", Base = "Bread", Food = new Food(50, 50, 4, 1800), Station = "piece_cauldron", Amount = 2,
+                Recipe = new[] { new RequirementConfig("Scot_Bere", 4) },
+            },
             new ItemSpec
             {
                 Name = "Scot_TartanCloth", Base = "JuteRed", Station = "piece_workbench", Amount = 2,
@@ -147,6 +174,10 @@ namespace Scotheim.Content
             AddPickable(added, "Scot_CairngormPickable", "Pickable_Flint", "Scot_Cairngorm");
             AddPickable(added, "Scot_RowanBranch", "Pickable_Branch", "Scot_RowanWood");
             AddPickable(added, "Scot_HacksilverCache", "Pickable_Stone", "Scot_Hacksilver");
+            AddPickable(added, "Scot_PeatTurf", "Pickable_Stone", "Scot_Peat");
+            AddPickable(added, "Scot_WildBere", "Pickable_Barley_Wild", "Scot_Bere");
+            AddPickable(added, "Scot_Pickable_Bere", "Pickable_Barley", "Scot_Bere");
+            Croft.Add(added);
         }
 
         static void AddCooking(string station, string from, string to, float time)
@@ -260,6 +291,8 @@ namespace Scotheim.Content
             // Clones still breed into and grow up as the vanilla creature until relinked.
             Relink(added, "Scot_Sheep", "Scot_Lamb");
             Relink(added, "Scot_HighlandCow", "Scot_HighlandCalf");
+            Places.Add(added);
+            Bagging.Add();
         }
 
         static void Relink(Dictionary<string, GameObject> added, string adult, string young)

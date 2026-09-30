@@ -3,6 +3,17 @@
 // and components are checked separately by tests/Data/check_data.py.
 public class Character : UnityEngine.MonoBehaviour { public string m_name; public float m_health; public enum Faction { Players } }
 public class Humanoid : Character { }
+public class Player : Humanoid
+{
+    public static Player m_localPlayer;
+    public void Message(MessageHud.MessageType type, string msg, int amount = 0, UnityEngine.Sprite icon = null, bool priority = false) { }
+    public SEMan GetSEMan() => null;
+}
+public class SEMan { }
+public class MessageHud { public enum MessageType { TopLeft = 1, Center = 2 } }
+public interface Hoverable { string GetHoverText(); string GetHoverName(); }
+public interface Interactable { bool Interact(Humanoid user, bool hold, bool alt); bool UseItem(Humanoid user, ItemDrop.ItemData item); }
+public class Localization { public static Localization instance; public string Localize(string text) => text; }
 public class ItemDrop : UnityEngine.MonoBehaviour
 {
     public ItemData m_itemData;
@@ -24,6 +35,7 @@ public class Pickable : UnityEngine.MonoBehaviour { public UnityEngine.GameObjec
 public class Procreation : UnityEngine.MonoBehaviour { public UnityEngine.GameObject m_offspring; }
 public class Growup : UnityEngine.MonoBehaviour { public UnityEngine.GameObject m_grownPrefab; }
 public class Recipe : UnityEngine.ScriptableObject { }
+public class Piece : UnityEngine.MonoBehaviour { public class Requirement { } public enum PieceCategory { Misc } }
 public class CharacterDrop : UnityEngine.MonoBehaviour { public class Drop { } }
 public class SpawnSystem : UnityEngine.MonoBehaviour { public class SpawnData { } }
 public class CookingStation : UnityEngine.MonoBehaviour { public class ItemConversion { } }

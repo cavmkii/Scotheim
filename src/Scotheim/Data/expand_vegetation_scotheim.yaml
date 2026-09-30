@@ -435,3 +435,28 @@
   minAltitude: 1
   maxAltitude: 1000
   maxTerrainDelta: 2
+# Peat: turves cut from the open moor.
+- prefab: Scot_PeatTurf
+  min: 1
+  max: 3
+  chanceToUseGroundTilt: 1
+  biome: highland_moor
+  minAltitude: 2
+  maxAltitude: 35
+  maxTilt: 15
+  maxTerrainDelta: 2
+  groupSizeMin: 2
+  groupSizeMax: 4
+  groupRadius: 3
+# Bere: a few self-sown plants, from old croft ground. Plant the grain to grow more.
+- prefab: Scot_WildBere
+  min: 0
+  max: 0.3
+  biome: highland_moor
+  minAltitude: 3
+  maxAltitude: 40
+  maxTilt: 15
+  maxTerrainDelta: 2
+  groupSizeMin: 3
+  groupSizeMax: 6
+  groupRadius: 3
