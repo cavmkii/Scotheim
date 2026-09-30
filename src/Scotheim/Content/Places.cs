@@ -21,7 +21,7 @@ namespace Scotheim.Content
             new[] { "Scot_Spawner_EachUisge", "Spawner_Troll", "Scot_EachUisge" },
         };
 
-        // What each Pictish symbol shows and hints at. Nobody knows what the symbols meant; the texts say so.
+        // What each Pictish symbol shows, and what its text hints at.
         static readonly string[][] SymbolStones =
         {
             new[] { "Crescent and V-rod", "A crescent, struck through by a broken rod. Below it, a tower of dry stone, and small red figures at its door." },
@@ -67,10 +67,16 @@ namespace Scotheim.Content
                 }
                 else
                 {
-                    var text = SymbolStones[i][1] + "\n\n(What the Pictish symbols meant is unknown. This reading is a guess.)";
+                    var text = SymbolStones[i][1];
                     GameFields.TrySet(rune, "Pictish symbol stone", "m_name");
                     GameFields.TrySet(rune, SymbolStones[i][0], "m_topic");
                     GameFields.TrySet(rune, text, "m_text");
+                    if (i == 3) // "Mirror and comb" points to the Grey Man: reading it marks his altar, like a vegvisir
+                    {
+                        GameFields.TrySet(rune, GreyMan.Location, "m_locationName");
+                        GameFields.TrySet(rune, "$piece_scot_greymanaltar_pin", "m_pinName");
+                        GameFields.TrySet(rune, "Boss", "m_pinType");
+                    }
                 }
                 PrefabManager.Instance.AddPrefab(stone);
             }

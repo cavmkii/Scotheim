@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
@@ -16,7 +17,10 @@ namespace Scotheim.Content
     /// </summary>
     static class Bagging
     {
-        internal const int ToCompleat = 12; // expand_locations_scotheim.yaml places up to 24
+        internal const int ToCompleat = 12; // expand_locations_scotheim.yaml asks for 24
+        const string CountKey = "scotheim_cairns"; // global key "scotheim_cairns <n>", set by the server
+        static float nextCount;
+        static bool warnedNoAltar;
         static StatusEffect compleatist;
         static float nextCheck;
 
@@ -34,7 +38,7 @@ namespace Scotheim.Content
             foreach (var name in new[] { "WearNTear", "Piece" })
             {
                 var component = cairn.GetComponent(name);
-                if (component != null) Object.DestroyImmediate(component);
+                if (component != null) UnityEngine.Object.DestroyImmediate(component);
             }
             // The game's RuneStone supplies hover and use (it implements Hoverable and Interactable for this
             // game version); CairnPatches below replaces what it shows and does when a SummitCairn is present.
@@ -86,13 +90,90 @@ namespace Scotheim.Content
             return set.Count;
         }
 
+        /// <summary>
+        /// Hills to bag for Compleatist in this world: <see cref="ToCompleat"/>, or every cairn if the world has fewer.
+        /// How many EWD places depends on the terrain (16, 24 and 10 in the first three test worlds), so the server
+        /// counts them and shares the number as a global key, which reaches clients on a dedicated server too.
+        /// </summary>
+        internal static int Target
+        {
+            get
+            {
+                var count = PublishedCount();
+                return count > 0 ? Math.Min(ToCompleat, count) : ToCompleat;
+            }
+        }
+
+        static object Instance(string typeName)
+        {
+            var type = Type.GetType(typeName + ", assembly_valheim");
+            if (type == null) return null;
+            const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+            var property = type.GetProperty("instance", flags);
+            if (property != null) return property.GetValue(null, null);
+            var field = type.GetField("m_instance", flags) ?? type.GetField("instance", flags);
+            return field != null ? field.GetValue(null) : null;
+        }
+
+        static int PublishedCount()
+        {
+            var zones = Instance("ZoneSystem");
+            if (zones == null) return 0;
+            var method = zones.GetType().GetMethod("GetGlobalKey", new[] { typeof(string), typeof(string).MakeByRefType() });
+            if (method == null) return 0;
+            var args = new object[] { CountKey, null };
+            int count;
+            return (bool)method.Invoke(zones, args) && int.TryParse(args[1] as string, out count) ? count : 0;
+        }
+
+        // Server only: count this world's cairns and publish the number if it changed (genloc can add more).
+        static void CountCairns()
+        {
+            var net = Instance("ZNet");
+            var zones = Instance("ZoneSystem");
+            if (net == null || zones == null || !(GameFields.Call(net, "IsServer") as bool? ?? false)) return;
+            var instances = GameFields.Get(zones, "m_locationInstances") as System.Collections.IDictionary;
+            if (instances == null || instances.Count == 0) return;
+            int count = 0, altars = 0;
+            foreach (var instance in instances.Values)
+            {
+                var location = GameFields.Get(instance, "m_location");
+                var prefab = location != null ? GameFields.Get(location, "m_prefab") : null;
+                var name = prefab != null ? prefab.GetType().GetProperty("Name")?.GetValue(prefab, null) as string : null;
+                if (name == null && location != null) name = GameFields.Get(location, "m_prefabName") as string;
+                if (name == "scotheim_cairn") count++;
+                else if (name == GreyMan.Location) altars++;
+            }
+            if (altars == 0 && !warnedNoAltar)
+            {
+                warnedNoAltar = true;
+                Plugin.Log.LogWarning("No Grey Man altar was placed in this world, so he can't be summoned. Lower minAltitude for " +
+                    GreyMan.Location + " in expand_locations_scotheim.yaml and run genloc, or use a new world.");
+            }
+            if (count == 0 || count == PublishedCount()) return;
+            GameFields.Call(zones, "SetGlobalKey", CountKey + " " + count);
+            Plugin.Log.LogInfo("Summit cairns in this world: " + count + ". Compleatist needs " + Math.Min(ToCompleat, count) + ".");
+        }
+
         /// <summary>Called every frame from the plugin: gives compleatists their effect if it's missing.</summary>
         internal static void Tick()
         {
             if (compleatist == null || Time.time < nextCheck) return;
             nextCheck = Time.time + 5f;
+            if (Time.time >= nextCount)
+            {
+                nextCount = Time.time + 60f;
+                CountCairns();
+            }
             var player = Player.m_localPlayer;
-            if (player == null || Bagged(player).Count < ToCompleat) return;
+            var data = player != null ? Data(player) : null;
+            if (data == null) return;
+            // Once earned it stays, even if genloc later adds cairns and raises the target.
+            if (!data.ContainsKey(Key + "_compleat"))
+            {
+                if (Bagged(player).Count < Target) return;
+                data[Key + "_compleat"] = "1";
+            }
             var seman = player.GetSEMan();
             var active = GameFields.Get(seman, "m_statusEffects") as System.Collections.IList;
             if (active != null)
@@ -133,9 +214,10 @@ namespace Scotheim.Content
                 player.Message(MessageHud.MessageType.Center, "You've already left a stone here.");
                 return true;
             }
-            var message = count >= Bagging.ToCompleat
-                ? (count == Bagging.ToCompleat ? "Compleatist! Every hill is bagged." : "Munros bagged: " + count)
-                : "Munros bagged: " + count + " of " + Bagging.ToCompleat;
+            var target = Bagging.Target;
+            var message = count >= target
+                ? (count == target ? "Compleatist! You've bagged " + count + " hills." : "Munros bagged: " + count)
+                : "Munros bagged: " + count + " of " + target;
             player.Message(MessageHud.MessageType.Center, message);
             return true;
         }

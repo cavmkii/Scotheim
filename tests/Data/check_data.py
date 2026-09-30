@@ -81,7 +81,26 @@ unknown = sorted({s["prefab"] for s in spawns} - set(creatures))
 check(not unknown, "every spawned prefab is a Scotheim creature" + (": " + ", ".join(unknown) if unknown else ""))
 bad_fields = sorted({k for s in spawns for k in (s.get("fields") or {})} - {"damage"})
 check(not bad_fields, "spawn fields only use damage" + (": " + ", ".join(bad_fields) if bad_fields else ""))
-never = sorted(set(creatures) - {s["prefab"] for s in spawns} - {"Scot_Lamb", "Scot_HighlandCalf"})
+# --- events (raids)
+EVENT_FIELDS = set("""name enabled customChance customInterval duration radius spawnerDelay outsideBaseOnly nearBaseOnly biome
+requiredGlobalKeys notRequiredGlobalKeys requiredPlayerKeys requiredPlayerKeysAll notRequiredPlayerKeys requiredKnownItems
+notRequiredKnownItems requiredEnvironments startMessage endMessage forceMusic forceEnvironment spawns pauseIfNoPlayerInArea
+random playerDistance playerLimit eventLimit startCommands endCommands""".split())
+events = yaml.safe_load((data / "expand_events_scotheim.yaml").read_text(encoding="utf-8"))
+bad_keys = sorted({k for e in events for k in e} - EVENT_FIELDS)
+check(not bad_keys, "event keys are EWD 1.73 event fields" + (": unknown " + ", ".join(bad_keys) if bad_keys else ""))
+event_spawns = [sp for e in events for sp in e["spawns"]]
+bad_keys = sorted({k for sp in event_spawns for k in sp} - SPAWN_FIELDS)
+check(not bad_keys, "event spawn keys are EWD 1.73 spawn fields" + (": unknown " + ", ".join(bad_keys) if bad_keys else ""))
+check({sp["prefab"] for sp in event_spawns} <= set(creatures), "event spawns are Scotheim creatures")
+check({b.strip() for e in events for b in e["biome"].split(",")} <= biomes, "event biomes are Scotheim biomes")
+check({e["forceEnvironment"] for e in events if e.get("forceEnvironment")} <= environments, "event environments exist in vanilla")
+boss_src = (root / "src/Scotheim/Content/Boss.cs").read_text(encoding="utf-8")
+defeat_key = re.search(r'DefeatKey = "(\w+)"', boss_src).group(1)
+check(all(k.strip() == defeat_key for e in events for k in e.get("requiredGlobalKeys", "").split(",") if k.strip()),
+      "raids wait for the boss's defeat key (" + defeat_key + ")")
+
+never = sorted(set(creatures) - {s["prefab"] for s in spawns + event_spawns} - {"Scot_Lamb", "Scot_HighlandCalf", "Scot_GreyMan"})  # the boss is summoned
 check(not never, "every adult creature has a spawn" + (": missing " + ", ".join(never) if never else ""))
 
 # --- vegetation
@@ -175,9 +194,10 @@ spawners = re.findall(r'new\[\] \{ "(Scot_Spawner_\w+)", "(\w+)", "(Scot_\w+)" \
 bad = [s for s in spawners if s[1] not in vanilla_prefabs or s[2] not in creatures or "CreatureSpawner" not in prefab_components.get(s[1], set())]
 check(spawners and not bad, "%d spawners copy vanilla CreatureSpawners and spawn Scotheim creatures" % len(spawners) + (": " + str(bad) if bad else ""))
 stones = {"Scot_StandingStone"} | {"Scot_SymbolStone%d" % (i + 1) for i in range(places_src.count('new[] { "') - len(spawners))}
-bagging_src = (root / "src/Scotheim/Content/Bagging.cs").read_text(encoding="utf-8")
-cairns = set(re.findall(r'CreateClonedPrefab\("(Scot_\w+)", "(\w+)"\)', bagging_src))
-check(cairns and all(base in vanilla_prefabs for _, base in cairns), "summit cairns copy a vanilla prefab")
+clones_src = "".join((root / "src/Scotheim/Content" / f).read_text(encoding="utf-8") for f in ("Bagging.cs", "Boss.cs"))
+cairns = set(re.findall(r'CreateClonedPrefab\("(Scot_\w+)", "(\w+)"\)', clones_src))
+check(len(cairns) == 2 and all(base in vanilla_prefabs for _, base in cairns), "summit cairn and boss altar copy vanilla prefabs: " + ", ".join(sorted(b for _, b in cairns)))
+check("OfferingBowl" in prefab_components.get("offeraltar_FrozenKing_bossroom", set()), "the boss altar's base has an OfferingBowl")
 own = set(prefabs) | {s[0] for s in spawners} | stones | {c for c, _ in cairns} | {"piece_bpcenterpoint"}
 blueprint_names = set()
 missing = set()

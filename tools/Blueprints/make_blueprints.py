@@ -126,3 +126,7 @@ for n in range(1, 6):
 # Use it to bag the hill (Content/Bagging.cs); its world position identifies the hill. Kept small on purpose:
 # a Clava-style ring of scaled pillars was tried and came out far too big on the summits.
 write("scotheim_cairn", "A summit cairn. Use it to bag the hill.", [row("Scot_SummitCairn", 0, 0, 0)])
+
+# The Grey Man's altar (Content/Boss.cs): a copy of the Deep North boss room's offering altar on a high summit.
+# Offer giant's heartstones to summon Am Fear Liath Mòr. Kept to the one object: see the cairn note above.
+write("scotheim_greyman", "The summit altar of Am Fear Liath Mòr.", [row("Scot_GreyManAltar", 0, 0, 0)])

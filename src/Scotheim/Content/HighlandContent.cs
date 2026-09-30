@@ -14,7 +14,11 @@ namespace Scotheim
     {
         partial void RegisterContent() => Content.HighlandContent.Register();
 
-        void Update() => Content.Bagging.Tick();
+        void Update()
+        {
+            Content.Bagging.Tick();
+            Content.Midges.Tick();
+        }
     }
 }
 
@@ -69,6 +73,7 @@ namespace Scotheim.Content
             new ItemSpec { Name = "Scot_KelpieMane", Base = "JuteBlue" },
             new ItemSpec { Name = "Scot_WashersShroud", Base = "LinenThread" },
             new ItemSpec { Name = "Scot_GiantHeartstone", Base = "Crystal" },
+            new ItemSpec { Name = "Scot_TrophyGreyMan", Base = "TrophyMorgen" },
             // Highland raw materials: gear is made from these and the drops above, nothing from other biomes.
             new ItemSpec { Name = "Scot_BogIronOre", Base = "IronOre" },
             new ItemSpec { Name = "Scot_BogIron", Base = "Iron" },
@@ -87,6 +92,13 @@ namespace Scotheim.Content
                 Recipe = new[] { new RequirementConfig("Scot_Bere", 10), new RequirementConfig("Scot_Peat", 2) },
             },
             new ItemSpec { Name = "Scot_UisgeBeatha", Base = "MeadFrostResist" },
+            // Bog myrtle keeps midges off (Content/Midges.cs): gathered by lochs on the moor, made into a salve.
+            new ItemSpec { Name = "Scot_BogMyrtle", Base = "Thistle" },
+            new ItemSpec
+            {
+                Name = "Scot_MyrtleSalve", Base = "MeadPoisonResist", Station = "piece_cauldron", Amount = 3,
+                Recipe = new[] { new RequirementConfig("Scot_BogMyrtle", 6), new RequirementConfig("Scot_Mutton", 1) },
+            },
             // Foods (estimates for late-game food, not copied from the game).
             new ItemSpec
             {
@@ -169,6 +181,7 @@ namespace Scotheim.Content
 
             // Things to pick up in the Highlands, placed by expand_vegetation_scotheim.yaml.
             AddPickable(added, "Scot_BlaeberryBush", "BlueberryBush", "Scot_Blaeberries");
+            AddPickable(added, "Scot_BogMyrtlePickable", "Pickable_Thistle", "Scot_BogMyrtle");
             AddPickable(added, "Scot_BogIronNodule", "Pickable_Stone", "Scot_BogIronOre");
             AddPickable(added, "Scot_BogOakPickable", "Pickable_Branch", "Scot_BogOak");
             AddPickable(added, "Scot_CairngormPickable", "Pickable_Flint", "Scot_Cairngorm");
@@ -178,6 +191,7 @@ namespace Scotheim.Content
             AddPickable(added, "Scot_WildBere", "Pickable_Barley_Wild", "Scot_Bere");
             AddPickable(added, "Scot_Pickable_Bere", "Pickable_Barley", "Scot_Bere");
             Croft.Add(added);
+            Midges.Add(added);
         }
 
         static void AddCooking(string station, string from, string to, float time)
@@ -253,6 +267,15 @@ namespace Scotheim.Content
             new CreatureSpec { Name = "Scot_HillGiant", Base = "StoneGolem", Health = 2600, Scale = 1.25f,
                 Drops = new[] { Drop("Scot_GiantHeartstone", 1, 1), Drop("Crystal", 8, 12) } },
             // Redcaps hoard scrap: hacksilver instead of the goblin's black metal scrap, and only rarely a bar.
+            // The boss (Content/Boss.cs): summoned at the altar, never spawned. Morgen is Ashlands tier; the boss
+            // sits between the Seeker Queen (Mistlands) and the Fader in health.
+            new CreatureSpec { Name = "Scot_GreyMan", Base = "Morgen_NonSleeping", Health = 9000, Scale = 1.3f,
+                Drops = new[] { Drop("Scot_TrophyGreyMan", 1, 1), Drop("Scot_Cairngorm", 4, 6), Drop("Scot_PictishSilver", 6, 10),
+                    Drop("Scot_GiantHeartstone", 1, 2) } },
+            // The Sluagh: the host of the restless dead, flying in from the west at night. Only comes in the raid
+            // (expand_events_scotheim.yaml), once the Grey Man is dead.
+            new CreatureSpec { Name = "Scot_Sluagh", Base = "Ghost", Health = 350, Scale = 1.2f,
+                Drops = new[] { Drop("Coins", 3, 8, 50f), Drop("Scot_PictishSilver", 1, 1, 10f) } },
             new CreatureSpec { Name = "Scot_Redcap", Base = "Goblin", Health = 220, Scale = 0.8f,
                 Drops = new[] { Drop("Scot_Hacksilver", 1, 3), Drop("Scot_PictishSilver", 1, 1, 10f), Drop("Coins", 10, 20, 50f) } },
         };
@@ -293,6 +316,9 @@ namespace Scotheim.Content
             Relink(added, "Scot_HighlandCow", "Scot_HighlandCalf");
             Places.Add(added);
             Bagging.Add();
+            Flock.Add(added);
+            GameObject boss;
+            if (added.TryGetValue(GreyMan.Boss, out boss)) GreyMan.Add(boss);
         }
 
         static void Relink(Dictionary<string, GameObject> added, string adult, string young)
