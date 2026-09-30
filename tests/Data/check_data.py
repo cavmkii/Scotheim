@@ -141,6 +141,10 @@ for kind, defined in (("item", items), ("creature", creatures), ("gear piece", g
     missing = sorted(n for n in defined if '{ "%s", ' % n not in localization)
     check(not missing, "every %s has English text" % kind + (": " + ", ".join(missing) if missing else ""))
 
+# Jötunn's clone constructor overwrites CreatureConfig.Name with the prefab name, so the name must be set after.
+check("character.m_name = Localization.CreatureName(spec.Name);" in content,
+      "creature names are set after cloning (Jötunn resets them to the prefab name)")
+
 # --- reskins: every recoloured name is a real Scotheim creature, item or gear piece
 reskin = (root / "src/Scotheim/Content/Reskin.cs").read_text(encoding="utf-8")
 names = set(re.findall(r'\{ "(Scot_\w+)", (?:Tint|TartanLook)', reskin))

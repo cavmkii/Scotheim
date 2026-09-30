@@ -30,7 +30,7 @@ namespace Scotheim.Content
 
         static readonly Dictionary<string, Look> Creatures = new Dictionary<string, Look>
         {
-            { "Scot_CuSith", Tint(0.3f, 0.55f, 0.35f) },          // the green fairy hound
+            { "Scot_CuSith", Tint(0.4f, 0.75f, 0.45f) },          // the green fairy hound (0.3/0.55/0.35 read nearly black)
             { "Scot_CatSith", Tint(0.18f, 0.18f, 0.2f) },         // black. KITBASH later: still a wolf-man (Ulv); needs a cat model
             { "Scot_BeanNighe", Tint(1.25f, 1.25f, 1.3f) },       // pale
             { "Scot_HighlandCow", Tint(1.15f, 0.6f, 0.35f) },     // ginger. KITBASH later: lox body and horns; needs a cow model
