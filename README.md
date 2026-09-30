@@ -191,7 +191,7 @@ Not yet: a guardian power at an item stand, and a model of his own (KITBASH late
 
 - **Wool**: a tamed sheep that isn't hungry sheds one wool every 15 minutes (half an in-game day) at its feet. Lambs still come from breeding as before; wool is a separate timer saved on the sheep, and only the client simulating the sheep drops it, so it isn't doubled in multiplayer.
 - **Midges**: on the moor and in the forest, when the wind is light at dawn or dusk, you get **Midges** (stamina regenerates 25% slower). Standing by any fire keeps them off (smoke), and so does **bog myrtle salve**: 6 bog myrtle and 1 mutton at the cauldron make 3, and each gives 20 minutes' protection. Bog myrtle grows in clumps at loch and bog edges on the low moor. Midges and bog myrtle as a repellent are both real; the timing (calm air, dawn and dusk) is the midge's actual habit.
-- **The Sluagh**: once Am Fear Liath Mòr is dead, the host of the restless dead can raid bases in the Highlands at night: up to 8 dark spirits at a time for two minutes, in mist. This needs **`Event data = true`** in `expand_world_data.cfg` (like `Spawn data`); EWD then merges `expand_events_scotheim.yaml` with the vanilla raids.
+- **The Sluagh**: once Am Fear Liath Mòr is dead, the host of the restless dead can raid bases in the Highlands at night: level 2-3 dark spirits, up to 8 at a time for two minutes, in mist, with the music of the vanilla raid it's copied from. It's added to the game's raid list in code. Don't use EWD's `Event data = true` for it: in EWD 1.73 on this game version that setting fails to patch `RandEventSystem.Awake`, the error stops the rest of EWD's startup, and the Highland biomes (and all their vegetation) go missing.
 
 ### Looks
 

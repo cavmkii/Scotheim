@@ -81,26 +81,13 @@ unknown = sorted({s["prefab"] for s in spawns} - set(creatures))
 check(not unknown, "every spawned prefab is a Scotheim creature" + (": " + ", ".join(unknown) if unknown else ""))
 bad_fields = sorted({k for s in spawns for k in (s.get("fields") or {})} - {"damage"})
 check(not bad_fields, "spawn fields only use damage" + (": " + ", ".join(bad_fields) if bad_fields else ""))
-# --- events (raids)
-EVENT_FIELDS = set("""name enabled customChance customInterval duration radius spawnerDelay outsideBaseOnly nearBaseOnly biome
-requiredGlobalKeys notRequiredGlobalKeys requiredPlayerKeys requiredPlayerKeysAll notRequiredPlayerKeys requiredKnownItems
-notRequiredKnownItems requiredEnvironments startMessage endMessage forceMusic forceEnvironment spawns pauseIfNoPlayerInArea
-random playerDistance playerLimit eventLimit startCommands endCommands""".split())
-events = yaml.safe_load((data / "expand_events_scotheim.yaml").read_text(encoding="utf-8"))
-bad_keys = sorted({k for e in events for k in e} - EVENT_FIELDS)
-check(not bad_keys, "event keys are EWD 1.73 event fields" + (": unknown " + ", ".join(bad_keys) if bad_keys else ""))
-event_spawns = [sp for e in events for sp in e["spawns"]]
-bad_keys = sorted({k for sp in event_spawns for k in sp} - SPAWN_FIELDS)
-check(not bad_keys, "event spawn keys are EWD 1.73 spawn fields" + (": unknown " + ", ".join(bad_keys) if bad_keys else ""))
-check({sp["prefab"] for sp in event_spawns} <= set(creatures), "event spawns are Scotheim creatures")
-check({b.strip() for e in events for b in e["biome"].split(",")} <= biomes, "event biomes are Scotheim biomes")
-check({e["forceEnvironment"] for e in events if e.get("forceEnvironment")} <= environments, "event environments exist in vanilla")
+# The Sluagh raid is added in code (Content/Raid.cs), not EWD event data: EWD 1.73's event patch fails on this game.
+check(not (data / "expand_events_scotheim.yaml").exists(), "no EWD event file is shipped (Event data breaks EWD 1.73's startup)")
 boss_src = (root / "src/Scotheim/Content/Boss.cs").read_text(encoding="utf-8")
-defeat_key = re.search(r'DefeatKey = "(\w+)"', boss_src).group(1)
-check(all(k.strip() == defeat_key for e in events for k in e.get("requiredGlobalKeys", "").split(",") if k.strip()),
-      "raids wait for the boss's defeat key (" + defeat_key + ")")
+raid_src = (root / "src/Scotheim/Content/Raid.cs").read_text(encoding="utf-8")
+check("GreyMan.DefeatKey" in raid_src and 'GetPrefab("Scot_Sluagh")' in raid_src, "the Sluagh raid spawns Scot_Sluagh and waits for the boss's defeat key")
 
-never = sorted(set(creatures) - {s["prefab"] for s in spawns + event_spawns} - {"Scot_Lamb", "Scot_HighlandCalf", "Scot_GreyMan"})  # the boss is summoned
+never = sorted(set(creatures) - {s["prefab"] for s in spawns} - {"Scot_Lamb", "Scot_HighlandCalf", "Scot_GreyMan", "Scot_Sluagh"})  # boss summoned, Sluagh raid only
 check(not never, "every adult creature has a spawn" + (": missing " + ", ".join(never) if never else ""))
 
 # --- vegetation
@@ -241,5 +228,18 @@ try:
 except FileNotFoundError:
     print("SKIP data file upgrade check (no git)")
 
+# --- retired files: every version an earlier release wrote must be listed, so unedited copies get removed
+try:
+    retired = {k: set(v.split('", "')) for k, v in re.findall(r'\{ "([\w.]+)", new\[\] \{ "([^}]*)" \} \}', ew.split("Retired =")[1].split("};")[0])}
+    for name, prints in sorted(retired.items()):
+        rel = "src/Scotheim/Data/" + name
+        commits = subprocess.run(["git", "log", "--format=%H", "--", rel], cwd=root, capture_output=True, text=True).stdout.split()
+        past = {fingerprint(t) for t in (subprocess.run(["git", "show", c + ":" + rel], cwd=root, capture_output=True, text=True).stdout for c in commits) if t}
+        missing = sorted(past - prints)
+        check(past and not missing, "every released version of retired %s is removable" % name + (": missing " + ", ".join(missing) if missing else ""))
+except FileNotFoundError:
+    print("SKIP retired file check (no git)")
+
 print("ALL PASS" if fails == 0 else "%d FAILED" % fails)
 sys.exit(1 if fails else 0)
+
