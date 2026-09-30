@@ -122,7 +122,28 @@ for n in range(1, 6):
     path.write_text(path.read_text(encoding="utf-8").rstrip("\n") + "\n" + row("Scot_SymbolStone%d" % n, 0, 0, 0) + "\n",
                     encoding="utf-8", newline="\n")
 
-# Summit cairn: one cairn to bag (Content/Bagging.cs). Its world position identifies the hill.
-# The squat scale is also set on the prefab; it's repeated here in case EWD writes the row's scale to the object.
-write("scotheim_cairn", "A summit cairn. Add a stone to bag the hill.",
-      [row("Scot_SummitCairn", 0, 0, 0, scale=(0.7, 0.3, 0.7))])
+# Summit cairn, after the Clava cairns near Inverness (Balnuaran of Clava): a cone of piled stone inside a kerb
+# of low slabs, ringed by standing stones. The capstone is Scot_SummitCairn, the stone you use to bag the hill
+# (Content/Bagging.cs); its world position identifies the hill. EWD levels the site, so every stone sits on flat
+# ground even on a steep top. Sized to be told apart from the stone circle (r = 8 m, 12 tall stones, no cone).
+cairn = []
+for tier, (y, radius, size) in enumerate([(0.0, 1.6, 0.85), (0.55, 1.15, 0.8), (1.1, 0.7, 0.75), (1.6, 0.3, 0.7)]):
+    n = max(1, round(2 * math.pi * radius / 0.8))
+    for i in range(n):
+        theta = 2 * math.pi * (i + rng.uniform(-0.2, 0.2)) / n
+        s = size * rng.uniform(0.85, 1.1)
+        cairn.append(row("stone_wall_1x1_ruin", radius * math.cos(theta), y, radius * math.sin(theta), rng.uniform(0, 360),
+                         scale=(s, s * rng.uniform(0.6, 0.8), s)))
+    if radius > 0.5:  # fill the middle so no gaps show between tiers
+        cairn.append(row("stone_wall_1x1_ruin", 0, y, 0, rng.uniform(0, 360), scale=(size, size * 0.7, size)))
+cairn.append(row("Scot_SummitCairn", 0, 2.0, 0, rng.uniform(0, 360), scale=(0.5, 0.3, 0.5)))  # capstone: use this one
+for i in range(14):  # kerb
+    theta = 2 * math.pi * i / 14
+    cairn.append(row("Scot_StandingStone", 2.6 * math.cos(theta), 0, 2.6 * math.sin(theta), rng.uniform(0, 360),
+                     scale=(0.35, 0.18, 0.35)))
+for i in range(9):  # outer ring, some fallen away
+    theta = 2 * math.pi * i / 9
+    s = rng.uniform(0.45, 0.6)
+    cairn.append(row("Scot_StandingStone", 6 * math.cos(theta), 0, 6 * math.sin(theta), rng.uniform(0, 360),
+                     scale=(s, s, s), chance=0.85))
+write("scotheim_cairn", "A Clava-style summit cairn. Use the capstone to bag the hill.", cairn)
