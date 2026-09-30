@@ -120,14 +120,15 @@
   groups: scotheim_stone
   awayFrom:
   - scotheim_stone, 300
-# Summit cairns: Munro bagging. Touch 16 for the Compleatist effect, so at least 16 must be placed.
-# In the terrain preview, ground above 70 m has room for 30-35 cairns 200 m apart across all four islands;
-# raising minAltitude or awayFrom quickly leaves fewer than 16.
+# Summit cairns: Munro bagging. Touch 12 for the Compleatist effect, so at least 12 must be placed.
+# First real world (seed -1725648492): minAltitude 70, maxTerrainDelta 6, quantity 30 placed only 16 and took
+# 37 s of world generation, because most attempts on steep summits failed. A cairn needs only ~3 m of ground,
+# so steepness is allowed here, and the quantity asked for is closer to what fits.
 - prefab: scotheim_cairn
   biome: munros
-  quantity: 30
-  minAltitude: 70
-  maxTerrainDelta: 6
+  quantity: 24
+  minAltitude: 65
+  maxTerrainDelta: 12
   randomRotation: true
   prioritized: true
   exteriorRadius: 3

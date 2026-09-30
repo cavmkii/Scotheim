@@ -184,7 +184,7 @@ namespace Scotheim.Patches
             { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa", "5701be8eddf32039", "ea39f5128c57a39a", "5074ac3eed8be0de" } },
             { "expand_clutter_scotheim.yaml", new[] { "f186b91465d1e721", "facdfd177fc3d3ed" } },
             { "expand_spawns_scotheim.yaml", new[] { "e3fe9b1655bcf793" } },
-            { "expand_locations_scotheim.yaml", new[] { "ce145deb2eded126" } },
+            { "expand_locations_scotheim.yaml", new[] { "ce145deb2eded126", "2a726b435d06f2f4" } },
             { "scotheim_shieling.blueprint", new[] { "4e2b1ff402de1f0c" } },
         };
     }
