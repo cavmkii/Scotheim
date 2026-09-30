@@ -237,6 +237,9 @@ namespace Scotheim.Content
                         Plugin.Log.LogWarning("Skipped creature " + spec.Name + ": base prefab " + spec.Base + " not found.");
                         continue;
                     }
+                    // Jötunn's clone constructor replaces the configured name with the prefab name, so the
+                    // localised name has to be set again here (otherwise players see "Scot_CuSith").
+                    character.m_name = Localization.CreatureName(spec.Name);
                     character.m_health = spec.Health;
                     if (spec.Scale != 1f) creature.Prefab.transform.localScale *= spec.Scale;
                     Reskin.Creature(spec.Name, creature.Prefab);
