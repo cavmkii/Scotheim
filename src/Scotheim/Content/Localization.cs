@@ -25,6 +25,8 @@ namespace Scotheim.Content
             { "Scot_WashersShroud", new[] { "Washer's shroud", "Linen she was washing at the ford. You don't ask whose." } },
             { "Scot_GiantHeartstone", new[] { "Giant's heartstone", "Warm, and heavier than its size." } },
             { "Scot_TrophyGreyMan", new[] { "Grey Man trophy", "Proof that something did walk the high plateau." } },
+            { "Scot_BogMyrtle", new[] { "Bog myrtle", "Sweet gale from the loch edges. Midges hate the smell." } },
+            { "Scot_MyrtleSalve", new[] { "Bog myrtle salve", "Rub it on and the midges leave you be for twenty minutes." } },
             { "Scot_BogIronOre", new[] { "Bog iron ore", "Rusty lumps from the edge of a loch. Smelt it." } },
             { "Scot_BogIron", new[] { "Bog iron", "Soft, honest iron. Most Highland blades began as this." } },
             { "Scot_Hacksilver", new[] { "Hacksilver", "Cut-up silver plate, probably Roman once. Smelt it down." } },
@@ -91,6 +93,7 @@ namespace Scotheim.Content
             { "Scot_HillGiant", "Hill giant" },
             { "Scot_Redcap", "Redcap" },
             { "Scot_GreyMan", "Am Fear Liath Mòr" },
+            { "Scot_Sluagh", "Sluagh" },
         };
 
         internal static void Register()
@@ -101,6 +104,10 @@ namespace Scotheim.Content
             english["piece_scot_bere_desc"] = "Plant bere. It grows on the open moor.";
             english["se_scot_uisgebeatha"] = "Uisge-beatha";
             english["se_scot_uisgebeatha_tooltip"] = "Warm to the bones: no freezing, and stamina comes back quicker.";
+            english["se_scot_midges"] = "Midges";
+            english["se_scot_midges_tooltip"] = "Being eaten alive. Stamina comes back slower. Wind, smoke or bog myrtle keeps them off.";
+            english["se_scot_myrtleward"] = "Bog myrtle";
+            english["se_scot_myrtleward_tooltip"] = "The midges keep away.";
             english["se_scot_dread"] = "Dread";
             english["se_scot_dread_tooltip"] = "Something tall is near. Your breath comes short and your legs feel heavy.";
             english["piece_scot_greymanaltar"] = "Summit altar";

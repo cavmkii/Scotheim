@@ -81,7 +81,26 @@ unknown = sorted({s["prefab"] for s in spawns} - set(creatures))
 check(not unknown, "every spawned prefab is a Scotheim creature" + (": " + ", ".join(unknown) if unknown else ""))
 bad_fields = sorted({k for s in spawns for k in (s.get("fields") or {})} - {"damage"})
 check(not bad_fields, "spawn fields only use damage" + (": " + ", ".join(bad_fields) if bad_fields else ""))
-never = sorted(set(creatures) - {s["prefab"] for s in spawns} - {"Scot_Lamb", "Scot_HighlandCalf", "Scot_GreyMan"})  # the boss is summoned
+# --- events (raids)
+EVENT_FIELDS = set("""name enabled customChance customInterval duration radius spawnerDelay outsideBaseOnly nearBaseOnly biome
+requiredGlobalKeys notRequiredGlobalKeys requiredPlayerKeys requiredPlayerKeysAll notRequiredPlayerKeys requiredKnownItems
+notRequiredKnownItems requiredEnvironments startMessage endMessage forceMusic forceEnvironment spawns pauseIfNoPlayerInArea
+random playerDistance playerLimit eventLimit startCommands endCommands""".split())
+events = yaml.safe_load((data / "expand_events_scotheim.yaml").read_text(encoding="utf-8"))
+bad_keys = sorted({k for e in events for k in e} - EVENT_FIELDS)
+check(not bad_keys, "event keys are EWD 1.73 event fields" + (": unknown " + ", ".join(bad_keys) if bad_keys else ""))
+event_spawns = [sp for e in events for sp in e["spawns"]]
+bad_keys = sorted({k for sp in event_spawns for k in sp} - SPAWN_FIELDS)
+check(not bad_keys, "event spawn keys are EWD 1.73 spawn fields" + (": unknown " + ", ".join(bad_keys) if bad_keys else ""))
+check({sp["prefab"] for sp in event_spawns} <= set(creatures), "event spawns are Scotheim creatures")
+check({b.strip() for e in events for b in e["biome"].split(",")} <= biomes, "event biomes are Scotheim biomes")
+check({e["forceEnvironment"] for e in events if e.get("forceEnvironment")} <= environments, "event environments exist in vanilla")
+boss_src = (root / "src/Scotheim/Content/Boss.cs").read_text(encoding="utf-8")
+defeat_key = re.search(r'DefeatKey = "(\w+)"', boss_src).group(1)
+check(all(k.strip() == defeat_key for e in events for k in e.get("requiredGlobalKeys", "").split(",") if k.strip()),
+      "raids wait for the boss's defeat key (" + defeat_key + ")")
+
+never = sorted(set(creatures) - {s["prefab"] for s in spawns + event_spawns} - {"Scot_Lamb", "Scot_HighlandCalf", "Scot_GreyMan"})  # the boss is summoned
 check(not never, "every adult creature has a spawn" + (": missing " + ", ".join(never) if never else ""))
 
 # --- vegetation

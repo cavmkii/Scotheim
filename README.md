@@ -187,6 +187,12 @@ The Big Grey Man of Ben Macdui: a very tall grey figure said to walk the Cairngo
 
 Not yet: a guardian power at an item stand, and a model of his own (KITBASH later).
 
+### Wool, midges and the Sluagh
+
+- **Wool**: a tamed sheep that isn't hungry sheds one wool every 15 minutes (half an in-game day) at its feet. Lambs still come from breeding as before; wool is a separate timer saved on the sheep, and only the client simulating the sheep drops it, so it isn't doubled in multiplayer.
+- **Midges**: on the moor and in the forest, when the wind is light at dawn or dusk, you get **Midges** (stamina regenerates 25% slower). Standing by any fire keeps them off (smoke), and so does **bog myrtle salve**: 6 bog myrtle and 1 mutton at the cauldron make 3, and each gives 20 minutes' protection. Bog myrtle grows in clumps at loch and bog edges on the low moor. Midges and bog myrtle as a repellent are both real; the timing (calm air, dawn and dusk) is the midge's actual habit.
+- **The Sluagh**: once Am Fear Liath Mòr is dead, the host of the restless dead can raid bases in the Highlands at night: up to 8 dark spirits at a time for two minutes, in mist. This needs **`Event data = true`** in `expand_world_data.cfg` (like `Spawn data`); EWD then merges `expand_events_scotheim.yaml` with the vanilla raids.
+
 ### Looks
 
 Until there are proper models, the clones are recoloured at load time (`Content/Reskin.cs`). Only colour and texture change, and vanilla creatures and items keep their own look.

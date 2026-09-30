@@ -47,7 +47,8 @@ namespace Scotheim.Content
             { "Scot_HillGiant", Tint(0.65f, 0.85f, 0.6f) },       // mossy granite
             { "Scot_Fuath", Tint(0.55f, 0.85f, 0.85f) },          // water-spirit blue-green
             { "Scot_Redcap", Tint(1.3f, 0.6f, 0.55f) },
-            { "Scot_GreyMan", Tint(0.7f, 0.72f, 0.78f) },         // grey. KITBASH later: shaggier, taller still           // red. KITBASH later: a red cap
+            { "Scot_GreyMan", Tint(0.7f, 0.72f, 0.78f) },         // grey. KITBASH later: shaggier, taller still
+            { "Scot_Sluagh", Tint(0.35f, 0.35f, 0.42f) },         // dark host. KITBASH later: ragged wings           // red. KITBASH later: a red cap
             { "Scot_EachUisge", Tint(0.45f, 0.6f, 0.45f) },       // kelp. KITBASH later: an abomination, not a water horse
         };
 
