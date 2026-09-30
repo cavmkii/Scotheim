@@ -1,0 +1,171 @@
+using System.Collections.Generic;
+using Jotunn.Managers;
+using UnityEngine;
+
+namespace Scotheim.Content
+{
+    /// <summary>
+    /// Recolours the vanilla models the Highland clones borrow, so they read as their own things until
+    /// proper models exist. Only colour and texture change, never shape.
+    ///
+    /// Every material is copied before it's changed, so vanilla creatures and items keep their look.
+    /// Tints multiply the texture's own colours (values above 1 brighten). Body armour that Valheim paints
+    /// onto the player's skin (m_armorMaterial) is tinted too, but never given a tiling texture, which would
+    /// cover the skin as well. Items whose look changes get a freshly rendered icon.
+    ///
+    /// KITBASH later marks pieces whose shape is wrong and needs Jötunn's kitbashing (or a real model).
+    /// </summary>
+    static class Reskin
+    {
+        sealed class Look
+        {
+            public Color Tint = Color.white;
+            public bool Tartan;
+            public Look(float r, float g, float b) { Tint = new Color(r, g, b, 1f); }
+            public Look() { }
+        }
+
+        static Look Tint(float r, float g, float b) => new Look(r, g, b);
+        static Look TartanLook() => new Look { Tartan = true };
+
+        static readonly Dictionary<string, Look> Creatures = new Dictionary<string, Look>
+        {
+            { "Scot_CuSith", Tint(0.3f, 0.55f, 0.35f) },          // the green fairy hound
+            { "Scot_CatSith", Tint(0.18f, 0.18f, 0.2f) },         // black. KITBASH later: still a wolf-man (Ulv); needs a cat model
+            { "Scot_BeanNighe", Tint(1.25f, 1.25f, 1.3f) },       // pale
+            { "Scot_HighlandCow", Tint(1.15f, 0.6f, 0.35f) },     // ginger. KITBASH later: lox body and horns; needs a cow model
+            { "Scot_HighlandCalf", Tint(1.15f, 0.6f, 0.35f) },
+            { "Scot_Sheep", Tint(1.6f, 1.5f, 1.3f) },             // cream fleece. KITBASH later: a boar; needs a sheep model
+            { "Scot_Lamb", Tint(1.6f, 1.5f, 1.3f) },
+            { "Scot_RedDeer", Tint(1.15f, 0.8f, 0.65f) },         // redder coat
+            { "Scot_PineMarten", Tint(0.55f, 0.4f, 0.3f) },       // dark brown. KITBASH later: a hare; needs a marten model
+            { "Scot_HillWolf", Tint(0.85f, 0.8f, 0.72f) },        // grey-brown
+            { "Scot_HillGiant", Tint(0.65f, 0.85f, 0.6f) },       // mossy granite
+            { "Scot_Fuath", Tint(0.55f, 0.85f, 0.85f) },          // water-spirit blue-green
+            { "Scot_Redcap", Tint(1.3f, 0.6f, 0.55f) },           // red. KITBASH later: a red cap
+            { "Scot_EachUisge", Tint(0.45f, 0.6f, 0.45f) },       // kelp. KITBASH later: an abomination, not a water horse
+        };
+
+        static readonly Dictionary<string, Look> Items = new Dictionary<string, Look>
+        {
+            // materials
+            { "Scot_Wool", Tint(1.05f, 1f, 0.88f) },
+            { "Scot_BogIronOre", Tint(1f, 0.6f, 0.4f) },
+            { "Scot_BogIron", Tint(0.6f, 0.52f, 0.46f) },
+            { "Scot_BogOak", Tint(0.3f, 0.26f, 0.22f) },
+            { "Scot_Cairngorm", Tint(0.6f, 0.45f, 0.3f) },        // smoky quartz
+            { "Scot_RowanWood", Tint(1f, 0.75f, 0.62f) },
+            { "Scot_HighlandHide", Tint(1.15f, 0.62f, 0.38f) },
+            { "Scot_MartenPelt", Tint(0.55f, 0.4f, 0.3f) },
+            { "Scot_SithPelt", Tint(0.45f, 0.85f, 0.5f) },
+            { "Scot_KelpieMane", Tint(0.35f, 0.55f, 0.4f) },
+            { "Scot_WashersShroud", Tint(1.2f, 1.2f, 1.2f) },
+            { "Scot_GiantHeartstone", Tint(1.35f, 0.55f, 0.35f) }, // ember-red
+            { "Scot_TartanCloth", TartanLook() },
+            // armour and capes
+            { "Scot_BlueBonnet", Tint(0.45f, 0.55f, 1.1f) },
+            { "Scot_Leine", Tint(1.2f, 0.95f, 0.5f) },            // saffron
+            { "Scot_Kilt", Tint(0.45f, 0.6f, 0.7f) },             // KITBASH later: tartan can't go on a skin overlay; needs its own mesh
+            { "Scot_BeltedPlaid", TartanLook() },
+            { "Scot_Acton", Tint(0.8f, 0.78f, 0.68f) },
+            { "Scot_Brigandine", Tint(0.7f, 0.65f, 0.6f) },       // bog iron
+            { "Scot_Chausses", Tint(0.7f, 0.65f, 0.6f) },
+            { "Scot_SaltireCape", Tint(0.35f, 0.5f, 1.15f) },     // KITBASH later: the white saltire cross needs a mesh or UV-mapped texture
+            { "Scot_PictishChain", Tint(0.82f, 0.86f, 0.95f) },   // silver, not gold. KITBASH later: still a circlet, not a chain
+            { "Scot_PictishCloak", Tint(0.55f, 0.4f, 0.3f) },     // marten fur
+            { "Scot_SithRobe", Tint(0.5f, 0.9f, 0.55f) },
+            { "Scot_SithLeggings", Tint(0.5f, 0.9f, 0.55f) },
+            { "Scot_FairyFlag", Tint(1.1f, 0.9f, 0.6f) },         // the real flag is faded yellow-brown silk
+            // Weapons keep their looks for now. KITBASH later: basket-hilted claymore, longer Wallace blade,
+            // long-hafted sparth, hooked Lochaber axe, a real log for the caber, a square Pictish shield,
+            // a studded targe and a holed stone for the Seer's stone.
+        };
+
+        static Texture2D tartan;
+
+        internal static void Creature(string name, GameObject prefab)
+        {
+            Look look;
+            if (Creatures.TryGetValue(name, out look)) Apply(name, prefab, look);
+        }
+
+        /// <summary>Recolours an item, including the skin overlay armour uses, and renders it a new icon.</summary>
+        internal static void Item(string name, GameObject prefab, ItemDrop.ItemData.SharedData shared)
+        {
+            Look look;
+            if (!Items.TryGetValue(name, out look)) return;
+            Apply(name, prefab, look);
+            var overlay = GameFields.Get(shared, "m_armorMaterial") as Material;
+            if (overlay != null)
+                GameFields.TrySetObject(shared, Recolour(overlay, look, allowTexture: false), "m_armorMaterial");
+            var icon = RenderManager.Instance.Render(prefab, RenderManager.IsometricRotation);
+            if (icon != null) shared.m_icons = new[] { icon };
+            else Plugin.Log.LogWarning("Reskin " + name + ": couldn't render an icon; it keeps the vanilla one.");
+        }
+
+        static void Apply(string name, GameObject prefab, Look look)
+        {
+            int changed = 0, untintable = 0;
+            foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer.GetType().Name == "ParticleSystemRenderer") continue;
+                var materials = renderer.sharedMaterials;
+                for (int i = 0; i < materials.Length; i++)
+                {
+                    if (materials[i] == null) continue;
+                    if (!materials[i].HasProperty("_Color") && !(look.Tartan && materials[i].HasProperty("_MainTex"))) { untintable++; continue; }
+                    materials[i] = Recolour(materials[i], look, allowTexture: true);
+                    changed++;
+                }
+                renderer.sharedMaterials = materials;
+            }
+            Plugin.Log.LogInfo("Reskin " + name + ": " + changed + " materials changed" +
+                (untintable > 0 ? ", " + untintable + " without a colour to tint" : "") + ".");
+        }
+
+        static Material Recolour(Material original, Look look, bool allowTexture)
+        {
+            var copy = new Material(original) { name = original.name + "_scot" };
+            if (copy.HasProperty("_Color")) copy.color = original.color * look.Tint;
+            if (look.Tartan && allowTexture && copy.HasProperty("_MainTex"))
+            {
+                copy.mainTexture = Tartan();
+                copy.mainTextureScale = new Vector2(3f, 3f);
+                if (copy.HasProperty("_Color")) copy.color = Color.white;
+            }
+            return copy;
+        }
+
+        // A dark Government-style sett in Black Watch colours (blue, black, green), woven as a 2/2 twill:
+        // threads alternate over and under in pairs, which gives tartan its diagonal texture. The thread
+        // counts are a common rendering of the Black Watch sett, not an official registration.
+        static Texture2D Tartan()
+        {
+            if (tartan != null) return tartan;
+            var blue = new Color(0.1f, 0.14f, 0.36f);
+            var black = new Color(0.04f, 0.04f, 0.05f);
+            var green = new Color(0.07f, 0.24f, 0.12f);
+            var half = new List<KeyValuePair<Color, int>>
+            {
+                new KeyValuePair<Color, int>(blue, 22), new KeyValuePair<Color, int>(black, 2), new KeyValuePair<Color, int>(blue, 2),
+                new KeyValuePair<Color, int>(black, 2), new KeyValuePair<Color, int>(blue, 2), new KeyValuePair<Color, int>(black, 16),
+                new KeyValuePair<Color, int>(green, 16), new KeyValuePair<Color, int>(black, 2), new KeyValuePair<Color, int>(green, 16),
+                new KeyValuePair<Color, int>(black, 16), new KeyValuePair<Color, int>(blue, 16), new KeyValuePair<Color, int>(black, 2),
+                new KeyValuePair<Color, int>(blue, 4),
+            };
+            // A symmetric sett repeats by mirroring around its first and last stripes.
+            var threads = new List<Color>();
+            foreach (var stripe in half) for (int i = 0; i < stripe.Value; i++) threads.Add(stripe.Key);
+            for (int i = threads.Count - 2; i > 0; i--) threads.Add(threads[i]);
+            int n = threads.Count;
+            tartan = new Texture2D(n, n, TextureFormat.RGBA32, true) { name = "scot_tartan", wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Bilinear };
+            var pixels = new Color[n * n];
+            for (int y = 0; y < n; y++)
+                for (int x = 0; x < n; x++)
+                    pixels[y * n + x] = ((x + y) / 2) % 2 == 0 ? threads[x] : threads[y];
+            tartan.SetPixels(pixels);
+            tartan.Apply(true);
+            return tartan;
+        }
+    }
+}

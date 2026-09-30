@@ -140,6 +140,30 @@ On the sources:
 - **Clansman set.** This follows the film, not the 1290s. The belted plaid is attested from the late 16th century and the little kilt from the 18th. The item descriptions own up to it.
 - **Man-at-arms set.** Mail, quilted aketons (actons), plated coats and steel caps fit the Wars of Independence. A saltire appears on the seal of the Guardians of Scotland from 1286.
 
+### Looks
+
+Until there are proper models, the clones are recoloured at load time (`Content/Reskin.cs`). Only colour and texture change, and vanilla creatures and items keep their own look.
+
+- **Creatures:**
+  - Cù-sìth dark green, Cat-sìth black, bean-nighe pale;
+  - Highland cattle ginger, sheep cream;
+  - red deer redder, pine martens dark brown;
+  - hill giants mossy, the fuath blue-green, redcaps red, the each-uisge kelp-dark.
+- **Materials:** bog iron dark, bog oak black, cairngorm smoky, the heartstone ember-red, Highland hide ginger, the Sìth pelt green.
+- **Armour:** blue bonnet blue, léine saffron, Sìth robe green, Pictish chain silver.
+- **Tartan:** the belted plaid and tartan cloth carry a generated Black Watch–style sett, woven as a 2/2 twill (below; brightened here).
+- **Icons:** every recoloured item gets a freshly rendered icon.
+
+![generated tartan](docs/tartan.png)
+
+Body armour such as the kilt, léine and acton is painted onto the player's skin rather than modelled, so it can only be tinted, not patterned.
+
+**Needs kitbashing or a real model later.** Recolouring can't fix these shapes:
+- **Creatures (need real models):** the sheep (a boar), Highland cow (a lox), Cat-sìth (an Ulv), pine marten (a hare) and each-uisge (an abomination).
+- **Weapons (kitbash):** the claymore (needs a basket hilt), the Wallace sword (needs a longer blade), the sparth (needs a long haft), the Lochaber axe (needs its hook), the caber (needs to be a log), the Pictish shield (needs to be square), the targe (needs studs) and the Seer's stone (needs to be a holed stone).
+- **Armour and capes:** the kilt needs its own tartan mesh; the saltire cape needs its white cross; the Pictish chain is still a circlet.
+- **Small cases:** the redcap's cap, and ragdolls, which fall back to vanilla colours when a creature dies. Starred (levelled) creatures may also show vanilla colours where the game swaps their material by level.
+
 ## How it fits into the world
 
 - **Placement.** Sites are chosen from the world seed, largest island first: each takes the most open stretch of water 4.5–8.5 km from the centre that keeps clear of the islands already placed and of the Ashlands and Deep North. An island may turn up to 30° from the grain to fit. Sizes shrink evenly from 100% to `MinScale` (65%). Every peer computes the same sites. `Count` sets how many; with `AutoPlace` off, a single island goes at X/Y.

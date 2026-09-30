@@ -110,6 +110,7 @@ namespace Scotheim.Content
                         shared.m_foodRegen = spec.Food.Value.Regen;
                         shared.m_foodBurnTime = spec.Food.Value.Duration;
                     }
+                    Reskin.Item(spec.Name, item.ItemPrefab, item.ItemDrop.m_itemData.m_shared);
                     if (ItemManager.Instance.AddItem(item)) added[spec.Name] = item;
                 }
                 catch (Exception e)
@@ -238,6 +239,7 @@ namespace Scotheim.Content
                     }
                     character.m_health = spec.Health;
                     if (spec.Scale != 1f) creature.Prefab.transform.localScale *= spec.Scale;
+                    Reskin.Creature(spec.Name, creature.Prefab);
                     if (CreatureManager.Instance.AddCreature(creature)) added[spec.Name] = creature.Prefab;
                 }
                 catch (Exception e)
