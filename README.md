@@ -172,7 +172,7 @@ Places only appear in newly generated areas: use a new world, or EWD's `genloc` 
 
 Use a summit cairn to add a stone and bag that hill. The tally is kept on the character, separately for each world (by world seed), and each cairn counts once. Bagging 12 makes the character a **Compleatist**: +15 Run skill, 15% less stamina for running and jumping, and half fall damage, for as long as the character plays that world. The effect is re-applied every few seconds if it's missing, for example after death.
 
-The target is 12 rather than every cairn because how many EWD places depends on the terrain. In the first real world tested, asking for 30 cairns above 70 m on gentle ground placed only 16, and the failed attempts added 37 s to world generation. Cairns may now stand on steeper ground, lower down, and 24 are asked for. EWD's log says how many it placed ("placed N out of 24"). If it's below 12, lower `minAltitude` or the `awayFrom` distance for `scotheim_cairn` in `expand_locations_scotheim.yaml`.
+How many cairns EWD can place depends on the terrain: the first three test worlds got 16, 24 and 10 of the 24 asked for. So the server counts the cairns in its world and shares the number as the global key `scotheim_cairns <n>`, and Compleatist needs 12 or all of them, whichever is fewer. The log says "Summit cairns in this world: n". Running `genloc` later adds cairns and raises the count.
 
 The fall-damage field is set by name (`m_fallDamageModifier`); the log says whether it was found.
 

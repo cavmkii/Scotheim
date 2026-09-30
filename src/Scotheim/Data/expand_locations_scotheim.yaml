@@ -120,17 +120,16 @@
   groups: scotheim_stone
   awayFrom:
   - scotheim_stone, 300
-# Summit cairns: Munro bagging. Touch 12 for the Compleatist effect, so at least 12 must be placed.
-# First real world (seed -1725648492): minAltitude 70, maxTerrainDelta 6, quantity 30 placed only 16 and took
-# 37 s of world generation, because most attempts on steep summits failed. A cairn needs only ~3 m of ground,
-# so steepness is allowed here (EWD levels the small site), and the quantity asked for is closer to what fits.
+# Summit cairns: Munro bagging. How many fit depends on the terrain (16, 24 and 10 in the first three test
+# worlds), so Compleatist needs 12 or every cairn the world has, whichever is fewer (the server counts them).
+# A cairn needs only ~3 m of ground, so steep tops are allowed (EWD levels the small site). Not prioritized:
+# when fewer fit than asked for, EWD gives up after half the attempts, which saves world generation time.
 - prefab: scotheim_cairn
   biome: munros
   quantity: 24
   minAltitude: 65
   maxTerrainDelta: 12
   randomRotation: true
-  prioritized: true
   exteriorRadius: 3
   clearArea: true
   discoverLabel: Summit cairn
