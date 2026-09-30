@@ -106,6 +106,7 @@ crafts = math.ceil(tartan / 2)
 demand["Scot_Wool"] = demand.get("Scot_Wool", 0) + 4 * crafts
 demand["Scot_Blaeberries"] = demand.get("Scot_Blaeberries", 0) + 2 * crafts
 demand["Scot_BogIronOre"] = demand.pop("Scot_BogIron", 0)
+demand["Scot_Hacksilver"] = demand.get("Scot_Hacksilver", 0) + demand.pop("Scot_PictishSilver", 0)  # smelted 1:1
 
 print("Islands (by land area): " + ", ".join("#%d at (%.0f, %.0f)" % (k + 1, cx, cy) for k, (cx, cy) in enumerate(centres)))
 print()

@@ -75,14 +75,14 @@ namespace Scotheim.Content
                 Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 8, 4), Req("Scot_HighlandHide", 4, 2), Req("Scot_TartanCloth", 1, 1) } },
             // No Ashlands buckler exists, so the Carapace buckler's block is scaled up.
             new GearSpec { Name = "Scot_PictishShield", Look = "ShieldBronzeBuckler", Donor = "ShieldCarapaceBuckler", BlockTo = 90f, Weight = 0.4f, Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_BogOak", 8, 4), Req("Scot_Hacksilver", 6, 3), Req("Scot_HighlandHide", 3, 1) } },
+                Recipe = new[] { Req("Scot_BogOak", 8, 4), Req("Scot_PictishSilver", 6, 3), Req("Scot_HighlandHide", 3, 1) } },
 
             // --- Pictish weapons (Woad: spears, knives, crossbows). Crossbows are carved on Pictish stones
             // (St Vigeans, Shandwick, Glenferness).
             new GearSpec { Name = "Scot_PictishSpear", Look = "SpearBronze", Donor = "SpearSplitner", Hit = new HitData.DamageTypes { m_pierce = 115f }, OnHit = "pinned",
-                Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 6, 3), Req("Scot_Hacksilver", 4, 2) } },
+                Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 6, 3), Req("Scot_PictishSilver", 4, 2) } },
             new GearSpec { Name = "Scot_PictishCrossbow", Look = "CrossbowArbalest", Donor = "CrossbowRipper", Hit = new HitData.DamageTypes { m_pierce = 190f }, OnHit = "pinned",
-                Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 8, 4), Req("Scot_KelpieMane", 1, 1), Req("Scot_MartenPelt", 2, 1), Req("Scot_Hacksilver", 2, 1) } },
+                Recipe = new[] { Req("Scot_BogOak", 10, 5), Req("Scot_BogIron", 8, 4), Req("Scot_KelpieMane", 1, 1), Req("Scot_MartenPelt", 2, 1), Req("Scot_PictishSilver", 2, 1) } },
             // No Ashlands knife exists, so Skoll and Hati is scaled up.
             new GearSpec { Name = "Scot_Dirk", Look = "KnifeBlackMetal", Donor = "KnifeSkollAndHati", Hit = new HitData.DamageTypes { m_slash = 45f, m_pierce = 45f, m_poison = 30f }, 
                 Recipe = new[] { Req("Scot_BogIron", 10, 5), Req("Scot_BogOak", 2, 1), Req("Scot_MartenPelt", 2, 1) } },
@@ -98,13 +98,13 @@ namespace Scotheim.Content
             // --- Pictish set: light and quick. Each piece also takes the matching Fenris (werewolf) piece's movement speed.
             new GearSpec { Name = "Scot_PictishChain", Look = "HelmetDverger", Donor = "HelmetAshlandsMediumHood", ArmourTo = 18f, Weight = 0.5f, Set = "pictish", MovementFrom = "HelmetFenring",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_Hacksilver", 16, 8), Req("Scot_GiantHeartstone", 1, 0) } },
+                Recipe = new[] { Req("Scot_PictishSilver", 16, 8), Req("Scot_GiantHeartstone", 1, 0) } },
             new GearSpec { Name = "Scot_PictishJerkin", Look = "ArmorLeatherChest", Donor = "ArmorAshlandsMediumChest", ArmourTo = 18f, Weight = 0.5f, Set = "pictish", MovementFrom = "ArmorFenringChest",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_HighlandHide", 10, 5), Req("Scot_Hacksilver", 4, 2), Req("Scot_MartenPelt", 2, 1) } },
+                Recipe = new[] { Req("Scot_HighlandHide", 10, 5), Req("Scot_PictishSilver", 4, 2), Req("Scot_MartenPelt", 2, 1) } },
             new GearSpec { Name = "Scot_PictishTrews", Look = "ArmorLeatherLegs", Donor = "ArmorAshlandsMediumlegs", ArmourTo = 18f, Weight = 0.5f, Set = "pictish", MovementFrom = "ArmorFenringLegs",
                 Tweak = s => s.m_movementModifier = 0f,
-                Recipe = new[] { Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 6, 3), Req("Scot_Hacksilver", 2, 1) } },
+                Recipe = new[] { Req("Scot_Wool", 10, 5), Req("Scot_HighlandHide", 6, 3), Req("Scot_PictishSilver", 2, 1) } },
 
             // --- Clansman set ("Braveheart"): the film's look, not the 1290s.
             new GearSpec { Name = "Scot_BlueBonnet", Look = "HelmetLeather", Donor = "HelmetAshlandsMediumHood", ArmourTo = 24f, Weight = 0.6f, Set = "clansman",
@@ -140,7 +140,7 @@ namespace Scotheim.Content
             // --- Capes: Ashlands (Ash cape) numbers, each with its own twist.
             new GearSpec { Name = "Scot_PictishCloak", Look = "CapeDeerHide", Donor = "CapeAsh", ArmourTo = 10f,
                 Tweak = s => s.m_movementModifier += 0.05f,
-                Recipe = new[] { Req("Scot_MartenPelt", 8, 4), Req("Scot_Hacksilver", 2, 1) } },
+                Recipe = new[] { Req("Scot_MartenPelt", 8, 4), Req("Scot_PictishSilver", 2, 1) } },
             new GearSpec { Name = "Scot_BeltedPlaid", Look = "CapeTrollHide", Donor = "CapeAsh", ArmourTo = 10f, EquipEffect = "plaid",
                 Recipe = new[] { Req("Scot_TartanCloth", 10, 5), Req("Scot_Wool", 4, 2) } },
             new GearSpec { Name = "Scot_SaltireCape", Look = "CapeLinen", Donor = "CapeAsh", ArmourTo = 10f,
