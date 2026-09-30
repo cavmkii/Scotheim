@@ -20,7 +20,7 @@ namespace Scotheim.Content
         internal const int ToCompleat = 12; // expand_locations_scotheim.yaml asks for 24
         const string CountKey = "scotheim_cairns"; // global key "scotheim_cairns <n>", set by the server
         static float nextCount;
-        static bool warnedNoAltar;
+        static bool warnedNoAltar, reportedAltars;
         static StatusEffect compleatist;
         static float nextCheck;
 
@@ -142,8 +142,20 @@ namespace Scotheim.Content
                 var name = prefab != null ? prefab.GetType().GetProperty("Name")?.GetValue(prefab, null) as string : null;
                 if (name == null && location != null) name = GameFields.Get(location, "m_prefabName") as string;
                 if (name == "scotheim_cairn") count++;
-                else if (name == GreyMan.Location) altars++;
+                else if (name == GreyMan.Location)
+                {
+                    altars++;
+                    if (!reportedAltars)
+                    {
+                        var at = GameFields.Get(instance, "m_position") as Vector3?;
+                        Plugin.Log.LogInfo("Grey Man altar " + altars + (at.HasValue
+                            ? " at x " + Mathf.RoundToInt(at.Value.x) + ", z " + Mathf.RoundToInt(at.Value.z) +
+                              ", " + Mathf.RoundToInt(at.Value.y) + " m up (devcommands: goto " + Mathf.RoundToInt(at.Value.x) + " " + Mathf.RoundToInt(at.Value.z) + ")"
+                            : " (position unknown)") + ".");
+                    }
+                }
             }
+            if (instances.Count > 0) reportedAltars = true;
             if (altars == 0 && !warnedNoAltar)
             {
                 warnedNoAltar = true;

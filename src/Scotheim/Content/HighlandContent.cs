@@ -37,6 +37,7 @@ namespace Scotheim.Content
             Localization.Register();
             PrefabManager.OnVanillaPrefabsAvailable += AddItems;
             CreatureManager.OnVanillaCreaturesAvailable += AddCreatures;
+            ZoneManager.OnVanillaLocationsAvailable += Places.AddRunestones;
         }
 
         // ---------------------------------------------------------------- items

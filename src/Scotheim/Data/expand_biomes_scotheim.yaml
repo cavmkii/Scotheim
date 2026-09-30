@@ -50,7 +50,8 @@
   - environment: Rain
     weight: 0.2
 
-# Snow and SnowStorm are freezing; Misty isn't, so the hills sometimes give you a break.
+# Snow is freezing; Misty isn't, so the hills sometimes give you a break. No SnowStorm: its whiteout hid the
+# screen. Hill fog suits the Grey Man, who was usually met in mist.
 - biome: munros
   name: Munros
   terrain: Mountain
@@ -61,8 +62,6 @@
   musicNight: mountain
   environments:
   - environment: Snow
-    weight: 4
-  - environment: SnowStorm
-    weight: 1
+    weight: 3
   - environment: Misty
-    weight: 1
+    weight: 2

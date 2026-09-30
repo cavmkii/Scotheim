@@ -54,3 +54,5 @@ public class HitData
     [System.Flags] public enum DamageType { Blunt = 1, Slash = 2, Pierce = 4 }
     public enum DamageModifier { Normal, Resistant, Weak }
 }
+public class ZoneSystem { public class ZoneLocation { } }
+public class Location : UnityEngine.MonoBehaviour { }
