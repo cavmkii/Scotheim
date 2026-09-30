@@ -11,7 +11,7 @@ public class Player : Humanoid
 }
 public class SEMan { }
 public class MessageHud { public enum MessageType { TopLeft = 1, Center = 2 } }
-public class Localization { public static Localization instance; public string Localize(string text) => text; }
+
 public class ItemDrop : UnityEngine.MonoBehaviour
 {
     public ItemData m_itemData;

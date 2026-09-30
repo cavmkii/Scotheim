@@ -114,7 +114,7 @@ namespace Scotheim.Content
             var player = Player.m_localPlayer;
             var done = player != null && Bagging.Bagged(player).Contains(Id);
             var text = "Summit cairn\n" + (done ? "You've bagged this one." : "[<color=yellow><b>$KEY_Use</b></color>] Add a stone");
-            return global::Localization.instance.Localize(text);
+            return global::Localization.instance.Localize(text); // Localization is in assembly_guiutils
         }
 
         internal bool Interact(Humanoid user, bool hold)
