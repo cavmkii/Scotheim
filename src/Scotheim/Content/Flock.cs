@@ -18,19 +18,15 @@ namespace Scotheim.Content
         internal static void Add(Dictionary<string, GameObject> creatures)
         {
             GameObject sheep;
-            if (!creatures.TryGetValue("Scot_Sheep", out sheep)) return;
-            if (PrefabManager.Instance.GetPrefab("Scot_Wool") == null)
-            {
-                Plugin.Log.LogWarning("Sheep won't shed: Scot_Wool wasn't added.");
-                return;
-            }
-            sheep.AddComponent<ShedWool>();
+            // Wool is looked up when a sheep spawns: Jötunn announces creatures before Scotheim's items exist.
+            if (creatures.TryGetValue("Scot_Sheep", out sheep)) sheep.AddComponent<ShedWool>();
         }
     }
 
     public class ShedWool : MonoBehaviour
     {
         const string Key = "scot_wool_time";
+        static bool warned;
         float next;
         Component view, tameable;
         Character character;
@@ -42,6 +38,11 @@ namespace Scotheim.Content
             tameable = GetComponent("Tameable");
             character = GetComponent<Character>();
             wool = PrefabManager.Instance.GetPrefab("Scot_Wool");
+            if (wool == null && !warned)
+            {
+                warned = true;
+                Plugin.Log.LogWarning("Sheep won't shed: Scot_Wool wasn't found.");
+            }
             next = Time.time + Random.Range(5f, 15f); // spread the checks out across a flock
         }
 
