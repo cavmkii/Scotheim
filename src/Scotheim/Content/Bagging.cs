@@ -22,15 +22,20 @@ namespace Scotheim.Content
 
         internal static void Add()
         {
-            var cairn = PrefabManager.Instance.CreateClonedPrefab("Scot_SummitCairn", "HeathRockPillar");
+            // A copy of the vanilla stone pile (the build piece for storing stone): a heap of stones at its own
+            // size, so it doesn't depend on EWD applying a blueprint scale. WearNTear and Piece are removed so it
+            // can't be damaged or taken apart with the hammer (WearNTear first, since it needs Piece).
+            var cairn = PrefabManager.Instance.CreateClonedPrefab("Scot_SummitCairn", "stone_pile");
             if (cairn == null)
             {
-                Plugin.Log.LogWarning("Munro bagging skipped: HeathRockPillar not found.");
+                Plugin.Log.LogWarning("Munro bagging skipped: stone_pile not found.");
                 return;
             }
-            var destructible = cairn.GetComponent("Destructible");
-            if (destructible != null) Object.DestroyImmediate(destructible);
-            cairn.transform.localScale = new Vector3(0.7f, 0.3f, 0.7f); // squat: a heap, not a pillar
+            foreach (var name in new[] { "WearNTear", "Piece" })
+            {
+                var component = cairn.GetComponent(name);
+                if (component != null) Object.DestroyImmediate(component);
+            }
             // The game's RuneStone supplies hover and use (it implements Hoverable and Interactable for this
             // game version); CairnPatches below replaces what it shows and does when a SummitCairn is present.
             var runeType = System.Type.GetType("RuneStone, assembly_valheim");
@@ -146,6 +151,7 @@ namespace Scotheim.Content
         static bool Report(MethodBase method, string name)
         {
             if (method == null) Plugin.Log.LogWarning("Summit cairns can't be used: " + name + " wasn't found.");
+            else Plugin.Log.LogInfo("Summit cairns: patched " + name + ".");
             return method != null;
         }
 
