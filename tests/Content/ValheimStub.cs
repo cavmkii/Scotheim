@@ -11,8 +11,6 @@ public class Player : Humanoid
 }
 public class SEMan { }
 public class MessageHud { public enum MessageType { TopLeft = 1, Center = 2 } }
-public interface Hoverable { string GetHoverText(); string GetHoverName(); }
-public interface Interactable { bool Interact(Humanoid user, bool hold, bool alt); bool UseItem(Humanoid user, ItemDrop.ItemData item); }
 public class Localization { public static Localization instance; public string Localize(string text) => text; }
 public class ItemDrop : UnityEngine.MonoBehaviour
 {
