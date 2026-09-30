@@ -16,7 +16,7 @@ namespace Scotheim.Content
     /// </summary>
     static class Bagging
     {
-        internal const int ToCompleat = 16; // expand_locations_scotheim.yaml places up to 30
+        internal const int ToCompleat = 12; // expand_locations_scotheim.yaml places up to 24
         static StatusEffect compleatist;
         static float nextCheck;
 
