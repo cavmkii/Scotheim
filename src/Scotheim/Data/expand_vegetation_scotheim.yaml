@@ -113,11 +113,11 @@
   groupSizeMin: 4
   groupSizeMax: 8
   groupRadius: 5
-# Bog myrtle (sweet gale) grows in wet ground at loch and bog edges: low moor, just above the water.
+# Bog myrtle (sweet gale) grows in wet ground at loch and bog edges, just above the water, on the moor and by forest lochs.
 - prefab: Scot_BogMyrtlePickable
   min: 0
   max: 1
-  biome: highland_moor
+  biome: highland_moor, caledonian_forest
   minAltitude: 0.5
   maxAltitude: 6
   maxTilt: 20
@@ -473,7 +473,8 @@
   biome: highland_moor, caledonian_forest
   minAltitude: -1
   maxAltitude: 3
-  maxTerrainDelta: 2
+  maxTilt: 25
+  maxTerrainDelta: 3
   groupSizeMin: 2
   groupSizeMax: 4
   groupRadius: 3
