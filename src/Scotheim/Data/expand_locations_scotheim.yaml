@@ -64,11 +64,12 @@
   groups: scotheim_place
   awayFrom:
   - scotheim_place, 400
-# Pictish symbol stones: lore markers, five texts. Copies of the vanilla Meadows runestone location (glowing
-# runes), made in Content/Places.cs rather than blueprints.
+# Pictish symbol stones: lore markers, six texts. Copies of the vanilla Meadows runestone location (glowing
+# runes), made in Content/Places.cs rather than blueprints. Ten of each (about 15 per island) so every text turns
+# up early on any island: four of each, about 1.3 per km2, went unfound in play.
 - prefab: scotheim_runestone1
   biome: highland_moor, caledonian_forest
-  quantity: 4
+  quantity: 10
   minAltitude: 2
   maxAltitude: 60
   maxTerrainDelta: 3
@@ -76,10 +77,10 @@
   exteriorRadius: 3
   groups: scotheim_stone
   awayFrom:
-  - scotheim_stone, 300
+  - scotheim_stone, 250
 - prefab: scotheim_runestone2
   biome: highland_moor, caledonian_forest
-  quantity: 4
+  quantity: 10
   minAltitude: 2
   maxAltitude: 60
   maxTerrainDelta: 3
@@ -87,10 +88,10 @@
   exteriorRadius: 3
   groups: scotheim_stone
   awayFrom:
-  - scotheim_stone, 300
+  - scotheim_stone, 250
 - prefab: scotheim_runestone3
   biome: highland_moor, caledonian_forest
-  quantity: 4
+  quantity: 10
   minAltitude: 2
   maxAltitude: 60
   maxTerrainDelta: 3
@@ -98,10 +99,10 @@
   exteriorRadius: 3
   groups: scotheim_stone
   awayFrom:
-  - scotheim_stone, 300
+  - scotheim_stone, 250
 - prefab: scotheim_runestone4
   biome: highland_moor, caledonian_forest, munros
-  quantity: 4
+  quantity: 10
   minAltitude: 2
   maxAltitude: 90
   maxTerrainDelta: 3
@@ -109,10 +110,10 @@
   exteriorRadius: 3
   groups: scotheim_stone
   awayFrom:
-  - scotheim_stone, 300
+  - scotheim_stone, 250
 - prefab: scotheim_runestone5
   biome: highland_moor, munros
-  quantity: 4
+  quantity: 10
   minAltitude: 2
   maxAltitude: 90
   maxTerrainDelta: 3
@@ -120,7 +121,7 @@
   exteriorRadius: 3
   groups: scotheim_stone
   awayFrom:
-  - scotheim_stone, 300
+  - scotheim_stone, 250
 # Summit cairns: Munro bagging. Scotheim puts one on top of each Munro itself (it knows where the terrain's domes
 # are), so EWD places none at random: quantity 0. The entry has to stay, because it's what makes scotheim_cairn
 # a location Scotheim can register. Compleatist needs 12, or every cairn the world has if that's fewer.
@@ -139,7 +140,7 @@
 # Symbol stone 6, "The eagle", marks the Grey Man's stone on the map when read.
 - prefab: scotheim_runestone6
   biome: highland_moor, caledonian_forest, munros
-  quantity: 4
+  quantity: 10
   minAltitude: 2
   maxAltitude: 90
   maxTerrainDelta: 3
@@ -147,7 +148,7 @@
   exteriorRadius: 3
   groups: scotheim_stone
   awayFrom:
-  - scotheim_stone, 300
+  - scotheim_stone, 250
 # The Grey Man's altar: on the high tops, as he walks Ben Macdui. Up to two per world, far apart and placed
 # first. EWD can't pick "the highest" summit, so it's any ground above 95 m; the log warns if none was placed.
 # It's a copy of the vanilla runestone with the altar beside it (Content/Places.cs): reading the stone marks the altar
