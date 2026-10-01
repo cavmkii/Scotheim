@@ -105,6 +105,19 @@ static class Harness
         Check(domes > 0 && same && onIsland == domes, "Munro dome centres are deterministic and on the islands (" + domes + " domes)");
         Check(munroTops > 0, "some dome centres are Munro ground (" + munroTops + " of " + domes + "), so summit cairns have tops to go on");
 
+        // Moor lochs: placed on every island, deterministic, and each one's middle is water.
+        var lochs = hl.MoorLochs();
+        var lochsAgain = new HighlandsTerrain(settings, 12345, sites).MoorLochs();
+        bool lochsSame = lochs.Count == lochsAgain.Count;
+        for (int i = 0; lochsSame && i < lochs.Count; i++) lochsSame = lochs[i] == lochsAgain[i];
+        int wetMiddles = 0;
+        for (int i = 0; i + 2 < lochs.Count; i += 3)
+            if (hl.ShapeMoorland(lochs[i], lochs[i + 1], 14f) < -1f) wetMiddles++;
+        Check(lochs.Count >= 3 * sites.Count && lochsSame, "moor lochs placed, at least one per island, deterministically (" + lochs.Count / 3 + ")");
+        Check(wetMiddles == lochs.Count / 3, "every moor loch's middle is under water (" + wetMiddles + " of " + lochs.Count / 3 + ")");
+        var none = new HighlandsSettings { MoorLochsPerIsland = 0 };
+        Check(new HighlandsTerrain(none, 12345, sites).MoorLochs().Count == 0, "LochsPerIsland = 0 turns moor lochs off");
+
         // Find one sample of each Highland biome.
         var found = new Dictionary<HighlandBiome, float[]>();
         foreach (var p in points)

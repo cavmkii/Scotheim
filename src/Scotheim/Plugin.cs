@@ -97,6 +97,12 @@ namespace Scotheim
             BindFloat("5 - Moor", "LochanFrequency", 0f, 0.5f, s => s.LochanFrequency, (s, v) => s.LochanFrequency = v,
                 "Rough fraction of low moor that becomes lochans. Only possible within LochanMaxHeight of sea level: Valheim has one water plane.");
             BindFloat("5 - Moor", "LochanMaxHeight", 0f, 30f, s => s.LochanMaxHeight, (s, v) => s.LochanMaxHeight = v, "Ground above this never becomes a lochan (m).");
+            var lochs = Config.Bind("5 - Moor", "LochsPerIsland", defaults.MoorLochsPerIsland,
+                new ConfigDescription("Big moor lochs placed on purpose on each island (smaller islands get fewer; only where they fit on flat moor). 0 turns them off.",
+                    new AcceptableValueRange<int>(0, 5)));
+            readers.Add(s => s.MoorLochsPerIsland = lochs.Value);
+            BindFloat("5 - Moor", "LochLength", 200f, 1200f, s => s.MoorLochLength, (s, v) => s.MoorLochLength = v,
+                "Typical length of a big moor loch (m); each is 75-125% of this (shorter on small islands) and a third to half as wide.");
 
             BindFloat("6 - Caledonian Forest", "DrumlinAmplitude", 0f, 20f, s => s.DrumlinAmplitude, (s, v) => s.DrumlinAmplitude = v, "Drumlin height (m).");
             BindFloat("6 - Caledonian Forest", "DrumlinCoverage", 0f, 1f, s => s.DrumlinCoverage, (s, v) => s.DrumlinCoverage = v, "Rough fraction of ground covered by drumlins.");

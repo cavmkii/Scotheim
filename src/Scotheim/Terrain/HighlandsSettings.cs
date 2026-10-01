@@ -77,6 +77,12 @@ namespace Scotheim.Terrain
         public float LochanScale = 400f;
         public float LochanMaxHeight = 18f;
         public float LochanDepth = 2.5f;
+        /// <summary>Big lochs placed on purpose on each island's moor (smaller islands get fewer). 0 turns them off.</summary>
+        public int MoorLochsPerIsland = 2;
+        /// <summary>Typical length of a moor loch (m); each varies from 75% to 125% of this, and is about a third as wide.</summary>
+        public float MoorLochLength = 700f;
+        /// <summary>Depth of a moor loch's middle (m); the margins are shallow.</summary>
+        public float MoorLochDepth = 8f;
 
         // Drumlins (Black Forest).
         public float DrumlinAmplitude = 6f;
