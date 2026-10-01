@@ -137,6 +137,18 @@
   groups: scotheim_cairn
   awayFrom:
   - scotheim_cairn, 200
+# Symbol stone 6, "The eagle", marks the Grey Man's stone on the map when read.
+- prefab: scotheim_runestone6
+  biome: highland_moor, caledonian_forest, munros
+  quantity: 4
+  minAltitude: 2
+  maxAltitude: 90
+  maxTerrainDelta: 3
+  randomRotation: true
+  exteriorRadius: 3
+  groups: scotheim_stone
+  awayFrom:
+  - scotheim_stone, 300
 # The Grey Man's altar: on the high tops, as he walks Ben Macdui. Up to two per world, far apart and placed
 # first. EWD can't pick "the highest" summit, so it's any ground above 95 m; the log warns if none was placed.
 # Symbol stone 4 ("Mirror and comb") marks the nearest one on the map.
@@ -153,3 +165,18 @@
   groups: scotheim_greyman
   awayFrom:
   - scotheim_greyman, 1500
+# The Grey Man's stone: hang his trophy on it for his guardian power. One per world, on a Munro top, placed first
+# and well away from his altars. The log gives its position, and warns if it couldn't be placed.
+- prefab: scotheim_greymanstone
+  biome: munros
+  quantity: 1
+  minAltitude: 85
+  maxTerrainDelta: 12
+  randomRotation: true
+  prioritized: true
+  exteriorRadius: 5
+  clearArea: true
+  discoverLabel: The Grey Man's stone
+  groups: scotheim_greymanstone
+  awayFrom:
+  - scotheim_greyman, 500

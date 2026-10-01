@@ -125,3 +125,7 @@ write("scotheim_cairn", "A summit cairn. Use it to bag the hill.", [row("Scot_Su
 # The Grey Man's altar (Content/Boss.cs): a copy of the Deep North boss room's offering altar on a high summit.
 # Offer giant's heartstones to summon Am Fear Liath Mòr. Kept to the one object: see the cairn note above.
 write("scotheim_greyman", "The summit altar of Am Fear Liath Mòr.", [row("Scot_GreyManAltar", 0, 0, 0)])
+
+# The Grey Man's stone (Content/Boss.cs): a copy of the Queen's boss stone on another Munro summit. Hang his trophy
+# on it to take his guardian power.
+write("scotheim_greymanstone", "The Grey Man's stone, where his trophy gives his power.", [row("Scot_GreyManStone", 0, 0, 0)])

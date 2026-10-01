@@ -29,6 +29,7 @@ namespace Scotheim.Content
             new[] { "The Pictish beast", "The long-snouted swimming beast, its tail curled behind. The loch horse, perhaps. Do not mount it." },
             new[] { "Mirror and comb", "A mirror and a comb. A grey one walks the highest hill; bring what the giants carry in their chests." },
             new[] { "Serpent and Z-rod", "A serpent pierced by a rod. Climb every hill, and leave a stone on each top." },
+            new[] { "The eagle", "An eagle, wings folded, on a high stone. When the grey one falls, carry his head to the stone on the tops, and his stride is yours." },
         };
 
         internal static void Add(Dictionary<string, GameObject> creatures)
@@ -57,7 +58,7 @@ namespace Scotheim.Content
 
             // The first symbol stones were heath pillars placed by blueprint. They're no longer placed (see
             // AddRunestones), but stay registered so worlds that already have them still load them.
-            for (int i = 0; i < SymbolStones.Length; i++)
+            for (int i = 0; i < 5; i++)
             {
                 var stone = Stone("Scot_SymbolStone" + (i + 1));
                 if (stone == null) continue;
@@ -122,6 +123,12 @@ namespace Scotheim.Content
                     {
                         GameFields.TrySet(rune, GreyMan.Location, "m_locationName");
                         GameFields.TrySet(rune, "$piece_scot_greymanaltar_pin", "m_pinName");
+                        GameFields.TrySet(rune, "Boss", "m_pinType");
+                    }
+                    else if (i == 5) // "The eagle" marks the Grey Man's stone, where his trophy gives his power
+                    {
+                        GameFields.TrySet(rune, GreyMan.StoneLocation, "m_locationName");
+                        GameFields.TrySet(rune, "$piece_scot_greymanstone", "m_pinName");
                         GameFields.TrySet(rune, "Boss", "m_pinType");
                     }
                 }

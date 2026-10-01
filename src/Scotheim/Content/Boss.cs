@@ -21,11 +21,12 @@ namespace Scotheim.Content
         internal const string Boss = "Scot_GreyMan";
         internal const string Altar = "Scot_GreyManAltar";
         internal const string Location = "scotheim_greyman";
+        internal const string StoneLocation = "scotheim_greymanstone";
         internal const string DefeatKey = "defeated_scot_greyman";
         internal const int Heartstones = 3;
         internal static StatusEffect Dread;
         static GameObject bossPrefab;
-        static ItemDrop heartstone;
+        static ItemDrop heartstone, trophy;
         static bool altarBuilt;
 
         // Jötunn announces creatures before items, so the altar is built by whichever of these runs second.
@@ -34,6 +35,8 @@ namespace Scotheim.Content
             CustomItem item;
             if (added.TryGetValue("Scot_GiantHeartstone", out item)) heartstone = item.ItemDrop;
             else Plugin.Log.LogWarning("The Grey Man can't be summoned: Scot_GiantHeartstone wasn't added.");
+            if (added.TryGetValue("Scot_TrophyGreyMan", out item)) trophy = item.ItemDrop;
+            else Plugin.Log.LogWarning("The Grey Man's power can't be taken: Scot_TrophyGreyMan wasn't added.");
             TryAddAltar();
         }
 
@@ -57,6 +60,65 @@ namespace Scotheim.Content
             if (altarBuilt || bossPrefab == null || heartstone == null) return;
             altarBuilt = true;
             AddAltar(bossPrefab);
+            if (trophy != null) AddStone(AddPower());
+        }
+
+        // The guardian power: the Grey Man's long, sure stride on the high tops. Same length and cooldown as vanilla's.
+        static StatusEffect AddPower()
+        {
+            var se = ScriptableObject.CreateInstance<SE_Stats>();
+            se.name = "GP_Scot_GreyMan";
+            se.m_name = "$se_scot_greymanpower";
+            se.m_tooltip = "$se_scot_greymanpower_tooltip";
+            se.m_ttl = 300f;
+            GameFields.TrySet(se, 1200f, "m_cooldown");
+            var icons = trophy.m_itemData.m_shared.m_icons;
+            if (icons != null && icons.Length > 0) se.m_icon = icons[0];
+            se.m_runStaminaDrainModifier = -0.5f;
+            se.m_jumpStaminaUseModifier = -0.5f;
+            GameFields.TrySet(se, -0.75f, "m_fallDamageModifier");
+            GameFields.TrySet(se, -0.5f, "m_noiseModifier");
+            se.m_mods = new System.Collections.Generic.List<HitData.DamageModPair>
+            {
+                // Frost resistance is what stops freezing (as frost resistance mead does).
+                new HitData.DamageModPair { m_type = HitData.DamageType.Frost, m_modifier = HitData.DamageModifier.Resistant },
+            };
+            ItemManager.Instance.AddStatusEffect(new CustomStatusEffect(se, false));
+            return se;
+        }
+
+        // The stone where his trophy hangs to give the power: a copy of the Queen's boss stone from the start
+        // temple (vanilla spawns these as standalone objects), placed on a Munro summit (location scotheim_greymanstone).
+        static void AddStone(StatusEffect power)
+        {
+            var stone = PrefabManager.Instance.CreateClonedPrefab("Scot_GreyManStone", "BossStone_TheQueen");
+            if (stone == null)
+            {
+                Plugin.Log.LogWarning("The Grey Man's power can't be taken: BossStone_TheQueen wasn't found.");
+                return;
+            }
+            var standType = Type.GetType("ItemStand, assembly_valheim");
+            var stand = standType != null ? stone.GetComponentInChildren(standType, true) : null;
+            if (stand == null)
+            {
+                Plugin.Log.LogWarning("The Grey Man's power can't be taken: BossStone_TheQueen has no ItemStand.");
+                return;
+            }
+            GameFields.TrySetObject(stand, new System.Collections.Generic.List<ItemDrop> { trophy }, "m_supportedItems");
+            GameFields.TrySetObject(stand, power, "m_guardianPower");
+
+            var runeType = Type.GetType("RuneStone, assembly_valheim");
+            var rune = runeType != null ? stone.GetComponentInChildren(runeType, true) : null;
+            if (rune != null)
+            {
+                var random = GameFields.Get(rune, "m_randomTexts") as System.Collections.IList;
+                if (random != null) random.Clear();
+                GameFields.TrySet(rune, "$piece_scot_greymanstone", "m_name");
+                GameFields.TrySet(rune, "Am Fear Liath Mòr", "m_topic");
+                GameFields.TrySet(rune, "Hang the grey one's head here, and walk the high tops as he did: sure-footed, unheard, " +
+                    "and never cold.", "m_text");
+            }
+            PrefabManager.Instance.AddPrefab(stone);
         }
 
         static void AddDread()

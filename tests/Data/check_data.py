@@ -183,7 +183,8 @@ check(spawners and not bad, "%d spawners copy vanilla CreatureSpawners and spawn
 stones = {"Scot_StandingStone"} | {"Scot_SymbolStone%d" % (i + 1) for i in range(places_src.count('new[] { "') - len(spawners))}
 clones_src = "".join((root / "src/Scotheim/Content" / f).read_text(encoding="utf-8") for f in ("Bagging.cs", "Boss.cs"))
 cairns = set(re.findall(r'CreateClonedPrefab\("(Scot_\w+)", "(\w+)"\)', clones_src))
-check(len(cairns) == 2 and all(base in vanilla_prefabs for _, base in cairns), "summit cairn and boss altar copy vanilla prefabs: " + ", ".join(sorted(b for _, b in cairns)))
+check(len(cairns) == 3 and all(base in vanilla_prefabs for _, base in cairns), "summit cairn, boss altar and boss stone copy vanilla prefabs: " + ", ".join(sorted(b for _, b in cairns)))
+check({"ItemStand", "BossStone"} <= prefab_components.get("BossStone_TheQueen", set()), "the guardian power stone's base has an ItemStand and BossStone")
 check("OfferingBowl" in prefab_components.get("offeraltar_FrozenKing_bossroom", set()), "the boss altar's base has an OfferingBowl")
 own = set(prefabs) | {s[0] for s in spawners} | stones | {c for c, _ in cairns} | {"piece_bpcenterpoint"}
 blueprint_names = set()
@@ -199,7 +200,9 @@ for f in sorted(data.glob("*.blueprint")):
         elif fields[0] not in vanilla_prefabs and fields[0] not in own:
             missing.add(fields[0])
 check(not missing, "blueprints use real prefabs" + (": " + ", ".join(sorted(missing)) if missing else ""))
-cloned = {"scotheim_runestone%d" % (n + 1) for n in range(5)} if "scotheim_runestone" in places_src else set()
+stone_texts = len(re.findall(r'new\[\] \{ "[^"]+", "[^"]+" \}', places_src.split("SymbolStones =")[1].split("};")[0]))
+cloned = {"scotheim_runestone%d" % (n + 1) for n in range(stone_texts)} if "scotheim_runestone" in places_src else set()
+check(stone_texts == 6, "six symbol stone texts")
 base = re.search(r'CreateClonedLocation\(name, "(\w+)"\)', places_src)
 check(base and "Location" in prefab_components.get(base.group(1), set()) and "RuneStone" in prefab_components.get(base.group(1), set()),
       "runestone locations copy a vanilla location with a RuneStone" + (" (" + base.group(1) + ")" if base else ""))

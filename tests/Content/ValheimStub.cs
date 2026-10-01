@@ -51,7 +51,7 @@ public class HitData
 {
     public struct DamageTypes { public float m_damage, m_blunt, m_slash, m_pierce, m_chop, m_pickaxe, m_fire, m_frost, m_lightning, m_poison, m_spirit; public void Modify(float multiplier) { } }
     public struct DamageModPair { public DamageType m_type; public DamageModifier m_modifier; }
-    [System.Flags] public enum DamageType { Blunt = 1, Slash = 2, Pierce = 4 }
+    [System.Flags] public enum DamageType { Blunt = 1, Slash = 2, Pierce = 4, Frost = 64 }
     public enum DamageModifier { Normal, Resistant, Weak }
 }
 public class ZoneSystem { public class ZoneLocation { } }
