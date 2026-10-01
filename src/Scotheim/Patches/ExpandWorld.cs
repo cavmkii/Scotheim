@@ -218,7 +218,7 @@ namespace Scotheim.Patches
         {
             // tests/Data/check_data.py checks this list against git history.
             { FileName, new[] { "e7fd26f1f5d69f39", "063f4b3eae79531a", "47c982eb6dd734ee", "a6262f4eff3dc651" } },
-            { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa", "5701be8eddf32039", "ea39f5128c57a39a", "5074ac3eed8be0de", "3a3641781cb81f63" } },
+            { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa", "5701be8eddf32039", "ea39f5128c57a39a", "5074ac3eed8be0de", "3a3641781cb81f63", "fedff3064f4fd3c7" } },
             { "expand_clutter_scotheim.yaml", new[] { "f186b91465d1e721", "facdfd177fc3d3ed" } },
             { "expand_spawns_scotheim.yaml", new[] { "e3fe9b1655bcf793" } },
             { "expand_locations_scotheim.yaml", new[] { "ce145deb2eded126", "2a726b435d06f2f4", "2d799944054d17f9", "cc8d5b7368e22015", "dc9432fb0422aa35", "c4a1d1a5e06e3e7e", "fe12fc34ff080dbe", "39cbce773f75fe14" } },

@@ -372,34 +372,98 @@
   maxAltitude: 1000
   maxTerrainDelta: 2
   groundOffset: -0.5
-- prefab: Bush01_heath
-  min: 10
-  max: 20
-  biome: munros
-  maxAltitude: 90
-  maxTerrainDelta: 2
+# Munro vegetation follows a real Ben's zones: Scots pine and birch on the lower slopes, heather, blaeberry and
+# juniper-like scrub above, and low montane heath on the tops. Slopes are steep, so terrain delta is looser
+# than elsewhere (2 m rejected most attempts and left the hills bare).
+# Lower slopes: pine and birch woods.
 - prefab: Pinetree_01
-  min: 0
-  max: 3
+  min: 2
+  max: 6
   scaleMin: 0.6
   scaleMax: 1.5
   randTilt: 4
   biome: munros
   minAltitude: 2
-  maxAltitude: 70
-  maxTilt: 30
-  maxTerrainDelta: 2
+  maxAltitude: 75
+  maxTilt: 35
+  maxTerrainDelta: 4
+  groupSizeMin: 2
+  groupSizeMax: 5
+  groupRadius: 12
 - prefab: Birch1
-  min: 0
-  max: 2
+  min: 1
+  max: 3
   scaleMin: 0.4
   randTilt: 4
   biome: munros
   minAltitude: 2
-  maxAltitude: 70
+  maxAltitude: 85
+  maxTilt: 35
+  maxTerrainDelta: 4
+  groupSizeMin: 2
+  groupSizeMax: 4
+  groupRadius: 8
+- prefab: Birch2
+  min: 0
+  max: 2
+  scaleMin: 0.4
+  scaleMax: 0.9
+  randTilt: 4
+  biome: munros
+  minAltitude: 2
+  maxAltitude: 85
+  maxTilt: 35
+  maxTerrainDelta: 4
+  groupSizeMin: 2
+  groupSizeMax: 3
+  groupRadius: 6
+# Mid slopes: heath bushes and juniper-like scrub, and blaeberry, up to near the tops.
+- prefab: Bush01_heath
+  min: 10
+  max: 20
+  biome: munros
+  maxAltitude: 140
+  maxTilt: 40
+  maxTerrainDelta: 5
+- prefab: shrub_2_heath
+  min: 4
+  max: 10
+  scaleMin: 0.7
+  scaleMax: 1.1
+  biome: munros
+  minAltitude: 40
+  maxAltitude: 130
+  maxTilt: 40
+  maxTerrainDelta: 5
+  groupSizeMin: 2
+  groupSizeMax: 4
+  groupRadius: 4
+- prefab: Scot_BlaeberryBush
+  min: 0
+  max: 1
+  chanceToUseGroundTilt: 1
+  biome: munros
+  minAltitude: 40
+  maxAltitude: 100
   maxTilt: 30
-  maxTerrainDelta: 2
-
+  maxTerrainDelta: 3
+  groupSizeMin: 3
+  groupSizeMax: 6
+  groupRadius: 5
+# Tops: montane heath, the dwarf shrubs that hug the ground on the high plateaux.
+- prefab: shrub_2_heath
+  min: 6
+  max: 12
+  scaleMin: 0.4
+  scaleMax: 0.7
+  biome: munros
+  minAltitude: 110
+  maxAltitude: 1000
+  maxTilt: 40
+  maxTerrainDelta: 5
+  groupSizeMin: 2
+  groupSizeMax: 5
+  groupRadius: 3
 # ---------------------------------------------------------- Highland raw materials
 # Scotheim's own pickables (Jötunn clones). Gear is made only from what the Highlands yield.
 # Bog iron: nodules of ore at loch and lochan edges, where bog ore forms.
