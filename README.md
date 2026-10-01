@@ -64,7 +64,7 @@ Items, also Jötunn clones. Each keeps its base item's model and icon for now:
 
 The food values are my estimate of Mistlands-tier food, not copied from the game. Valheim's "blueberries" already look like bilberries (*Vaccinium myrtillus*), which is what a blaeberry is, so the blaeberry bush is a copy of the blueberry bush that yields the Scots-named item.
 
-Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tamed like boars. They keep the boar body for taming and breeding but never attack: they take the deer's neutral faction, have no attack, and run when hurt. Lambs too.
+Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tamed like boars. They keep the boar body for taming and breeding but never attack: they take the deer's neutral faction, have no attack, and run when hurt. Lambs too. Highland cattle share that neutral faction, so cows and sheep never fight; cows keep their attack and still defend themselves.
 
 ### Weapons and armour
 
