@@ -40,7 +40,8 @@ namespace Scotheim.Content
             var ai = animal.GetComponent("MonsterAI");
             if (ai == null)
             {
-                Plugin.Log.LogWarning(animal.name + " has no MonsterAI; it keeps its base behaviour.");
+                // Lambs are piglet clones, which use the passive AnimalAI: they flee and never attack anyway.
+                Plugin.Log.LogInfo(animal.name + " uses passive animal AI (no MonsterAI), so it already never attacks.");
                 return;
             }
             GameFields.TrySet(ai, false, "m_enableHuntPlayer");
