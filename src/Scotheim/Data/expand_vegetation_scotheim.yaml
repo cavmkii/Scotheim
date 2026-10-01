@@ -466,12 +466,16 @@
   groupRadius: 3
 # ---------------------------------------------------------- Highland raw materials
 # Scotheim's own pickables (Jötunn clones). Gear is made only from what the Highlands yield.
-# Bog iron: nodules of ore at loch and lochan edges, where bog ore forms...
+# Bog iron: nodules of ore at loch and lochan edges, where bog ore forms, on the strand just above the water (in game
+# they were spawning in the shallows, under the surface, when this started 1 m below water). Larger than a pebble so
+# they can be seen in the grass...
 - prefab: Scot_BogIronNodule
   min: 3
   max: 5
+  scaleMin: 1.3
+  scaleMax: 1.8
   biome: highland_moor, caledonian_forest
-  minAltitude: -1
+  minAltitude: 0.3
   maxAltitude: 3
   maxTilt: 25
   maxTerrainDelta: 3
@@ -482,6 +486,8 @@
 - prefab: Scot_BogIronNodule
   min: 0
   max: 2
+  scaleMin: 1.3
+  scaleMax: 1.8
   biome: highland_moor
   minAltitude: 0.5
   maxAltitude: 30
