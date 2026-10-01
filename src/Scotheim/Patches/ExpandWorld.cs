@@ -175,6 +175,24 @@ namespace Scotheim.Patches
         }
 
         /// <summary>
+        /// The entry with this key in a BepInEx ConfigFile, in any section, or null. ConfigFile has two indexers
+        /// (by ConfigDefinition, and by section and key), so the one taking a ConfigDefinition is picked by its
+        /// parameter type: asking for "Item" by name alone throws "Ambiguous match found" (seen in game).
+        /// </summary>
+        internal static object FindConfigEntry(object config, string key)
+        {
+            var keys = config.GetType().GetProperty("Keys");
+            if (keys == null) return null;
+            foreach (var definition in (System.Collections.IEnumerable)keys.GetValue(config, null))
+            {
+                if ((string)definition.GetType().GetProperty("Key").GetValue(definition, null) != key) continue;
+                var indexer = config.GetType().GetProperty("Item", new[] { definition.GetType() });
+                return indexer != null ? indexer.GetValue(config, new[] { definition }) : null;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// EWD loads Scotheim's spawn file only with its "Spawn data" setting on, which is off by default, and its
         /// "Event data" setting breaks EWD's startup on this game version (see Content/Raid.cs). These are set here so
         /// nobody has to edit EWD's config. Reached through BepInEx's plugin list by reflection; EWD writes the change
@@ -194,10 +212,7 @@ namespace Scotheim.Patches
                 var changed = new List<string>();
                 foreach (var setting in new[] { new KeyValuePair<string, bool>("Spawn data", true), new KeyValuePair<string, bool>("Event data", false) })
                 {
-                    object entry = null;
-                    foreach (var key in (System.Collections.IEnumerable)config.GetType().GetProperty("Keys").GetValue(config, null))
-                        if ((string)key.GetType().GetProperty("Key").GetValue(key, null) == setting.Key)
-                            entry = config.GetType().GetProperty("Item").GetValue(config, new[] { key });
+                    var entry = FindConfigEntry(config, setting.Key);
                     var boxed = entry != null ? entry.GetType().GetProperty("BoxedValue") : null;
                     if (boxed == null)
                     {

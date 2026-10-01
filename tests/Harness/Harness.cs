@@ -31,6 +31,12 @@ static class Harness
         var spawnDump = Path.Combine(configDir, "expand_spawns.yaml");
         File.WriteAllText(spawnDump, dump);
 
+        // EWD's settings live in a BepInEx ConfigFile, which has two indexers; the lookup must not be ambiguous.
+        var fakeConfig = new FakeConfig();
+        var found0 = ExpandWorld.FindConfigEntry(fakeConfig, "Spawn data") as FakeEntry;
+        Check(found0 != null && found0.Name == "Spawn data" && ExpandWorld.FindConfigEntry(fakeConfig, "Missing") == null,
+            "EWD setting found in a config with two indexers");
+
         var plugin = new Plugin();
         typeof(Plugin).GetMethod("Awake", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(plugin, null);
 
@@ -256,4 +262,20 @@ static class Harness
   - environment: Misty
     weight: 1
 ";
+}
+
+// Stand-ins for BepInEx's ConfigFile, ConfigDefinition and ConfigEntryBase: two indexers, like the real one.
+class FakeDefinition { public string Section { get; set; } public string Key { get; set; } }
+class FakeEntry { public string Name; public object BoxedValue { get; set; } }
+class FakeConfig
+{
+    readonly Dictionary<FakeDefinition, FakeEntry> entries = new Dictionary<FakeDefinition, FakeEntry>();
+    public FakeConfig()
+    {
+        foreach (var k in new[] { "Spawn data", "Event data" })
+            entries[new FakeDefinition { Section = "2. Data", Key = k }] = new FakeEntry { Name = k, BoxedValue = false };
+    }
+    public ICollection<FakeDefinition> Keys { get { return entries.Keys; } }
+    public FakeEntry this[FakeDefinition key] { get { return entries[key]; } }
+    public FakeEntry this[string section, string key] { get { foreach (var kv in entries) if (kv.Key.Section == section && kv.Key.Key == key) return kv.Value; return null; } }
 }
