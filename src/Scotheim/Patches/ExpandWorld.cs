@@ -337,7 +337,7 @@ namespace Scotheim.Patches
             { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa", "5701be8eddf32039", "ea39f5128c57a39a", "5074ac3eed8be0de", "3a3641781cb81f63", "fedff3064f4fd3c7", "ecaec4640f6da63c", "1d07cbddecee2262", "35284329bcb27cd7", "ba725ab10cdb397f", "8505df72bcafbdb3", "8f97233333b23163", "cab9ff7298d6ad20" } },
             { "expand_clutter_scotheim.yaml", new[] { "f186b91465d1e721", "facdfd177fc3d3ed", "c56b433982d86238" } },
             { "expand_spawns_scotheim.yaml", new[] { "e3fe9b1655bcf793" } },
-            { "expand_locations_scotheim.yaml", new[] { "ce145deb2eded126", "2a726b435d06f2f4", "2d799944054d17f9", "cc8d5b7368e22015", "dc9432fb0422aa35", "c4a1d1a5e06e3e7e", "fe12fc34ff080dbe", "39cbce773f75fe14", "8e87be14fbcf04ce", "241fbc260a58f1ef" } },
+            { "expand_locations_scotheim.yaml", new[] { "ce145deb2eded126", "2a726b435d06f2f4", "2d799944054d17f9", "cc8d5b7368e22015", "dc9432fb0422aa35", "c4a1d1a5e06e3e7e", "fe12fc34ff080dbe", "39cbce773f75fe14", "8e87be14fbcf04ce", "241fbc260a58f1ef", "0b8ec0a5a7d53bae" } },
             { "scotheim_shieling.blueprint", new[] { "4e2b1ff402de1f0c" } },
             { "scotheim_cairn.blueprint", new[] { "4b67526b98f77391", "77cb3cbfa4b1f120" } },
         };
