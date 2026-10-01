@@ -92,6 +92,13 @@ namespace Scotheim.Terrain
         readonly Island[] islands;
         readonly float forestThreshold;
 
+        /// <summary>A moor loch: a grain-aligned ellipse of water carved into the lowland shelf.</summary>
+        sealed class Loch
+        {
+            public float X, Y, HalfLength, HalfWidth, AlongX, AlongY, AcrossX, AcrossY, Reach;
+        }
+        readonly List<Loch> lochs = new List<Loch>();
+
         public HighlandsTerrain(HighlandsSettings settings, int worldSeed, IList<LandmassSite> sites)
         {
             s = settings;
@@ -120,6 +127,107 @@ namespace Scotheim.Terrain
             lochThreshold = Quantile(Fbm2Quantiles, settings.LochFrequency);
             lochanThreshold = Quantile(Fbm2Quantiles, settings.LochanFrequency);
             drumlinThreshold = Quantile(PerlinQuantiles, 1f - settings.DrumlinCoverage);
+            PlaceMoorLochs();
+        }
+
+        // ---------------------------------------------------------------- moor lochs
+
+        /// <summary>
+        /// Puts a few big lochs on each island's moor. Lochans come from noise, but on islands this size the moor is
+        /// only a narrow shelf and noise rarely leaves room for a large loch (none over 20 ha in eleven preview
+        /// variants), so these are placed on purpose: seeded candidate spots are tried, and the ones whose whole
+        /// footprint is flat moor, well inside the coast and clear of the hills, win.
+        /// </summary>
+        void PlaceMoorLochs()
+        {
+            if (s.MoorLochsPerIsland <= 0 || s.MoorLochLength <= 0f) return;
+            for (int i = 0; i < islands.Length; i++)
+            {
+                var island = islands[i];
+                float scale = island.Length / Math.Max(1f, s.LandmassLength);
+                int want = Math.Max(1, (int)Math.Round(s.MoorLochsPerIsland * scale));
+                for (int n = 0; n < want; n++)
+                {
+                    Loch best = null;
+                    float bestScore = float.MaxValue;
+                    for (int k = 0; k < 400; k++)
+                    {
+                        int key = n * 1000 + k;
+                        float u = (Noise.Hash01(i, key, seed + 81) * 2f - 1f) * 0.8f;
+                        float v = (Noise.Hash01(i, key, seed + 82) * 2f - 1f) * 0.8f;
+                        float x = island.X + u * island.Length * island.AlongX + v * island.Width * island.AcrossX;
+                        float y = island.Y + u * island.Length * island.AlongY + v * island.Width * island.AcrossY;
+                        float half = 0.5f * s.MoorLochLength * (0.75f + 0.5f * Noise.Hash01(i, key, seed + 83)) * (float)Math.Sqrt(scale);
+                        float turn = (Noise.Hash01(i, key, seed + 84) - 0.5f) * 0.5f; // up to ~15 degrees off the grain
+                        float ax = alongX * (float)Math.Cos(turn) - acrossX * (float)Math.Sin(turn);
+                        float ay = alongY * (float)Math.Cos(turn) - acrossY * (float)Math.Sin(turn);
+                        var loch = new Loch
+                        {
+                            X = x, Y = y, HalfLength = half,
+                            HalfWidth = half * (0.33f + 0.17f * Noise.Hash01(i, key, seed + 85)),
+                            AlongX = ax, AlongY = ay, AcrossX = ay, AcrossY = -ax,
+                        };
+                        loch.Reach = loch.HalfLength * 1.5f;
+                        float score = FootprintScore(loch);
+                        if (score < bestScore) { bestScore = score; best = loch; }
+                    }
+                    if (best != null && bestScore < 1f) lochs.Add(best);
+                }
+            }
+        }
+
+        /// <summary>How unsuitable a loch's footprint is: 0 is all flat moor well inside the coast; 1 or more rejects it.</summary>
+        float FootprintScore(Loch loch)
+        {
+            float score = 0f;
+            foreach (var other in lochs)
+            {
+                float gap = (float)Math.Sqrt((other.X - loch.X) * (other.X - loch.X) + (other.Y - loch.Y) * (other.Y - loch.Y));
+                if (gap < other.Reach + loch.Reach + 250f) return float.MaxValue;
+            }
+            for (int a = -2; a <= 2; a++)
+            {
+                for (int b = -1; b <= 1; b++)
+                {
+                    float x = loch.X + 1.2f * (a / 2f * loch.HalfLength * loch.AlongX + b * loch.HalfWidth * loch.AcrossX);
+                    float y = loch.Y + 1.2f * (a / 2f * loch.HalfLength * loch.AlongY + b * loch.HalfWidth * loch.AcrossY);
+                    float d;
+                    if (Dominant(x, y, out d) == null) return float.MaxValue;
+                    if (d < 0.3f || d > 0.85f) return float.MaxValue;        // stay off the coastal ramp and out of the sea
+                    float hills = MassifWeight(x, y, d);
+                    if (hills > 0.1f) return float.MaxValue;                // not on the hills
+                    score += hills + 0.02f * Math.Abs(d - 0.6f);
+                }
+            }
+            return score;
+        }
+
+        /// <summary>Carves the moor lochs into a final moor or forest height (altitude in, altitude out).</summary>
+        float CarveMoorLochs(float x, float y, float h)
+        {
+            foreach (var loch in lochs)
+            {
+                float dx = x - loch.X, dy = y - loch.Y;
+                if (Math.Abs(dx) > loch.Reach || Math.Abs(dy) > loch.Reach) continue; // Reach covers the shore noise too
+                float du = (dx * loch.AlongX + dy * loch.AlongY) / loch.HalfLength;
+                float dv = (dx * loch.AcrossX + dy * loch.AcrossY) / loch.HalfWidth;
+                // A ragged shore: bays and points rather than a clean ellipse.
+                float q = (float)Math.Sqrt(du * du + dv * dv)
+                    + 0.55f * Noise.Fbm2(x / 220f, y / 220f, seed + 86) + 0.12f * Noise.Perlin(x / 60f, y / 60f, seed + 87);
+                if (q >= 1.1f) continue;
+                float bank = SmoothStep(1.1f, 0.7f, q);                         // banks ease down over the outer fifth or so
+                float floor = -1.5f - s.MoorLochDepth * SmoothStep(0.9f, 0.2f, q); // shallow margins, deep middle
+                h = Math.Min(h, Lerp(h, floor, bank));
+            }
+            return h;
+        }
+
+        /// <summary>The moor lochs' centres and lengths, as (x, y, length) triples, for checks and logs.</summary>
+        public List<float> MoorLochs()
+        {
+            var list = new List<float>();
+            foreach (var loch in lochs) { list.Add(loch.X); list.Add(loch.Y); list.Add(loch.HalfLength * 2f); }
+            return list;
         }
 
         public HighlandsSettings Settings { get { return s; } }
@@ -713,7 +821,7 @@ namespace Scotheim.Terrain
                 if (lochan > 0f && h > -s.LochanDepth)
                     h = Lerp(h, -s.LochanDepth, lochan);
             }
-            return h;
+            return CarveMoorLochs(x, y, h);
         }
 
         /// <summary>Stage B, Black Forest: drumlin swarms aligned with the grain, plus hummocky moraine.</summary>
@@ -727,7 +835,8 @@ namespace Scotheim.Terrain
             d = d > 1f ? 1f : d;
             d = d * d * (3f - 2f * d);
             float hummocks = s.HummockAmplitude * Noise.Perlin(x / s.HummockScale, y / s.HummockScale, seed + 52);
-            return altitude + land * (s.DrumlinAmplitude * d + hummocks);
+            // A moor loch can reach into a forest patch; carve it there too so it isn't cut off at the biome edge.
+            return CarveMoorLochs(x, y, altitude + land * (s.DrumlinAmplitude * d + hummocks));
         }
 
         // ---------------------------------------------------------------- helpers
