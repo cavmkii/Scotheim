@@ -23,8 +23,24 @@ static class Harness
         var h = new Harmony("harness.ewd");
         h.Patch(AccessTools.Method(typeof(WorldGenerator), "GetBiomeHeight"), prefix: new HarmonyMethod(typeof(ExpandWorldData.TerrainSwap), "Prefix"));
 
+        // EWD 1.73's own spawn dump, as it writes it: the Fimbulvinter entries have no biome (read as every biome).
+        const string dump = "- prefab: Deer\n  enabled: true\n  name: Deer\n  biome: Meadows, BlackForest\n  maxSpawned: 1\n" +
+            "- prefab: JotunWitch\n  enabled: true\n  name: Fimbulvinter - Jotun Witches\n  maxSpawned: 2\n" +
+            "- prefab: projectile_FimbulvinterMeteor\n  enabled: true\n  name: Fimbulvinter - Meteors\n  groundOffset: 150\n";
+        Directory.CreateDirectory(configDir);
+        var spawnDump = Path.Combine(configDir, "expand_spawns.yaml");
+        File.WriteAllText(spawnDump, dump);
+
         var plugin = new Plugin();
         typeof(Plugin).GetMethod("Awake", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(plugin, null);
+
+        Func<string, bool> dumpFixed = text => text.Split(new[] { "- prefab:" }, StringSplitOptions.None).Count(e => e.Contains("Fimbulvinter") && e.Contains("biome: None")) == 2
+            && text.Contains("biome: Meadows, BlackForest") && !text.Contains("Deer\n  biome: None");
+        Check(dumpFixed(File.ReadAllText(spawnDump)), "EWD's spawn dump: Fimbulvinter entries get biome: None, others untouched");
+        var fixedText = File.ReadAllText(spawnDump);
+        File.WriteAllText(spawnDump, dump); // as EWD writes it again
+        for (int i = 0; i < 30 && File.ReadAllText(spawnDump) == dump; i++) System.Threading.Thread.Sleep(100);
+        Check(File.ReadAllText(spawnDump) == fixedText, "EWD's spawn dump is fixed again when rewritten, and only once");
 
         var yaml = Path.Combine(configDir, "expand_biomes_scotheim.yaml");
         var vegYaml = Path.Combine(configDir, "expand_vegetation_scotheim.yaml");

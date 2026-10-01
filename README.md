@@ -230,7 +230,7 @@ Body armour such as the kilt, léine and acton is painted onto the player's skin
 - **Additive.** The island only rises out of water deeper than a few metres. Vanilla land and the water just off its beaches keep their vanilla biome and terrain. If a vanilla islet sits inside the footprint, the Highlands wrap around it.
 - **Biomes.** Custom biomes come from [Expand World Data](https://thunderstore.io/c/valheim/p/JereKuusela/Expand_World_Data/), a soft dependency. Scotheim writes `expand_biomes_scotheim.yaml`, `expand_vegetation_scotheim.yaml`, `expand_clutter_scotheim.yaml` and `expand_spawns_scotheim.yaml` into `BepInEx/config/expand_world/`. The sources are in `src/Scotheim/Data/`. Scotheim finds the biomes by their identifiers (`highland_moor`, `caledonian_forest`, `munros`). Without EWD, the island uses vanilla Meadows, Black Forest and Mountain, with their vanilla vegetation and creatures.
 - **Your edits stick.** A data file is replaced only when it's missing, or when it's an unedited copy of what an earlier Scotheim wrote (compared by fingerprint, ignoring line endings). If you've edited one, it's kept, and the new default is written beside it as `*.yaml.new`. EWD doesn't load `.new` files; merge from them by hand.
-- **Spawns need EWD's spawn data.** Set `Spawn data = true` in `expand_world_data.cfg`; otherwise EWD ignores `expand_spawns*.yaml` and nothing spawns on the Highlands. **Fix EWD's own dump when you do:** its `expand_spawns.yaml` writes the four `Fimbulvinter - …` entries with no `biome`, and EWD 1.73 reads a missing biome as *every* biome (`DataManager.ToBiomes`), so meteors, Jotuns and Elakingar start spawning everywhere. Add `biome: None` to those four entries. EWD 1.73's `Drop data` setting does nothing on its own: that version has no drop files. Drops are set on the Jötunn clones instead.
+- **Spawns need EWD's spawn data**, which Scotheim turns on (see Build and install). With it on, EWD dumps the game's own spawns to `expand_spawns.yaml`, and EWD 1.73 writes the four `Fimbulvinter - …` entries with no `biome`, which it reads as *every* biome (`DataManager.ToBiomes`): meteors, Jotuns and Elakingar everywhere. Scotheim adds `biome: None` to those four entries whenever the file is written, and touches nothing else in it. EWD 1.73's `Drop data` setting does nothing on its own: that version has no drop files. Drops are set on the Jötunn clones instead.
 
 ## Status
 
@@ -263,7 +263,7 @@ Still unverified:
 
 ## Known limitations
 
-- **New worlds only.** Every player and the server need the mod with identical settings; the log prints a `signature` to compare. EWD syncs its YAML from the server.
+- **New worlds only.** Every player and the server need the same Scotheim build, and the same terrain settings if `CustomTerrain` is on; the log prints a `signature` to compare. EWD syncs its YAML from the server.
 - **Crafting stations** (black forge, galdr table) are still built from Mistlands materials; only the gear recipes are Highland-only.
 - **Gear looks vanilla.** Each piece keeps its look item's model and icon; in particular, the Wallace sword is no bigger than Krom.
 - **Stand-in creatures.** Clones look, move and attack exactly like their base, and a scaled creature's ragdoll drops back to normal size when it dies. Clones also carry the base's trophy drop.
@@ -276,10 +276,15 @@ Still unverified:
 
 ## Build and install
 
-1. Install BepInEx 5 for Valheim, plus [Jötunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) (required) and Expand World Data, on the server and every client. In `expand_world_data.cfg`, set `Spawn data = true`.
+1. Install BepInEx 5 for Valheim, plus [Jötunn](https://thunderstore.io/c/valheim/p/ValheimModding/Jotunn/) (required) and Expand World Data, on the server and every client. A mod manager (Vortex, r2modman) can do this.
 2. `dotnet build src/Scotheim -c Release -p:ValheimDir="<path to Valheim>"` (restores Jötunn's compile DLL from NuGet)
-3. Copy `src/Scotheim/bin/Release/netstandard2.1/Scotheim.dll` to `<Valheim>/BepInEx/plugins/`.
-4. Start the game once to generate `BepInEx/config/cavmkii.scotheim.cfg` and the EWD biome file, then create a new world. The log reports where the Highlands landed.
+3. Copy `src/Scotheim/bin/Release/netstandard2.1/Scotheim.dll` to `<Valheim>/BepInEx/plugins/`, or zip it and add the zip to a mod manager.
+4. Start the game, then create a new world. The log reports where the Highlands landed.
+
+No config editing is needed:
+
+- **EWD settings.** Scotheim turns on EWD's `Spawn data` (its creature spawns need it) and keeps `Event data` off (it breaks EWD 1.73's startup), writing both to `expand_world_data.cfg`. The log says when it changed one. On the very first start EWD may already have read the old value, so restart once before making a world.
+- **Terrain settings.** `cavmkii.scotheim.cfg` lists every terrain setting, but they're ignored unless `CustomTerrain = true`, so a saved file never holds back a later update's terrain. Turn it on only to tune.
 
 ## Previewing changes
 
