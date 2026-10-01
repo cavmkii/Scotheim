@@ -143,8 +143,9 @@ On the sources:
 ### Crofting, the still and Highland food
 
 - **Bere** is the old barley of the north, still grown in Orkney and the Western Isles. It grows wild in small patches on the moor and by shielings. Like vanilla barley, the grain is its own seed: plant it with the cultivator on the open moor (the moor farms like the Plains).
-- **Peat** turves lie on the open moor.
-- **Uisge-beatha** is brewed like mead: a *whisky wash* at the cauldron (10 bere, 2 peat), then the fermenter, which gives 6. It carries the frost-resistance mead's protection from freezing, which the Munros' weather calls for, plus +15 % stamina regen.
+- **Peat** turves lie on the open moor. Cut peat is wet: dry it in a **peat stack** (built with the hammer near a workbench, 10 stone and 6 wood; a copy of the charcoal kiln that needs no fuel and takes 90 s a peat), as peats were stacked to dry in the wind.
+- **Uisge-beatha** is brewed like mead: a *whisky wash* at the cauldron (10 bere, 2 dried peat, whose smoke is what flavours the malt), then the fermenter, which gives 6.
+- **Moss bandage** (2 per craft at the workbench: 1 dried peat, 2 wool). Dried bog moss was a real wound dressing, gathered in Scotland by the ton in the First World War. Using one heals 30 at once and 30 more over 10 seconds. It shares the healing meads' cooldown slot (so no stacking with them) with a 60 s cooldown of its own: a quick patch-up rather than a big heal. It carries the frost-resistance mead's protection from freezing, which the Munros' weather calls for, plus +15 % stamina regen.
 - **Food**, made at the cauldron. The values are my estimates for late-game food.
 
 | Food | Recipe | Health | Stamina | Regen | Duration |

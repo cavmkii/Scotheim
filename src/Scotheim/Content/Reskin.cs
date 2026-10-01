@@ -65,6 +65,7 @@ namespace Scotheim.Content
             { "Scot_BogIronDeposit_frac", Tint(1.25f, 0.7f, 0.4f) },
             { "Scot_Hacksilver", Tint(1.25f, 1.3f, 1.4f) },
             { "Scot_Peat", Tint(0.65f, 0.45f, 0.3f) },            // brown turf, not coal
+            { "Scot_DriedPeat", Tint(0.85f, 0.65f, 0.45f) },      // dried turf: lighter, dustier brown
             { "Scot_UisgeBeatha", Tint(1.25f, 0.85f, 0.45f) },    // amber       // scrap iron's look, made silvery
             { "Scot_BogIron", Tint(0.6f, 0.52f, 0.46f) },
             { "Scot_BogOak", Tint(0.3f, 0.26f, 0.22f) },

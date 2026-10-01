@@ -89,11 +89,19 @@ namespace Scotheim.Content
             new ItemSpec { Name = "Scot_RowanWood", Base = "FineWood" },
             // Crofting and the still. Bere is the old Scottish barley; like vanilla barley it is its own seed.
             new ItemSpec { Name = "Scot_Bere", Base = "Barley" },
+            // Peat is cut wet and dried in a peat stack (Content/Peat.cs); dried peat smokes the malt for the whisky
+            // and, as bog moss, dresses wounds.
             new ItemSpec { Name = "Scot_Peat", Base = "Coal" },
+            new ItemSpec { Name = "Scot_DriedPeat", Base = "Coal" },
             new ItemSpec
             {
                 Name = "Scot_WhiskyWash", Base = "MeadBaseFrostResist", Station = "piece_cauldron",
-                Recipe = new[] { new RequirementConfig("Scot_Bere", 10), new RequirementConfig("Scot_Peat", 2) },
+                Recipe = new[] { new RequirementConfig("Scot_Bere", 10), new RequirementConfig("Scot_DriedPeat", 2) },
+            },
+            new ItemSpec
+            {
+                Name = "Scot_MossBandage", Base = "MeadHealthMinor", Station = "piece_workbench", Amount = 2,
+                Recipe = new[] { new RequirementConfig("Scot_DriedPeat", 1), new RequirementConfig("Scot_Wool", 2) },
             },
             new ItemSpec { Name = "Scot_UisgeBeatha", Base = "MeadFrostResist" },
             // Bog myrtle keeps midges off (Content/Midges.cs): gathered by lochs on the moor, made into a salve.
@@ -202,6 +210,7 @@ namespace Scotheim.Content
             Deposits.Add(added);
             Croft.Add(added);
             Midges.Add(added);
+            Peat.Add(added);
             GreyMan.ItemsReady(added);
         }
 

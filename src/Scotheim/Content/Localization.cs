@@ -36,7 +36,9 @@ namespace Scotheim.Content
             { "Scot_Cairngorm", new[] { "Cairngorm", "Smoky quartz from the high tops. It goes on a dirk hilt or a plaid brooch." } },
             { "Scot_RowanWood", new[] { "Rowan wood", "Rowan keeps witches and the Sìth at bay. Usually." } },
             { "Scot_Bere", new[] { "Bere", "The old barley of the north: short, hardy and quick to ripen. Plant it with the cultivator." } },
-            { "Scot_Peat", new[] { "Peat", "Cut from the moor and dried. It gives the whisky its smoke." } },
+            { "Scot_Peat", new[] { "Peat", "Wet turf cut from the moor. Stack it to dry before it'll burn." } },
+            { "Scot_DriedPeat", new[] { "Dried peat", "Wind-dried peat. Its smoke flavours the malt for whisky, and the dry moss makes a clean dressing." } },
+            { "Scot_MossBandage", new[] { "Moss bandage", "Dried bog moss in a wool pad. Heals 30 at once and 30 more over 10 seconds; shares a cooldown with healing meads." } },
             { "Scot_WhiskyWash", new[] { "Whisky wash", "Malted bere and peat smoke in water. Leave it in the fermenter." } },
             { "Scot_UisgeBeatha", new[] { "Uisge-beatha", "The water of life. Keeps the cold out on the high tops." } },
             { "Scot_Haggis", new[] { "Haggis", "Mutton, bere and suet, boiled in a bag. Better than it sounds." } },
@@ -112,6 +114,10 @@ namespace Scotheim.Content
             english["se_scot_dread"] = "Dread";
             english["se_scot_dread_tooltip"] = "Something tall is near. Your breath comes short and your legs feel heavy.";
             english["piece_scot_bogirondeposit"] = "Bog iron deposit";
+            english["piece_scot_peatstack"] = "Peat stack";
+            english["piece_scot_peatstack_desc"] = "Stack cut peat here to dry in the wind. Slow, and needs no fuel.";
+            english["se_scot_bandaged"] = "Bandaged";
+            english["se_scot_bandaged_tooltip"] = "Healing under a moss dressing.";
             english["piece_scot_greymanstone"] = "The Grey Man's stone";
             english["se_scot_greymanpower"] = "Am Fear Liath Mòr";
             english["se_scot_greymanpower_tooltip"] = "Walk the high tops as he did: no freezing, half the stamina for running and jumping, " +
