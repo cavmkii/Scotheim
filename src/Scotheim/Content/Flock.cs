@@ -25,6 +25,14 @@ namespace Scotheim.Content
                 GameObject animal;
                 if (creatures.TryGetValue(name, out animal)) Docile(animal);
             }
+            // Highland cattle share the sheep's neutral faction, so the herds never fight each other. Unlike sheep they
+            // keep their attack: a Highland cow still defends itself when attacked.
+            foreach (var name in new[] { "Scot_HighlandCow", "Scot_HighlandCalf" })
+            {
+                GameObject animal;
+                if (creatures.TryGetValue(name, out animal))
+                    GameFields.TrySet(animal.GetComponent<Character>(), "AnimalsVeg", "m_faction");
+            }
         }
 
         /// <summary>
