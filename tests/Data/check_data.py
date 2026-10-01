@@ -105,9 +105,9 @@ check({"highland_moor", "caledonian_forest", "munros"} <= {b.strip() for c in cl
 # --- vegetation
 deposits_src = (root / "src/Scotheim/Content/Deposits.cs").read_text(encoding="utf-8")
 deposits = dict(re.findall(r'CreateClonedPrefab\("(Scot_\w+)", "(\w+)"\)', deposits_src))
-check(deposits.get("Scot_BogIronDeposit") == "mudpile" and "Destructible" in prefab_components.get("mudpile", set())
-      and deposits.get("Scot_BogIronDeposit_frac") == "mudpile_frac" and "MineRock5" in prefab_components.get("mudpile_frac", set()),
-      "bog iron deposits copy the Swamp mud pile (Destructible) and its fragments (MineRock5)")
+check(deposits.get("Scot_BogIronDeposit") == "rock4_copper" and "Destructible" in prefab_components.get("rock4_copper", set())
+      and deposits.get("Scot_BogIronDeposit_frac") == "rock4_copper_frac" and "MineRock5" in prefab_components.get("rock4_copper_frac", set()),
+      "bog iron deposits copy the Black Forest copper boulder (Destructible) and its fragments (MineRock5)")
 prefabs |= set(deposits)
 veg_custom = sorted({v["prefab"] for v in vegetation if v["prefab"].startswith("Scot_")} - prefabs)
 check(not veg_custom, "vegetation Scot_ prefabs are defined in Content" + (": " + ", ".join(veg_custom) if veg_custom else ""))

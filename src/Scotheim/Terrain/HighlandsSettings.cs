@@ -54,7 +54,7 @@ namespace Scotheim.Terrain
 
         // Ribbon lochs: overdeepened stretches of glen floor that drop below sea level.
         public float LochFrequency = 0.3f;
-        public float LochDepth = 7f;
+        public float LochDepth = 4f;
 
         // Munros: rounded summits on the mountain massifs, with corries on the lee side.
         public float MassifLift = 1.0f;
