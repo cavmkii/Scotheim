@@ -73,9 +73,9 @@ namespace Scotheim.Terrain
         public float MoorRollScale = 320f;
         public float HummockAmplitude = 1.2f;
         public float HummockScale = 40f;
-        public float LochanFrequency = 0.12f;
-        public float LochanScale = 240f;
-        public float LochanMaxHeight = 8f;
+        public float LochanFrequency = 0.2f;
+        public float LochanScale = 400f;
+        public float LochanMaxHeight = 18f;
         public float LochanDepth = 2.5f;
 
         // Drumlins (Black Forest).

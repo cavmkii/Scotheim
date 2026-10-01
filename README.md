@@ -14,7 +14,7 @@ A BepInEx mod for Valheim that adds Scottish Highlands islands: new land raised 
 
 | Biome | Where | Terrain | Vegetation | Weather |
 |---|---|---|---|---|
-| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Purple heather nearly everywhere, heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
+| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans (carved down to the one water level, so they sit in hollows) | Purple heather nearly everywhere, heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
 | **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, heather in the clearings, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
 | **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Zoned like a real Ben: pine and birch woods on the lower slopes (to ~75–85 m), purple heather, blaeberry and juniper-like scrub above, low montane heath and grass on the tops; crags, scree, rare cloudberries | Freezing snow, often in mist |
 
@@ -76,7 +76,7 @@ Everything is made at the black forge except the Sìth set, the Faerie Flag and 
 
 | Material | Where | Use | Basis |
 |---|---|---|---|
-| Bog iron ore → sinter → bog iron | Orange nodules at loch and lochan edges, and rusty bog iron deposits (a retinted Swamp mud pile, mined with a pickaxe) in the low, wet moor. Roast the ore to **sinter** in the smelter, then run the sinter down to bars in the **blast furnace** | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore (limonite), which forms in wet, peaty ground; it was roasted before smelting. |
+| Bog iron ore → sinter → bog iron | Orange nodules at loch and lochan edges and scattered on flat blanket bog, and rusty bog iron deposits (a retinted Swamp mud pile, mined with a pickaxe) on flat moor. Roast the ore to **sinter** in the smelter, then run the sinter down to bars in the **blast furnace** | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore (limonite), which forms in wet, peaty ground; it was roasted before smelting. |
 | Hacksilver → Pictish silver | Redcaps (1–3, and a 10 % chance of one bar); rare hoards on moor and in forest; smelt in the vanilla smelter | Pictish gear | Pictish silver was largely cut-up Roman silver (the Traprain Law and Gaulcross hoards), melted and recast. |
 | Bog oak | Pulled from the open moor | Shafts, bows, shields, the caber | Oak preserved black in peat. |
 | Cairngorm | Rare, above 70 m in the Munros | Legendaries, staves, the Sìth crown | Smoky quartz from the Cairngorms, set in dirk hilts and plaid brooches. |
@@ -269,9 +269,9 @@ Still unverified:
 - **Stand-in creatures.** Clones look, move and attack exactly like their base, and a scaled creature's ragdoll drops back to normal size when it dies. Clones also carry the base's trophy drop.
 - **Clients and server must match.** Jötunn enforces this: everyone needs Scotheim with the same minor version.
 - **Map forest dots on the moor.** EWD shades a custom biome's map with its terrain biome (Meadows for the moor), so the map draws forest dots there even where there are no trees.
-- **One water plane.** Valheim has a single sea level, so every loch sits at sea level.
+- **One water plane.** Valheim has a single sea level, so every loch sits at sea level: moor lochans are hollows carved down from the ~14 m shelf (up to 18 m ground, `LochanMaxHeight`), which gives them steepish banks.
 - **Munros snow.** Mountain ground texture is snow-covered everywhere, not only on the tops.
-- **Steep ground.** 0.2–1.7% of Highland land is steeper than 40° in the previews, mostly where the island meets vanilla islets.
+- **Steep ground.** 2–3% of Highland land is steeper than 40° in the previews (2.8% on the synthetic preview world with the current lochan settings), mostly lochan banks and where the island meets vanilla islets.
 - **Editing biome YAML.** Restart the world afterwards so biome IDs and terrain agree.
 
 ## Build and install
