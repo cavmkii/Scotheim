@@ -25,15 +25,30 @@ namespace Scotheim.Content
                 GameObject animal;
                 if (creatures.TryGetValue(name, out animal)) Docile(animal);
             }
-            // Highland cattle share the sheep's neutral faction, so the herds never fight each other. Unlike sheep they
-            // keep their attack: a Highland cow still defends itself when attacked.
+            // Highland cattle share the sheep's neutral faction, and keep their attack: a Highland cow still defends
+            // itself when attacked, but never starts a fight.
             foreach (var name in new[] { "Scot_HighlandCow", "Scot_HighlandCalf" })
             {
                 GameObject animal;
-                if (creatures.TryGetValue(name, out animal))
-                    GameFields.TrySet(animal.GetComponent<Character>(), "AnimalsVeg", "m_faction");
+                if (!creatures.TryGetValue(name, out animal)) continue;
+                GameFields.TrySet(animal.GetComponent<Character>(), "AnimalsVeg", "m_faction");
+                var ai = animal.GetComponent("MonsterAI");
+                if (ai == null) continue;
+                GameFields.TrySet(ai, false, "m_enableHuntPlayer");
+                GameFields.TrySet(ai, false, "m_attackPlayerObjects");
+            }
+            // One group for the grazing animals. The game checks a shared group before faction or taming, so no
+            // grazer counts as another's enemy: a tamed cow would otherwise treat wild deer and sheep as fair game
+            // (tamed animals fight every wild creature outside the player's side), and they don't scatter from it.
+            foreach (var name in Grazers)
+            {
+                GameObject animal;
+                if (creatures.TryGetValue(name, out animal)) GameFields.TrySet(animal.GetComponent<Character>(), Group, "m_group");
             }
         }
+
+        const string Group = "scot_grazers";
+        static readonly string[] Grazers = { "Scot_HighlandCow", "Scot_HighlandCalf", "Scot_Sheep", "Scot_Lamb", "Scot_RedDeer" };
 
         /// <summary>
         /// Sheep are boar clones, and boars fight. This keeps the boar body (so taming, breeding and wool still work)

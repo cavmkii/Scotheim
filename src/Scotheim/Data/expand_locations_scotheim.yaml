@@ -150,7 +150,8 @@
   - scotheim_stone, 300
 # The Grey Man's altar: on the high tops, as he walks Ben Macdui. Up to two per world, far apart and placed
 # first. EWD can't pick "the highest" summit, so it's any ground above 95 m; the log warns if none was placed.
-# Symbol stone 4 ("Mirror and comb") marks the nearest one on the map.
+# It's a copy of the vanilla runestone with the altar beside it (Content/Places.cs): reading the stone marks the altar
+# on the map and hints at the offering. Symbol stone 4 ("Mirror and comb") marks the nearest one from afar.
 - prefab: scotheim_greyman
   biome: munros
   quantity: 2

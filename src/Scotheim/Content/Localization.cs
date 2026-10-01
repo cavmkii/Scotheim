@@ -106,7 +106,7 @@ namespace Scotheim.Content
             english["piece_scot_bere"] = "Bere";
             english["piece_scot_bere_desc"] = "Plant bere. It grows on the open moor.";
             english["se_scot_uisgebeatha"] = "Uisge-beatha";
-            english["se_scot_uisgebeatha_tooltip"] = "Warm to the bones: no freezing, and stamina comes back quicker.";
+            english["se_scot_uisgebeatha_tooltip"] = "The water of life: warm to the bones, quick to heal, and steady on the claymore.";
             english["se_scot_midges"] = "Midges";
             english["se_scot_midges_tooltip"] = "Being eaten alive. Stamina comes back slower. Wind, smoke or bog myrtle keeps them off.";
             english["se_scot_myrtleward"] = "Bog myrtle";
@@ -114,6 +114,9 @@ namespace Scotheim.Content
             english["se_scot_dread"] = "Dread";
             english["se_scot_dread_tooltip"] = "Something tall is near. Your breath comes short and your legs feel heavy.";
             english["piece_scot_bogirondeposit"] = "Bog iron deposit";
+            english["piece_scot_peathag"] = "Peat hag";
+            english["piece_scot_peatstack_add"] = "Add peat";
+            english["piece_scot_greymanrunestone"] = "Summit stone";
             english["piece_scot_peatstack"] = "Peat stack";
             english["piece_scot_peatstack_desc"] = "Stack cut peat here to dry in the wind. Slow, and needs no fuel.";
             english["se_scot_bandaged"] = "Bandaged";

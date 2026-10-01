@@ -137,6 +137,52 @@ namespace Scotheim.Content
                     Plugin.Log.LogError("Couldn't add " + name + ": " + e);
                 }
             }
+            try { AddAltarLocation(runeType); }
+            catch (Exception e) { Plugin.Log.LogError("Couldn't add " + GreyMan.Location + ": " + e); }
+        }
+
+        /// <summary>
+        /// The Grey Man's summit: a copy of the vanilla runestone location with his altar set beside it, as vanilla
+        /// boss altars have their stone. Reading the stone puts the altar on the map and hints at the offering.
+        /// The altar is a networked child, so the game spawns it with the location; it's snapped to the ground.
+        /// </summary>
+        static void AddAltarLocation(Type runeType)
+        {
+            var altar = PrefabManager.Instance.GetPrefab(GreyMan.Altar);
+            if (altar == null)
+            {
+                Plugin.Log.LogWarning("The Grey Man's summit skipped: " + GreyMan.Altar + " wasn't built.");
+                return;
+            }
+            var location = ZoneManager.Instance.CreateClonedLocation(GreyMan.Location, "Runestone_Meadows");
+            if (location == null || location.Prefab == null)
+            {
+                Plugin.Log.LogWarning("The Grey Man's summit skipped: Runestone_Meadows wasn't found.");
+                return;
+            }
+            GameFields.TrySet(location.ZoneLocation, false, "m_enable");
+            GameFields.TrySet(location.ZoneLocation, 0, "m_quantity");
+            var rune = runeType != null ? location.Prefab.GetComponentInChildren(runeType, true) : null;
+            if (rune != null)
+            {
+                var random = GameFields.Get(rune, "m_randomTexts") as System.Collections.IList;
+                if (random != null) random.Clear();
+                GameFields.TrySet(rune, "$piece_scot_greymanrunestone", "m_name");
+                GameFields.TrySet(rune, "Am Fear Liath Mòr", "m_topic");
+                GameFields.TrySet(rune, "The giants of the hills carry hearts of cold stone. Bring three to this summit and lay " +
+                    "them down, and the footsteps that follow you in the mist will stop following.", "m_text");
+                GameFields.TrySet(rune, GreyMan.Location, "m_locationName");
+                GameFields.TrySet(rune, "$piece_scot_greymanaltar_pin", "m_pinName");
+                GameFields.TrySet(rune, "Boss", "m_pinType");
+            }
+            else Plugin.Log.LogWarning("The Grey Man's summit has no readable stone: no RuneStone in Runestone_Meadows.");
+
+            var placed = UnityEngine.Object.Instantiate(altar, location.Prefab.transform);
+            placed.name = GreyMan.Altar; // the spawned object is looked up by this name
+            placed.transform.localPosition = new Vector3(0f, 0f, 4f);
+            placed.transform.localRotation = Quaternion.Euler(0f, 180f, 0f); // facing the stone
+            var snap = Type.GetType("SnapToGround, assembly_valheim");
+            if (snap != null && placed.GetComponent(snap) == null) placed.AddComponent(snap);
         }
 
         // A heath rock pillar that can't be broken: its Destructible component is removed.

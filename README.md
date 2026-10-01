@@ -36,7 +36,7 @@ Every creature is a [Jötunn](https://thunderstore.io/c/valheim/p/ValheimModding
 | Blackface sheep | Boar | Moor, flocks of 2–5 | 70 (10) | vanilla | Wool, raw mutton |
 | Lamb | Boar piglet | Bred from sheep; grows into a sheep | 20 | vanilla | — |
 | Red deer | Deer | Moor and forest | 90 (10) | — | Deer meat, deer hide |
-| Highland cow | Lox, ¾ size | Moor, herds of 2–3 | 1400 (1000) | 1.5 | Highland beef, Highland hide |
+| Highland cow | Lox, ¾ size; neutral (only fights back) | Moor, herds of 2–3 | 1400 (1000) | 1.5 | Highland beef, Highland hide |
 | Highland calf | Lox calf | Bred from cattle; grows into a cow | 300 | vanilla | vanilla |
 | Pine marten | Hare, 0.8× | Forest | 25 (20) | — | Pine marten pelt |
 | Hill wolf | Wolf | Munros; packs at night, pairs by day | 220 (80) | 2.5 | vanilla wolf drops |
@@ -64,7 +64,7 @@ Items, also Jötunn clones. Each keeps its base item's model and icon for now:
 
 The food values are my estimate of Mistlands-tier food, not copied from the game. Valheim's "blueberries" already look like bilberries (*Vaccinium myrtillus*), which is what a blaeberry is, so the blaeberry bush is a copy of the blueberry bush that yields the Scots-named item.
 
-Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tamed like boars. They keep the boar body for taming and breeding but never attack: they take the deer's neutral faction, have no attack, and run when hurt. Lambs too. Highland cattle share that neutral faction, so cows and sheep never fight; cows keep their attack and still defend themselves.
+Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tamed like boars. They keep the boar body for taming and breeding but never attack: they take the deer's neutral faction, have no attack, and run when hurt. Lambs too. Highland cattle share that neutral faction and never start a fight, but keep their attack and still defend themselves. Cows, calves, sheep, lambs and red deer are also one group, so none treats another as an enemy, even when tamed (vanilla tamed animals fight every wild creature).
 
 ### Weapons and armour
 
@@ -76,7 +76,7 @@ Everything is made at the black forge except the Sìth set, the Faerie Flag and 
 
 | Material | Where | Use | Basis |
 |---|---|---|---|
-| Bog iron ore → sinter → bog iron | Orange nodules at loch and lochan edges and scattered on flat blanket bog, and rusty bog iron deposits across the moor, as common and as easy to spot as copper in the Black Forest (the copper boulder retinted orange, mined with a pickaxe). Roast the ore to **sinter** in the smelter, then run the sinter down to bars in the **blast furnace** | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore (limonite), which forms in wet, peaty ground; it was roasted before smelting. |
+| Bog iron ore → sinter → bog iron | Mostly at lochs: orange nodules along loch and lochan edges, and rusty bog iron deposits on the shores (the Black Forest copper boulder retinted orange, mined with a pickaxe). Away from the water both are rare, so lochs are where to look. Roast the ore to **sinter** in the smelter, then run the sinter down to bars in the **blast furnace** | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore (limonite), which forms in wet, peaty ground; it was roasted before smelting. |
 | Hacksilver → Pictish silver | Redcaps (1–3, and a 10 % chance of one bar); rare hoards on moor and in forest; smelt in the vanilla smelter | Pictish gear | Pictish silver was largely cut-up Roman silver (the Traprain Law and Gaulcross hoards), melted and recast. |
 | Bog oak | Pulled from the open moor | Shafts, bows, shields, the caber | Oak preserved black in peat. |
 | Cairngorm | Rare, above 70 m in the Munros | Legendaries, staves, the Sìth crown | Smoky quartz from the Cairngorms, set in dirk hilts and plaid brooches. |
@@ -143,8 +143,8 @@ On the sources:
 ### Crofting, the still and Highland food
 
 - **Bere** is the old barley of the north, still grown in Orkney and the Western Isles. It grows wild in small patches on the moor and by shielings. Like vanilla barley, the grain is its own seed: plant it with the cultivator on the open moor (the moor farms like the Plains).
-- **Peat** turves lie on the open moor. Cut peat is wet: dry it in a **peat stack** (built with the hammer near a workbench, 10 stone and 6 wood; a copy of the charcoal kiln that needs no fuel and takes 90 s a peat), as peats were stacked to dry in the wind.
-- **Uisge-beatha** is brewed like mead: a *whisky wash* at the cauldron (10 bere, 2 dried peat, whose smoke is what flavours the malt), then the fermenter, which gives 6.
+- **Peat** turves lie on the open moor. Cut peat is wet: dry it in a **peat stack** (built with the hammer near a workbench, 10 stone and 6 wood; a copy of the charcoal kiln that needs no fuel and takes 90 s a peat), as peats were stacked to dry in the wind. **Peat hags**, black banks of eroded peat (a bone pile's shape), stand here and there on the moor; break one for 3–5 peat.
+- **Uisge-beatha** is brewed like mead: a *whisky wash* at the cauldron (10 bere, 2 dried peat, whose smoke is what flavours the malt), then the fermenter, which gives 6. A dram stops freezing like frost-resistance mead, and adds +25% health regen and +10 swords (the claymore).
 - **Moss bandage** (2 per craft at the workbench: 1 dried peat, 2 wool). Dried bog moss was a real wound dressing, gathered in Scotland by the ton in the First World War. Using one heals 30 at once and 30 more over 10 seconds. It shares the healing meads' cooldown slot (so no stacking with them) with a 60 s cooldown of its own: a quick patch-up rather than a big heal. It carries the frost-resistance mead's protection from freezing, which the Munros' weather calls for, plus +15 % stamina regen.
 - **Food**, made at the cauldron. The values are my estimates for late-game food.
 
@@ -181,7 +181,7 @@ The fall-damage field is set by name (`m_fallDamageModifier`); the log says whet
 
 The Big Grey Man of Ben Macdui: a very tall grey figure said to walk the Cairngorm plateau, known mostly from the panic climbers felt there (J. Norman Collie's 1925 account is the best known). Here he's the Highlands' boss.
 
-- **Where**: a summit altar on Munro ground above 95 m, up to two per world, placed before other locations. Reading symbol stone 4 ("Mirror and comb") marks the nearest altar on the map. EWD can't choose the single highest summit, so "high" is the best it can do; the log warns if no altar could be placed.
+- **Where**: a summit altar on Munro ground above 95 m, up to two per world, placed before other locations. A runestone stands beside each altar, as at vanilla boss altars: reading it marks the altar on the map and hints at the offering. From afar, symbol stone 4 ("Mirror and comb") marks the nearest altar. EWD can't choose the single highest summit, so "high" is the best it can do; the log warns if no altar could be placed.
 - **Summoning**: offer 3 giant's heartstones at the altar (hill giants drop them).
 - **The fight**: a boss health bar and music, 9,000 health (between the Seeker Queen and the Fader), on a Morgen body tinted grey and scaled up by 30%. Within 35 m of him you feel **Dread**: stamina regenerates 40% slower and you move 10% slower.
 - **Reward**: his trophy, 4–6 cairngorms, 6–10 Pictish silver and 1–2 heartstones back. Killing him sets the world key `defeated_scot_greyman`, which later content can build on.

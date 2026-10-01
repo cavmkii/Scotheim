@@ -51,7 +51,7 @@ namespace Scotheim.Content
             foreach (var name in names)
             {
                 var field = type.GetField(name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (field == null || !field.FieldType.IsInstanceOfType(value)) continue;
+                if (field == null || (value == null ? field.FieldType.IsValueType : !field.FieldType.IsInstanceOfType(value))) continue; // null clears a reference
                 field.SetValue(target, value);
                 Report(type.Name + "." + name + " found");
                 return true;

@@ -47,6 +47,7 @@ namespace Scotheim.Content
             if (conversions != null) conversions.Clear();
             GameFields.TrySet(smelter, "$piece_scot_peatstack", "m_name");
             GameFields.TrySet(smelter, SecondsPerPeat, "m_secPerProduct");
+            GameFields.TrySet(smelter, "$piece_scot_peatstack_add", "m_addOreTooltip"); // the kiln's says "Add wood"
             PieceManager.Instance.AddPiece(stack);
             ItemManager.Instance.AddItemConversion(new CustomItemConversion(new SmelterConversionConfig
             {

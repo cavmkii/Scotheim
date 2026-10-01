@@ -228,6 +228,8 @@ for f in sorted(data.glob("*.blueprint")):
 check(not missing, "blueprints use real prefabs" + (": " + ", ".join(sorted(missing)) if missing else ""))
 stone_texts = len(re.findall(r'new\[\] \{ "[^"]+", "[^"]+" \}', places_src.split("SymbolStones =")[1].split("};")[0]))
 cloned = {"scotheim_runestone%d" % (n + 1) for n in range(stone_texts)} if "scotheim_runestone" in places_src else set()
+if 'CreateClonedLocation(GreyMan.Location, "Runestone_Meadows")' in places_src:
+    cloned.add("scotheim_greyman")
 check(stone_texts == 6, "six symbol stone texts")
 base = re.search(r'CreateClonedLocation\(name, "(\w+)"\)', places_src)
 check(base and "Location" in prefab_components.get(base.group(1), set()) and "RuneStone" in prefab_components.get(base.group(1), set()),
