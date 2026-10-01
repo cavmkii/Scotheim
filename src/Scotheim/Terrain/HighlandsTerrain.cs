@@ -667,7 +667,16 @@ namespace Scotheim.Terrain
             if (mask <= 0f) return altitude;
             float relief = SmoothStep(floor + 4f, floor + 24f, rawBaseAltitude);
             float bed = Lerp(floor, -s.LochDepth, mask);
-            return altitude - strength * relief * (floor - bed) * CarveProfile(shape);
+            float carved = altitude - strength * relief * (floor - bed) * CarveProfile(shape);
+            // A strand at the water's edge: from 3 m under water to 1 m above, heights are remapped so the shore
+            // levels off about a metre above the water (slope 0 there, twice as steep 3 m down, out of sight).
+            // Nothing above the strand changes, so no bank gets steeper; loch-edge plants and bog ore need this.
+            if (carved > -3f && carved < 1f)
+            {
+                float t = 1f - carved;
+                carved = Lerp(carved, 1f - t * t / 4f, mask);
+            }
+            return carved;
         }
 
         // ---------------------------------------------------------------- munros

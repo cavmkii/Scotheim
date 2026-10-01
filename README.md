@@ -23,7 +23,7 @@ Each biome borrows a vanilla height function and ground texture. The moor uses M
 The landscape between them:
 
 - **Glens** are U-shaped troughs trending NE–SW, the Great Glen / Caledonian grain at about 040°. Each glen widens with its depth so walls stay near 35°.
-- **Ribbon lochs** form where glen floors drop below sea level.
+- **Ribbon lochs** form where glen floors drop below sea level. They're shallow (4 m, `LochDepth`) and shelve gently to a narrow strand at the water line, like the moor lochs.
 - **Sea lochs** form where glens reach the coast.
 - The island is an ellipse along the grain, 4 × 2.3 km by default, with a ragged coast. Most of it is a flat lowland shelf (~14 m) of open moor; a few separate NE–SW hill massifs rise out of it, wooded on their lower slopes. It comes to about 4–5 km² of new land: roughly two-thirds moor, a fifth Munros and the rest forest (set by `MassifThreshold`, `MunroMinHeight` and `ForestCover`).
 
@@ -76,7 +76,7 @@ Everything is made at the black forge except the Sìth set, the Faerie Flag and 
 
 | Material | Where | Use | Basis |
 |---|---|---|---|
-| Bog iron ore → sinter → bog iron | Orange nodules at loch and lochan edges and scattered on flat blanket bog, and rusty bog iron deposits (a retinted Swamp mud pile, mined with a pickaxe) on flat moor. Roast the ore to **sinter** in the smelter, then run the sinter down to bars in the **blast furnace** | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore (limonite), which forms in wet, peaty ground; it was roasted before smelting. |
+| Bog iron ore → sinter → bog iron | Orange nodules at loch and lochan edges and scattered on flat blanket bog, and rusty bog iron deposits across the moor, as common and as easy to spot as copper in the Black Forest (the copper boulder retinted orange, mined with a pickaxe). Roast the ore to **sinter** in the smelter, then run the sinter down to bars in the **blast furnace** | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore (limonite), which forms in wet, peaty ground; it was roasted before smelting. |
 | Hacksilver → Pictish silver | Redcaps (1–3, and a 10 % chance of one bar); rare hoards on moor and in forest; smelt in the vanilla smelter | Pictish gear | Pictish silver was largely cut-up Roman silver (the Traprain Law and Gaulcross hoards), melted and recast. |
 | Bog oak | Pulled from the open moor | Shafts, bows, shields, the caber | Oak preserved black in peat. |
 | Cairngorm | Rare, above 70 m in the Munros | Legendaries, staves, the Sìth crown | Smoky quartz from the Cairngorms, set in dirk hilts and plaid brooches. |
