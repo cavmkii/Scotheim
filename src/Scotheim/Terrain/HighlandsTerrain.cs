@@ -167,7 +167,7 @@ namespace Scotheim.Terrain
                             HalfWidth = half * (0.33f + 0.17f * Noise.Hash01(i, key, seed + 85)),
                             AlongX = ax, AlongY = ay, AcrossX = ay, AcrossY = -ax,
                         };
-                        loch.Reach = loch.HalfLength * 1.5f;
+                        loch.Reach = loch.HalfLength * 1.7f;
                         float score = FootprintScore(loch);
                         if (score < bestScore) { bestScore = score; best = loch; }
                     }
@@ -214,10 +214,14 @@ namespace Scotheim.Terrain
                 // A ragged shore: bays and points rather than a clean ellipse.
                 float q = (float)Math.Sqrt(du * du + dv * dv)
                     + 0.55f * Noise.Fbm2(x / 220f, y / 220f, seed + 86) + 0.12f * Noise.Perlin(x / 60f, y / 60f, seed + 87);
-                if (q >= 1.1f) continue;
-                float bank = SmoothStep(1.1f, 0.7f, q);                         // banks ease down over the outer fifth or so
-                float floor = -1.5f - s.MoorLochDepth * SmoothStep(0.9f, 0.2f, q); // shallow margins, deep middle
-                h = Math.Min(h, Lerp(h, floor, bank));
+                if (q >= 1.3f) continue;
+                // From the outside in: a bank easing down to a strand, a flat margin about a metre above the water
+                // (loch-edge plants and bog ore need nearly flat ground there), then the water, shallow at the
+                // margins and deep in the middle.
+                const float strand = 1f;
+                float shore = Lerp(h, Math.Min(h, strand), SmoothStep(1.3f, 1.05f, q));
+                float floor = -1.5f - s.MoorLochDepth * SmoothStep(0.85f, 0.2f, q);
+                h = Math.Min(h, Lerp(shore, floor, SmoothStep(0.97f, 0.8f, q)));
             }
             return h;
         }

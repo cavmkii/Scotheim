@@ -14,7 +14,7 @@ A BepInEx mod for Valheim that adds Scottish Highlands islands: new land raised 
 
 | Biome | Where | Terrain | Vegetation | Weather |
 |---|---|---|---|---|
-| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans, and a couple of real moor lochs per island, 450–600 m long, with ragged shores (`LochsPerIsland`, `LochLength`) | Purple heather nearly everywhere, heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
+| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans, and a couple of real moor lochs per island, 450–600 m long, with ragged shores and a flat strand round the water where bog ore and bog myrtle grow (`LochsPerIsland`, `LochLength`) | Purple heather nearly everywhere, heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
 | **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, heather in the clearings, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
 | **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Zoned like a real Ben: pine and birch woods on the lower slopes (to ~75–85 m), purple heather, blaeberry and juniper-like scrub above, low montane heath and grass on the tops; crags, scree, rare cloudberries | Freezing snow, often in mist |
 
