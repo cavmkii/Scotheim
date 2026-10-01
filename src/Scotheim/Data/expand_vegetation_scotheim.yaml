@@ -497,7 +497,8 @@
   groupSizeMax: 3
   groupRadius: 3
 # Bog iron deposits: limonite builds up in wet, peaty ground. A rusty mud heap, sunk into the bog like the
-# Swamp's scrap piles; mine it for bog ore (Content/Deposits.cs). Anywhere flat on the moor (blanket bog), not
+# Swamp's scrap piles, but only bedded in slightly: sunk 2 m like the Swamp's (which sit in mud and water) it was
+# buried out of sight on firm moor. Mine it for bog ore (Content/Deposits.cs). Anywhere flat on the moor (blanket bog), not
 # just the low ground, which is scarce: the moor shelf sits around 14 m.
 - prefab: Scot_BogIronDeposit
   min: 0
@@ -509,7 +510,7 @@
   maxAltitude: 30
   maxTilt: 8
   maxTerrainDelta: 2
-  groundOffset: -2
+  groundOffset: -0.3
 # Bog oak: old oak preserved in the peat of the open moor.
 - prefab: Scot_BogOakPickable
   min: 2
