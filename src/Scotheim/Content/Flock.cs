@@ -20,6 +20,32 @@ namespace Scotheim.Content
             GameObject sheep;
             // Wool is looked up when a sheep spawns: Jötunn announces creatures before Scotheim's items exist.
             if (creatures.TryGetValue("Scot_Sheep", out sheep)) sheep.AddComponent<ShedWool>();
+            foreach (var name in new[] { "Scot_Sheep", "Scot_Lamb" })
+            {
+                GameObject animal;
+                if (creatures.TryGetValue(name, out animal)) Docile(animal);
+            }
+        }
+
+        /// <summary>
+        /// Sheep are boar clones, and boars fight. This keeps the boar body (so taming, breeding and wool still work)
+        /// but makes it harmless: the deer's neutral faction, no attack items, and it runs when hurt.
+        /// </summary>
+        static void Docile(GameObject animal)
+        {
+            var character = animal.GetComponent<Character>();
+            GameFields.TrySet(character, "AnimalsVeg", "m_faction");
+            GameFields.TrySetObject(character, new GameObject[0], "m_defaultItems");
+            GameFields.TrySetObject(character, new GameObject[0], "m_randomWeapon");
+            var ai = animal.GetComponent("MonsterAI");
+            if (ai == null)
+            {
+                Plugin.Log.LogWarning(animal.name + " has no MonsterAI; it keeps its base behaviour.");
+                return;
+            }
+            GameFields.TrySet(ai, false, "m_enableHuntPlayer");
+            GameFields.TrySet(ai, false, "m_attackPlayerObjects");
+            GameFields.TrySet(ai, 1f, "m_fleeIfLowHealth"); // below full health it runs
         }
     }
 
