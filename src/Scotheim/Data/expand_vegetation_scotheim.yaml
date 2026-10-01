@@ -466,12 +466,16 @@
   groupRadius: 3
 # ---------------------------------------------------------- Highland raw materials
 # Scotheim's own pickables (Jötunn clones). Gear is made only from what the Highlands yield.
-# Bog iron: nodules of ore at loch and lochan edges, where bog ore forms...
+# Bog iron: nodules of ore at loch and lochan edges, where bog ore forms, on the strand just above the water (in game
+# they were spawning in the shallows, under the surface, when this started 1 m below water). Larger than a pebble so
+# they can be seen in the grass...
 - prefab: Scot_BogIronNodule
   min: 3
   max: 5
+  scaleMin: 1.3
+  scaleMax: 1.8
   biome: highland_moor, caledonian_forest
-  minAltitude: -1
+  minAltitude: 0.3
   maxAltitude: 3
   maxTilt: 25
   maxTerrainDelta: 3
@@ -482,6 +486,8 @@
 - prefab: Scot_BogIronNodule
   min: 0
   max: 2
+  scaleMin: 1.3
+  scaleMax: 1.8
   biome: highland_moor
   minAltitude: 0.5
   maxAltitude: 30
@@ -491,7 +497,8 @@
   groupSizeMax: 3
   groupRadius: 3
 # Bog iron deposits: limonite builds up in wet, peaty ground. A rusty mud heap, sunk into the bog like the
-# Swamp's scrap piles; mine it for bog ore (Content/Deposits.cs). Anywhere flat on the moor (blanket bog), not
+# Swamp's scrap piles, but only bedded in slightly: sunk 2 m like the Swamp's (which sit in mud and water) it was
+# buried out of sight on firm moor. Mine it for bog ore (Content/Deposits.cs). Anywhere flat on the moor (blanket bog), not
 # just the low ground, which is scarce: the moor shelf sits around 14 m.
 - prefab: Scot_BogIronDeposit
   min: 0
@@ -503,7 +510,7 @@
   maxAltitude: 30
   maxTilt: 8
   maxTerrainDelta: 2
-  groundOffset: -2
+  groundOffset: -0.3
 # Bog oak: old oak preserved in the peat of the open moor.
 - prefab: Scot_BogOakPickable
   min: 2
