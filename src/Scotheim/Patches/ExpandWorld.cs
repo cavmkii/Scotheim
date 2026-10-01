@@ -107,6 +107,120 @@ namespace Scotheim.Patches
         }
 
         /// <summary>
+        /// With "Spawn data" on, EWD writes the game's own spawns to expand_spawns.yaml, and EWD 1.73 writes the four
+        /// "Fimbulvinter - …" entries (an event's spawns) without a biome, which it then reads as every biome: meteors,
+        /// Jotuns and Elakingar everywhere. Those entries get "biome: None" here, now and whenever the file is written
+        /// (EWD reloads it when it changes). Nothing else in the file is touched, and a fixed file is left alone.
+        /// </summary>
+        internal static void WatchSpawnDump()
+        {
+            var dir = Path.Combine(Paths.ConfigPath, "expand_world");
+            try
+            {
+                FixSpawnDump(Path.Combine(dir, SpawnDump));
+                Directory.CreateDirectory(dir);
+                spawnWatcher = new FileSystemWatcher(dir, SpawnDump);
+                spawnWatcher.Created += (o, e) => FixSpawnDump(e.FullPath);
+                spawnWatcher.Changed += (o, e) => FixSpawnDump(e.FullPath);
+                spawnWatcher.EnableRaisingEvents = true;
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("Couldn't watch " + SpawnDump + " (" + e.Message + "). If meteors fall everywhere, add " +
+                    "\"biome: None\" to its Fimbulvinter entries.");
+            }
+        }
+
+        const string SpawnDump = "expand_spawns.yaml";
+        static FileSystemWatcher spawnWatcher;
+        static readonly object spawnLock = new object();
+
+        static void FixSpawnDump(string path)
+        {
+            lock (spawnLock)
+            {
+                string text = null;
+                for (int attempt = 0; attempt < 5 && text == null; attempt++)
+                {
+                    try { if (!File.Exists(path)) return; text = File.ReadAllText(path); }
+                    catch (IOException) { System.Threading.Thread.Sleep(200); } // EWD may still be writing it
+                }
+                if (text == null) return;
+                var lines = new List<string>(text.Replace("\r", "").Split('\n'));
+                int fixedCount = 0;
+                for (int start = 0; start < lines.Count; start++)
+                {
+                    if (!lines[start].StartsWith("- ")) continue;
+                    int end = start + 1;
+                    while (end < lines.Count && !lines[end].StartsWith("- ")) end++;
+                    bool fimbul = false, hasBiome = lines[start].StartsWith("- biome:");
+                    for (int j = start; j < end; j++)
+                    {
+                        var line = lines[j].TrimStart('-', ' ');
+                        if (line.StartsWith("name: Fimbulvinter")) fimbul = true;
+                        if (line.StartsWith("biome:")) hasBiome = true;
+                    }
+                    if (!fimbul || hasBiome) continue;
+                    lines.Insert(start + 1, "  biome: None");
+                    fixedCount++;
+                }
+                if (fixedCount == 0) return;
+                try
+                {
+                    File.WriteAllText(path, string.Join("\n", lines.ToArray()));
+                    Plugin.Log.LogInfo("Gave " + fixedCount + " Fimbulvinter spawns in " + path + " \"biome: None\", so they don't spawn everywhere.");
+                }
+                catch (IOException e) { Plugin.Log.LogWarning("Couldn't fix " + path + " (" + e.Message + ")."); }
+            }
+        }
+
+        /// <summary>
+        /// EWD loads Scotheim's spawn file only with its "Spawn data" setting on, which is off by default, and its
+        /// "Event data" setting breaks EWD's startup on this game version (see Content/Raid.cs). These are set here so
+        /// nobody has to edit EWD's config. Reached through BepInEx's plugin list by reflection; EWD writes the change
+        /// to its config file. EWD reads some settings only as it starts, which was before this ran, so a value that
+        /// had to change is logged: it applies fully from the next start.
+        /// </summary>
+        internal static void ApplyEwdSettings()
+        {
+            try
+            {
+                var loader = Type.GetType("BepInEx.Bootstrap.Chainloader, BepInEx");
+                var infos = loader != null ? loader.GetProperty("PluginInfos", BindingFlags.Static | BindingFlags.Public).GetValue(null, null) as System.Collections.IDictionary : null;
+                var info = infos != null && infos.Contains(Guid) ? infos[Guid] : null;
+                var plugin = info != null ? info.GetType().GetProperty("Instance").GetValue(info, null) : null;
+                var config = plugin != null ? plugin.GetType().GetProperty("Config").GetValue(plugin, null) : null;
+                if (config == null) return; // EWD isn't installed: the warning about that comes from elsewhere
+                var changed = new List<string>();
+                foreach (var setting in new[] { new KeyValuePair<string, bool>("Spawn data", true), new KeyValuePair<string, bool>("Event data", false) })
+                {
+                    object entry = null;
+                    foreach (var key in (System.Collections.IEnumerable)config.GetType().GetProperty("Keys").GetValue(config, null))
+                        if ((string)key.GetType().GetProperty("Key").GetValue(key, null) == setting.Key)
+                            entry = config.GetType().GetProperty("Item").GetValue(config, new[] { key });
+                    var boxed = entry != null ? entry.GetType().GetProperty("BoxedValue") : null;
+                    if (boxed == null)
+                    {
+                        Plugin.Log.LogWarning("Couldn't find EWD's \"" + setting.Key + "\" setting. In expand_world_data.cfg, set " +
+                            setting.Key + " = " + (setting.Value ? "true" : "false") + ".");
+                        continue;
+                    }
+                    if (boxed.GetValue(entry, null) is bool && (bool)boxed.GetValue(entry, null) == setting.Value) continue;
+                    boxed.SetValue(entry, setting.Value, null);
+                    changed.Add(setting.Key + " = " + (setting.Value ? "true" : "false"));
+                }
+                if (changed.Count > 0)
+                    Plugin.Log.LogWarning("Set EWD's " + string.Join(" and ", changed.ToArray()) + " for Scotheim. If this is the " +
+                        "first start with Scotheim, restart the game once before making a world so EWD picks it up.");
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning("Couldn't set EWD's settings (" + e.Message + "). In expand_world_data.cfg, set " +
+                    "Spawn data = true and Event data = false.");
+            }
+        }
+
+        /// <summary>
         /// Writes Scotheim's biome, vegetation, clutter and spawn definitions into EWD's config folder. EWD reads
         /// every expand_biomes*.yaml / expand_vegetation*.yaml / expand_clutter*.yaml / expand_spawns*.yaml there,
         /// so these sit alongside its own files and are synced from the server.

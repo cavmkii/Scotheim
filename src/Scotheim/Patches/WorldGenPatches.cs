@@ -84,8 +84,8 @@ namespace Scotheim.Patches
                         depths[0], pct(0.1f), pct(0.5f), pct(0.9f), depths[depths.Length - 1], land / (float)depths.Length));
                 }
                 if (site.OpenWater < 0.9f)
-                    Plugin.Log.LogWarning("  Less than 90% of this site was open water. Vanilla land and shallows there are left as they are, " +
-                        "so this island will be smaller or broken up.");
+                    Plugin.Log.LogWarning("  Less than 90% of this site was open water. Vanilla land well inside the island becomes Highland " +
+                        "ground; vanilla land near its coast is left as it is, so the coast may be broken up.");
             }
             Plugin.Log.LogInfo(string.Format("Placed {0} of {1} Highland islands. Seed {2}, signature {3}.",
                 sites.Count, settings.LandmassCount, seed, Plugin.Signature(settings)));

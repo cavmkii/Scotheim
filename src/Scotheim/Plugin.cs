@@ -27,7 +27,7 @@ namespace Scotheim
 
         // Terrain settings are bound here and snapshotted per world (see WorldGen.For).
         readonly HighlandsSettings defaults = new HighlandsSettings();
-        internal ConfigEntry<bool> TerrainEnabled;
+        internal ConfigEntry<bool> TerrainEnabled, CustomTerrain;
         readonly System.Collections.Generic.List<Action<HighlandsSettings>> readers =
             new System.Collections.Generic.List<Action<HighlandsSettings>>();
 
@@ -39,6 +39,11 @@ namespace Scotheim
             TerrainEnabled = Config.Bind("1 - General", "Enabled", true,
                 "Add the Highlands landmass. Every player and the server must use identical settings, and it only " +
                 "looks right on a NEW world: explored zones keep their saved objects at the old ground height.");
+
+            CustomTerrain = Config.Bind("1 - General", "CustomTerrain", false,
+                "Off (the default): the terrain uses Scotheim's built-in settings and everything from section 2 on is " +
+                "ignored, so an update always brings its current terrain. On: the settings below are used, for tuning. " +
+                "Players who share a world must match.");
 
             var count = Config.Bind("2 - Landmass", "Count", defaults.LandmassCount,
                 new ConfigDescription("How many Highland islands to place. Fewer are placed if the distance band runs out of open water.",
@@ -108,6 +113,8 @@ namespace Scotheim
             BindFloat("6 - Caledonian Forest", "DrumlinCoverage", 0f, 1f, s => s.DrumlinCoverage, (s, v) => s.DrumlinCoverage = v, "Rough fraction of ground covered by drumlins.");
 
             Patches.ExpandWorld.WriteDefaultFiles();
+            Patches.ExpandWorld.ApplyEwdSettings();
+            Patches.ExpandWorld.WatchSpawnDump();
             RegisterContent();
             new Harmony(Guid).PatchAll(Assembly.GetExecutingAssembly());
             Log.LogInfo(Name + " " + Version + " loaded. Terrain signature: " + Signature(SnapshotSettings()));
@@ -124,6 +131,7 @@ namespace Scotheim
         internal HighlandsSettings SnapshotSettings()
         {
             var s = new HighlandsSettings();
+            if (!CustomTerrain.Value) return s; // the built-in settings; the saved values below are ignored
             foreach (var r in readers) r(s);
             return s;
         }

@@ -68,6 +68,7 @@ namespace Scotheim.Terrain
 
         /// <summary>Base altitude of the island's lowland shelf, where the moor is.</summary>
         const float LowlandHeight = 14f;
+        const float LochanBank = 5f; // outer edge of a lochan's bank, in the edge units of ShapeMoorland
 
         /// <summary>
         /// Vanilla ground above this (its land and the water just off its beaches) is never raised
@@ -288,6 +289,21 @@ namespace Scotheim.Terrain
             return Lerp(floor, -s.LochDepth - 3f, SmoothStep(0.5f, 0.95f, d));
         }
 
+        /// <summary>
+        /// 1 well inside an island's coast, fading to 0 by the coast (coast distance 0.8 to 1.0). Vanilla land here is
+        /// absorbed: it takes Highland biomes and shaping instead of keeping its vanilla biome. Otherwise a vanilla
+        /// Mountain islet inside an island keeps vanilla's jagged ridges among the Munros (seen in game: a knife-edge
+        /// arete). Islets nearer the coast are left as vanilla made them.
+        /// </summary>
+        static float Core(float coastDistance) { return SmoothStep(1.0f, 0.8f, coastDistance); }
+
+        /// <summary><see cref="Core"/> at a point: 0 off the islands.</summary>
+        public float CoreWeight(float x, float y)
+        {
+            float d;
+            return Dominant(x, y, out d) == null ? 0f : Core(d);
+        }
+
         /// <summary>1 on an island and its shelf, fading to 0 in open ocean. Stage B only runs where this is above 0.5.</summary>
         public float LandWeight(float x, float y)
         {
@@ -308,13 +324,15 @@ namespace Scotheim.Terrain
             // Full lift below ~-14 m. Real Valheim sea floor near land sits around -20 to -35 m (measured
             // in game), so a deeper cut-off would leave an island half-risen in ordinary open water.
             float depthWeight = SmoothStep(VanillaShore, VanillaShore - 12f, vanillaAltitude);
-            if (depthWeight <= 0f) return result;
             foreach (var island in islands)
             {
                 float plain = EllipseDistance(island, x, y);
                 if (plain > island.Reach) continue;
                 float d = CoastDistance(x, y, plain);
-                float weight = SmoothStep(1.6f, 1.25f, d) * depthWeight;
+                // Vanilla land well inside the coast is absorbed (see Core): lifted like the sea floor. It's
+                // never lowered, as the result is the higher of the two.
+                float weight = SmoothStep(1.6f, 1.25f, d) * Math.Max(depthWeight, Core(d));
+                if (weight <= 0f) continue;
                 if (weight <= 0f) continue;
 
                 // Long, gentle coastal ramp up to a flat lowland shelf (~14 m) covering most of the
@@ -343,9 +361,10 @@ namespace Scotheim.Terrain
         /// </summary>
         public HighlandBiome Classify(float x, float y, float carvedBaseAltitude, float vanillaAltitude)
         {
-            if (carvedBaseAltitude <= OceanThreshold || vanillaAltitude > VanillaShore) return HighlandBiome.None;
+            if (carvedBaseAltitude <= OceanThreshold) return HighlandBiome.None;
             float d;
             if (Dominant(x, y, out d) == null || SmoothStep(1.6f, 1.25f, d) <= 0.5f) return HighlandBiome.None;
+            if (vanillaAltitude > VanillaShore && Core(d) <= 0.5f) return HighlandBiome.None; // vanilla land near the coast stays
             if (carvedBaseAltitude > s.MunroMinHeight) return HighlandBiome.Munros;
 
             // Moor is the open lowland shelf. Caledonian pinewood clothes the lower hill slopes below
@@ -825,16 +844,33 @@ namespace Scotheim.Terrain
                 s.MoorRollAmplitude * Noise.Fbm2(x / s.MoorRollScale, y / s.MoorRollScale, seed + 41) +
                 s.HummockAmplitude * Noise.Perlin(x / s.HummockScale, y / s.HummockScale, seed + 42));
 
-            if (s.LochanFrequency > 0f)
-            {
-                float n = Noise.Fbm2(x / s.LochanScale, y / s.LochanScale, seed + 43);
-                float lochan = SmoothStep(lochanThreshold + 0.05f, lochanThreshold - 0.05f, n);
-                // Valheim has one water plane, so lochans can only exist on low ground.
-                lochan *= SmoothStep(s.LochanMaxHeight, s.LochanMaxHeight - 5f, h);
-                if (lochan > 0f && h > -s.LochanDepth)
-                    h = Lerp(h, -s.LochanDepth, lochan);
-            }
+            h = Lochans(x, y, altitude, h);
             return CarveMoorLochs(x, y, h);
+        }
+
+        /// <summary>
+        /// Lochans: small lochs in hollows of the open moor, from noise. They fade out towards the hills: one dug at the
+        /// foot of a hill made the slope above it a cliff.
+        /// </summary>
+        float Lochans(float x, float y, float altitude, float h)
+        {
+            if (s.LochanFrequency <= 0f) return h;
+            // Valheim has one water plane, so lochans can only exist on low ground. Judged on the smooth shelf
+            // height, not the hummocky surface: a cut-off that follows every hummock's contour left vertical walls.
+            float allow = SmoothStep(s.LochanMaxHeight, s.LochanMaxHeight - 4f, altitude);
+            float d;
+            if (allow > 0f && Dominant(x, y, out d) != null) allow *= SmoothStep(0.15f, 0.03f, MassifWeight(x, y, d));
+            if (allow <= 0f) return h;
+            // u: how far out from the lochan's middle, in units of its edge noise (water below about 0, the strand out
+            // to 1, the bank out to LochanBank). Like the moor lochs: open water, a flat strand about a metre above it,
+            // then a wide bank easing up to the moor, so the ~15 m drop from the shelf is spread out, not one step.
+            float n = Noise.Fbm2(x / s.LochanScale, y / s.LochanScale, seed + 43);
+            float u = (n - lochanThreshold) / 0.05f;
+            const float strand = 1f;
+            float shore = Lerp(h, Math.Min(h, strand), SmoothStep(LochanBank, 1f, u));
+            float target = Lerp(shore, -s.LochanDepth, SmoothStep(0.5f, -1f, u));
+            h = Lerp(h, Math.Min(h, target), allow);
+            return h;
         }
 
         /// <summary>Stage B, Black Forest: drumlin swarms aligned with the grain, plus hummocky moraine.</summary>
