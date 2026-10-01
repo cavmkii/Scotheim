@@ -482,34 +482,59 @@
   groupSizeMin: 2
   groupSizeMax: 4
   groupRadius: 3
-# ...and scattered across flat, waterlogged blanket bog on the moor (flat ground stands for wet ground here).
+# ...and, rarely, on flat, waterlogged blanket bog away from the water (flat ground stands for wet ground here).
+# Kept scarce on purpose: lochs are where the iron is.
 - prefab: Scot_BogIronNodule
   min: 0
-  max: 2
+  max: 0.15
   scaleMin: 1.3
   scaleMax: 1.8
   biome: highland_moor
-  minAltitude: 0.5
+  minAltitude: 4
   maxAltitude: 30
   maxTilt: 6
   maxTerrainDelta: 1
   groupSizeMin: 1
-  groupSizeMax: 3
+  groupSizeMax: 2
   groupRadius: 3
 # Bog iron deposits: limonite builds up in wet, peaty ground. The Black Forest's copper boulder retinted rusty
-# orange (Content/Deposits.cs), placed as vanilla places copper: an attempt in about half the zones, sunk 2 m (the
-# boulder is tall, and its own terrain modifier beds it in). Vanilla's minTilt 5 is left off so the flat moor
-# qualifies; maxTilt 35 keeps it off crags. Above 1 m so it never sits on the loch strand or in the water.
+# orange (Content/Deposits.cs), sunk 2 m as vanilla sinks copper (the boulder is tall, and its own terrain modifier
+# beds it in). Mostly on loch and lochan shores, the moor's main iron supply with the nodules: one try in half the
+# shore zones, between 1 m (off the strand and out of the water) and 4 m. Vanilla's minTilt 5 is left off so the
+# flat shore qualifies; maxTilt 35 keeps it off crags.
 - prefab: Scot_BogIronDeposit
   min: 0
-  max: 1
+  max: 0.5
+  randTilt: 5
+  biome: highland_moor, caledonian_forest
+  minAltitude: 1
+  maxAltitude: 4
+  maxTilt: 35
+  maxTerrainDelta: 2
+  groundOffset: -2
+# ...and a rare one out on the open moor: one try in about one zone in twelve.
+- prefab: Scot_BogIronDeposit
+  min: 0
+  max: 0.08
   randTilt: 5
   biome: highland_moor
-  minAltitude: 1
+  minAltitude: 4
   maxAltitude: 1000
   maxTilt: 35
   maxTerrainDelta: 2
   groundOffset: -2
+# Peat hags: black banks of eroded peat standing out of the blanket bog (Content/Deposits.cs, a bone pile's shape).
+# Break one for a few turves of peat. Sparse: one try in a quarter of the moor's zones, on gentle ground.
+- prefab: Scot_PeatHag
+  min: 0
+  max: 0.25
+  randTilt: 5
+  biome: highland_moor
+  minAltitude: 2
+  maxAltitude: 1000
+  maxTilt: 15
+  maxTerrainDelta: 2
+  groundOffset: -0.2
 # Bog oak: old oak preserved in the peat of the open moor.
 - prefab: Scot_BogOakPickable
   min: 2

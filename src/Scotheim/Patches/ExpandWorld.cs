@@ -170,6 +170,8 @@ namespace Scotheim.Patches
             { "scotheim_symbolstone3.blueprint", new[] { "d30279e6b2fe9d01" } },
             { "scotheim_symbolstone4.blueprint", new[] { "78c4921345d38de7" } },
             { "scotheim_symbolstone5.blueprint", new[] { "761413ef9151cbea" } },
+            // The Grey Man's altar is part of a copied runestone location now, with its stone (Content/Places.cs).
+            { "scotheim_greyman.blueprint", new[] { "22db0e188f20bc43" } },
         };
 
         static void RemoveRetiredFiles()
@@ -210,7 +212,7 @@ namespace Scotheim.Patches
             FileName, "expand_vegetation_scotheim.yaml", "expand_clutter_scotheim.yaml", "expand_spawns_scotheim.yaml",
             "expand_locations_scotheim.yaml",
             "scotheim_broch.blueprint", "scotheim_crannog.blueprint", "scotheim_shieling.blueprint", "scotheim_stonecircle.blueprint",
-            "scotheim_cairn.blueprint", "scotheim_greyman.blueprint", "scotheim_greymanstone.blueprint",
+            "scotheim_cairn.blueprint", "scotheim_greymanstone.blueprint",
         };
 
         // Fingerprints of every version earlier releases wrote (see git history of src/Scotheim/Data).
@@ -218,10 +220,10 @@ namespace Scotheim.Patches
         {
             // tests/Data/check_data.py checks this list against git history.
             { FileName, new[] { "e7fd26f1f5d69f39", "063f4b3eae79531a", "47c982eb6dd734ee", "a6262f4eff3dc651" } },
-            { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa", "5701be8eddf32039", "ea39f5128c57a39a", "5074ac3eed8be0de", "3a3641781cb81f63", "fedff3064f4fd3c7", "ecaec4640f6da63c", "1d07cbddecee2262", "35284329bcb27cd7", "ba725ab10cdb397f", "8505df72bcafbdb3", "8f97233333b23163" } },
+            { "expand_vegetation_scotheim.yaml", new[] { "f52a0b849de4f93e", "08c9860a31fa88fa", "67ce30b011c4b0fa", "5701be8eddf32039", "ea39f5128c57a39a", "5074ac3eed8be0de", "3a3641781cb81f63", "fedff3064f4fd3c7", "ecaec4640f6da63c", "1d07cbddecee2262", "35284329bcb27cd7", "ba725ab10cdb397f", "8505df72bcafbdb3", "8f97233333b23163", "cab9ff7298d6ad20" } },
             { "expand_clutter_scotheim.yaml", new[] { "f186b91465d1e721", "facdfd177fc3d3ed", "c56b433982d86238" } },
             { "expand_spawns_scotheim.yaml", new[] { "e3fe9b1655bcf793" } },
-            { "expand_locations_scotheim.yaml", new[] { "ce145deb2eded126", "2a726b435d06f2f4", "2d799944054d17f9", "cc8d5b7368e22015", "dc9432fb0422aa35", "c4a1d1a5e06e3e7e", "fe12fc34ff080dbe", "39cbce773f75fe14", "8e87be14fbcf04ce" } },
+            { "expand_locations_scotheim.yaml", new[] { "ce145deb2eded126", "2a726b435d06f2f4", "2d799944054d17f9", "cc8d5b7368e22015", "dc9432fb0422aa35", "c4a1d1a5e06e3e7e", "fe12fc34ff080dbe", "39cbce773f75fe14", "8e87be14fbcf04ce", "241fbc260a58f1ef" } },
             { "scotheim_shieling.blueprint", new[] { "4e2b1ff402de1f0c" } },
             { "scotheim_cairn.blueprint", new[] { "4b67526b98f77391", "77cb3cbfa4b1f120" } },
         };

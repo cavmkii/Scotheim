@@ -11,7 +11,7 @@ namespace Scotheim.Content
     /// uisge-beatha brewed like vanilla mead (wash at the cauldron, then the fermenter).
     ///
     /// Whisky keeps the frost-resistance mead's protection from cold, which is what makes the Munros'
-    /// freezing weather survivable, and adds some stamina regen.
+    /// freezing weather survivable, and adds faster health regen and +10 to the swords skill (the claymore).
     /// </summary>
     static class Croft
     {
@@ -43,6 +43,7 @@ namespace Scotheim.Content
                 return;
             }
             GameFields.TrySetObject(plant, new[] { grown }, "m_grownPrefabs");
+            GameFields.TrySet(plant, "$piece_scot_bere", "m_name"); // the barley sapling's would read "Barley (healthy)"
             PieceManager.Instance.AddPiece(sapling);
         }
 
@@ -65,7 +66,10 @@ namespace Scotheim.Content
             dram.name = "Scot_UisgeBeathaEffect";
             dram.m_name = "$se_scot_uisgebeatha";
             dram.m_tooltip = "$se_scot_uisgebeatha_tooltip";
-            dram.m_staminaRegenMultiplier = 1.15f;
+            // The water of life: wounds close faster. And a dram before the charge: the claymore swings truer.
+            dram.m_healthRegenMultiplier = 1.25f;
+            GameFields.TrySet(dram, "Swords", "m_skillLevel");
+            GameFields.TrySet(dram, 10f, "m_skillLevelModifier");
             ItemManager.Instance.AddStatusEffect(new CustomStatusEffect(dram, false));
             GameFields.TrySetObject(whisky.ItemDrop.m_itemData.m_shared, dram, "m_consumeStatusEffect");
         }

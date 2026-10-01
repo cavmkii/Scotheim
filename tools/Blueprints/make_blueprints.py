@@ -122,9 +122,7 @@ write("scotheim_stonecircle", "A ring of standing stones.", circle)
 # a Clava-style ring of scaled pillars was tried and came out far too big on the summits.
 write("scotheim_cairn", "A summit cairn. Use it to bag the hill.", [row("Scot_SummitCairn", 0, 0, 0)])
 
-# The Grey Man's altar (Content/Boss.cs): a copy of the Deep North boss room's offering altar on a high summit.
-# Offer giant's heartstones to summon Am Fear Liath Mòr. Kept to the one object: see the cairn note above.
-write("scotheim_greyman", "The summit altar of Am Fear Liath Mòr.", [row("Scot_GreyManAltar", 0, 0, 0)])
+# The Grey Man's altar is no longer a blueprint: it sits beside a copy of the vanilla runestone (Content/Places.cs).
 
 # The Grey Man's stone (Content/Boss.cs): a copy of the Queen's boss stone on another Munro summit. Hang his trophy
 # on it to take his guardian power.
