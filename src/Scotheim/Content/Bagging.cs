@@ -20,7 +20,7 @@ namespace Scotheim.Content
         internal const int ToCompleat = 12; // expand_locations_scotheim.yaml asks for 24
         const string CountKey = "scotheim_cairns"; // global key "scotheim_cairns <n>", set by the server
         static float nextCount;
-        static bool warnedNoAltar, reportedAltars;
+        static bool warnedNoAltar, warnedNoStone, reportedAltars;
         static StatusEffect compleatist;
         static float nextCheck;
 
@@ -134,7 +134,7 @@ namespace Scotheim.Content
             if (net == null || zones == null || !(GameFields.Call(net, "IsServer") as bool? ?? false)) return;
             var instances = GameFields.Get(zones, "m_locationInstances") as System.Collections.IDictionary;
             if (instances == null || instances.Count == 0) return;
-            int count = 0, altars = 0;
+            int count = 0, altars = 0, stones = 0;
             foreach (var instance in instances.Values)
             {
                 var location = GameFields.Get(instance, "m_location");
@@ -145,15 +145,19 @@ namespace Scotheim.Content
                 else if (name == GreyMan.Location)
                 {
                     altars++;
-                    if (!reportedAltars)
-                    {
-                        var at = GameFields.Get(instance, "m_position") as Vector3?;
-                        Plugin.Log.LogInfo("Grey Man altar " + altars + (at.HasValue
-                            ? " at x " + Mathf.RoundToInt(at.Value.x) + ", z " + Mathf.RoundToInt(at.Value.z) +
-                              ", " + Mathf.RoundToInt(at.Value.y) + " m up (devcommands: goto " + Mathf.RoundToInt(at.Value.x) + " " + Mathf.RoundToInt(at.Value.z) + ")"
-                            : " (position unknown)") + ".");
-                    }
+                    if (!reportedAltars) Report("Grey Man altar " + altars, instance);
                 }
+                else if (name == GreyMan.StoneLocation)
+                {
+                    stones++;
+                    if (!reportedAltars) Report("Grey Man's stone (hang his trophy here for his power)", instance);
+                }
+            }
+            if (stones == 0 && instances.Count > 0 && !warnedNoStone)
+            {
+                warnedNoStone = true;
+                Plugin.Log.LogWarning("The Grey Man's stone wasn't placed in this world, so his power can't be taken. Lower minAltitude for " +
+                    GreyMan.StoneLocation + " in expand_locations_scotheim.yaml and run genloc, or use a new world.");
             }
             if (instances.Count > 0) reportedAltars = true;
             if (altars == 0 && !warnedNoAltar)
@@ -165,6 +169,15 @@ namespace Scotheim.Content
             if (count == 0 || count == PublishedCount()) return;
             GameFields.Call(zones, "SetGlobalKey", CountKey + " " + count);
             Plugin.Log.LogInfo("Summit cairns in this world: " + count + ". Compleatist needs " + Math.Min(ToCompleat, count) + ".");
+        }
+
+        static void Report(string what, object instance)
+        {
+            var at = GameFields.Get(instance, "m_position") as Vector3?;
+            Plugin.Log.LogInfo(what + (at.HasValue
+                ? " at x " + Mathf.RoundToInt(at.Value.x) + ", z " + Mathf.RoundToInt(at.Value.z) + ", " + Mathf.RoundToInt(at.Value.y) +
+                  " m up (devcommands: goto " + Mathf.RoundToInt(at.Value.x) + " " + Mathf.RoundToInt(at.Value.z) + ")"
+                : " (position unknown)") + ".");
         }
 
         /// <summary>Called every frame from the plugin: gives compleatists their effect if it's missing.</summary>

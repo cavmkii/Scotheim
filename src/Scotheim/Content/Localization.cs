@@ -110,6 +110,10 @@ namespace Scotheim.Content
             english["se_scot_myrtleward_tooltip"] = "The midges keep away.";
             english["se_scot_dread"] = "Dread";
             english["se_scot_dread_tooltip"] = "Something tall is near. Your breath comes short and your legs feel heavy.";
+            english["piece_scot_greymanstone"] = "The Grey Man's stone";
+            english["se_scot_greymanpower"] = "Am Fear Liath Mòr";
+            english["se_scot_greymanpower_tooltip"] = "Walk the high tops as he did: no freezing, half the stamina for running and jumping, " +
+                "a quarter of the fall damage, and half the noise.";
             english["piece_scot_greymanaltar"] = "Summit altar";
             english["piece_scot_greymanaltar_use"] = "Offer giant's heartstones";
             english["piece_scot_greymanaltar_pin"] = "Am Fear Liath Mòr";

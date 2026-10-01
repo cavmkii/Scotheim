@@ -163,7 +163,7 @@ EWD places these when a world is generated, from blueprints Scotheim writes into
 | **Crannog** (8) | In lochs, at water level | A timber platform on log piles with a ring of walls; a bean-nighe, sometimes an each-uisge, and hacksilver | Loch dwellings on artificial islets, e.g. those excavated on Loch Tay |
 | **Shieling** (20) | Forest and lower Munros | A roofless stone hut; sometimes a redcap or a little hacksilver | Summer huts on the hill grazing |
 | **Stone circle** (6) | Moor | Twelve standing stones, some fallen, sometimes a cairngorm in the middle | Circles such as Callanish (Lewis) and those around Clava |
-| **Pictish symbol stone** (20, five texts) | Moor, forest, Munros | A copy of the vanilla lore runestone (glowing runes, easy to spot) with its own text, hinting at brochs, crannogs, the each-uisge, the boss and Munro bagging; stone 4 marks the boss altar on the map | Class I symbol stones |
+| **Pictish symbol stone** (24, six texts) | Moor, forest, Munros | A copy of the vanilla lore runestone (glowing runes, easy to spot) with its own text, hinting at brochs, crannogs, the each-uisge, the boss and Munro bagging; stone 4 marks the boss altar on the map, stone 6 ("The eagle") the Grey Man's stone | Class I symbol stones |
 | **Summit cairn** (up to 24) | Munros, above 65 m | A small heap of stones (a copy of the vanilla stone pile) to add a stone to; see Munro bagging below | The custom of adding a stone to a summit cairn |
 
 Places only appear in newly generated areas: use a new world, or EWD's `genloc` command for unexplored ground. Crannog floors and posts are ordinary build pieces, so they can be taken apart for wood. The walls of brochs and shielings are ruin pieces that can't.
@@ -185,7 +185,9 @@ The Big Grey Man of Ben Macdui: a very tall grey figure said to walk the Cairngo
 - **The fight**: a boss health bar and music, 9,000 health (between the Seeker Queen and the Fader), on a Morgen body tinted grey and scaled up by 30%. Within 35 m of him you feel **Dread**: stamina regenerates 40% slower and you move 10% slower.
 - **Reward**: his trophy, 4–6 cairngorms, 6–10 Pictish silver and 1–2 heartstones back. Killing him sets the world key `defeated_scot_greyman`, which later content can build on.
 
-Not yet: a guardian power at an item stand, and a model of his own (KITBASH later).
+- **Guardian power**: hang his trophy on **the Grey Man's stone** (a copy of the Queen's boss stone from the start temple), placed on another Munro top, at least 500 m from his altars. Then use the stone as you would a vanilla boss stone. **Am Fear Liath Mòr** lasts 5 minutes with a 20-minute cooldown: no freezing (frost resistance), half the stamina for running and jumping, a quarter of the fall damage, and half the noise. Reading symbol stone 6 ("The eagle") marks it on the map; the log also gives its position and warns if it couldn't be placed.
+
+Not yet: a model of his own (KITBASH later).
 
 ### Wool, midges and the Sluagh
 
