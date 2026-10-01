@@ -128,8 +128,8 @@ namespace Scotheim.Content
 
         static int summitsPlacedFor = int.MinValue;
         const float SummitMinAltitude = 55f;   // m above sea; the Munros start around 32-50 m
-        const float SummitSearch = 96f;        // how far from a dome's centre to look for its real top
-        const float SummitStep = 12f;
+        const float SummitSeedSpacing = 240f;  // climbs start from each dome centre and a grid this far around it
+        static readonly float[] ClimbSteps = { 48f, 16f, 6f }; // coarse first, so the climb steps over crags on the flanks
         const float SummitSpacing = 150f;      // tops closer than this are the same hill
 
         /// <summary>
@@ -161,38 +161,71 @@ namespace Scotheim.Content
                 Plugin.Log.LogWarning("Summit cairns not placed on the tops: WorldGenerator.GetHeight(float, float) wasn't found.");
                 return;
             }
-            var args = new object[2];
+            var height = (Func<float, float, float>)Delegate.CreateDelegate(typeof(Func<float, float, float>), generator, getHeight);
             var water = GameFields.Get(zones, "m_waterLevel") as float? ?? 30f;
-            int placed = 0, low = 0, taken = 0, same = 0;
-            var tops = new List<Vector3>();
+
+            // Find every real top by walking uphill from many starts: each dome centre and a grid around it. A top found
+            // only near a dome's centre missed broad summits whose high point lies away from it, and hills with no dome
+            // centre at all (vanilla high ground taken into the Munros).
+            var found = new List<Vector3>();
+            int starts = 0;
             for (int i = 0; i + 1 < summits.Length; i += 2)
-            {
-                // The real top: the highest ground within reach of the dome's centre.
-                float bestX = summits[i], bestZ = summits[i + 1], bestH = float.MinValue;
-                for (float dz = -SummitSearch; dz <= SummitSearch; dz += SummitStep)
-                    for (float dx = -SummitSearch; dx <= SummitSearch; dx += SummitStep)
+                for (float oz = -SummitSeedSpacing; oz <= SummitSeedSpacing; oz += SummitSeedSpacing)
+                    for (float ox = -SummitSeedSpacing; ox <= SummitSeedSpacing; ox += SummitSeedSpacing)
                     {
-                        args[0] = summits[i] + dx;
-                        args[1] = summits[i + 1] + dz;
-                        var h = (float)getHeight.Invoke(generator, args);
-                        if (h > bestH) { bestH = h; bestX = (float)args[0]; bestZ = (float)args[1]; }
+                        float x = summits[i] + ox, z = summits[i + 1] + oz;
+                        if (height(x, z) - water < SummitMinAltitude - 20f) continue; // not hill ground
+                        starts++;
+                        found.Add(Climb(height, x, z));
                     }
-                var top = new Vector3(bestX, bestH, bestZ);
+            found.Sort((p, q) => q.y.CompareTo(p.y)); // highest first, so each hill keeps its highest point
+
+            int placed = 0, low = 0, taken = 0;
+            var tops = new List<Vector3>();
+            foreach (var top in found)
+            {
                 bool near = false;
-                foreach (var other in tops) if ((other - top).sqrMagnitude < SummitSpacing * SummitSpacing) { near = true; break; }
-                if (near) { same++; continue; }
+                foreach (var other in tops)
+                {
+                    float dx = other.x - top.x, dz = other.z - top.z;
+                    if (dx * dx + dz * dz < SummitSpacing * SummitSpacing) { near = true; break; }
+                }
+                if (near) continue;
+                tops.Add(top); // claimed even if it can't hold a cairn, so a lower point of the same hill doesn't get one
                 var biome = GameFields.Call(generator, "GetBiome", top);
                 bool custom;
-                if (bestH - water < SummitMinAltitude || !(biome is Heightmap.Biome) ||
+                if (top.y - water < SummitMinAltitude || !(biome is Heightmap.Biome) ||
                     Patches.ExpandWorld.FromGame((Heightmap.Biome)biome, out custom) != Scotheim.Terrain.HighlandBiome.Munros) { low++; continue; }
                 var zone = GameFields.Call(zones, "GetZone", top);
                 if (zone == null || instances.Contains(zone) || (GameFields.Call(zones, "IsZoneGenerated", zone) as bool? ?? true)) { taken++; continue; }
-                tops.Add(top);
                 GameFields.Call(zones, "RegisterLocation", cairn, top, false);
                 placed++;
             }
-            Plugin.Log.LogInfo("Summit cairns: " + placed + " placed on Munro tops; " + taken + " tops were already generated or held another location, " +
-                same + " were the same hill as another, " + low + " domes weren't high Munro ground.");
+            Plugin.Log.LogInfo("Summit cairns: " + placed + " placed on Munro tops (climbed from " + starts + " starts to " + tops.Count +
+                " separate tops); " + taken + " tops were already generated or held another location, " + low + " weren't high Munro ground.");
+        }
+
+        /// <summary>Walks uphill from (x, z) to where no neighbouring point is higher, and returns that top.</summary>
+        static Vector3 Climb(Func<float, float, float> height, float x, float z)
+        {
+            float h = height(x, z);
+            foreach (var step in ClimbSteps)
+            {
+                for (int moves = 0; moves < 60; moves++)
+                {
+                    float bestX = x, bestZ = z, bestH = h;
+                    for (int dz = -1; dz <= 1; dz++)
+                        for (int dx = -1; dx <= 1; dx++)
+                        {
+                            if (dx == 0 && dz == 0) continue;
+                            float nx = x + dx * step, nz = z + dz * step, nh = height(nx, nz);
+                            if (nh > bestH) { bestH = nh; bestX = nx; bestZ = nz; }
+                        }
+                    if (bestH <= h) break;
+                    x = bestX; z = bestZ; h = bestH;
+                }
+            }
+            return new Vector3(x, h, z);
         }
 
         static string LocationName(object location)
