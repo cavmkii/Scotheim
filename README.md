@@ -76,7 +76,7 @@ Everything is made at the black forge except the Sìth set, the Faerie Flag and 
 
 | Material | Where | Use | Basis |
 |---|---|---|---|
-| Bog iron ore → bog iron | Nodules at loch and lochan edges; smelt in the vanilla smelter | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore. |
+| Bog iron ore → sinter → bog iron | Orange nodules at loch and lochan edges, and rusty bog iron deposits (a retinted Swamp mud pile, mined with a pickaxe) in the low, wet moor. Roast the ore to **sinter** in the smelter, then run the sinter down to bars in the **blast furnace** | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore (limonite), which forms in wet, peaty ground; it was roasted before smelting. |
 | Hacksilver → Pictish silver | Redcaps (1–3, and a 10 % chance of one bar); rare hoards on moor and in forest; smelt in the vanilla smelter | Pictish gear | Pictish silver was largely cut-up Roman silver (the Traprain Law and Gaulcross hoards), melted and recast. |
 | Bog oak | Pulled from the open moor | Shafts, bows, shields, the caber | Oak preserved black in peat. |
 | Cairngorm | Rare, above 70 m in the Munros | Legendaries, staves, the Sìth crown | Smoky quartz from the Cairngorms, set in dirk hilts and plaid brooches. |
@@ -208,7 +208,7 @@ Until there are proper models, the clones are recoloured at load time (`Content/
   - Highland cattle ginger; sheep get a generated cream fleece texture in place of the boar's (a tint couldn't lighten it);
   - red deer redder, pine martens dark brown;
   - hill giants mossy, the fuath blue-green, redcaps red, the each-uisge kelp-dark.
-- **Materials:** bog iron dark, bog oak black, cairngorm smoky, the heartstone ember-red, Highland hide ginger, the Sìth pelt green.
+- **Materials:** bog ore and its nodules and deposits rusty orange, sinter dark rust, bog iron dark, bog oak black (the branches on the ground too), cairngorm smoky, the heartstone ember-red, Highland hide ginger, the Sìth pelt green.
 - **Armour:** blue bonnet blue, léine saffron, Sìth robe green, Pictish chain silver.
 - **Tartan:** the belted plaid and tartan cloth carry a generated Black Watch–style sett, woven as a 2/2 twill (below; brightened here).
 - **Icons:** every recoloured item gets a freshly rendered icon.

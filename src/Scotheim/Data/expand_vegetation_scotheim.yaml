@@ -477,6 +477,19 @@
   groupSizeMin: 2
   groupSizeMax: 4
   groupRadius: 3
+# Bog iron deposits: limonite builds up in wet, peaty ground. A rusty mud heap, sunk into the bog like the
+# Swamp's scrap piles; mine it for bog ore (Content/Deposits.cs).
+- prefab: Scot_BogIronDeposit
+  min: 0
+  max: 1
+  scaleMin: 1
+  scaleMax: 1.6
+  biome: highland_moor
+  minAltitude: 0.5
+  maxAltitude: 8
+  maxTilt: 15
+  maxTerrainDelta: 2
+  groundOffset: -2
 # Bog oak: old oak preserved in the peat of the open moor.
 - prefab: Scot_BogOakPickable
   min: 2

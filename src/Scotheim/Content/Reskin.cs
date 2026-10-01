@@ -56,7 +56,13 @@ namespace Scotheim.Content
         {
             // materials
             { "Scot_Wool", Tint(1.05f, 1f, 0.88f) },
-            { "Scot_BogIronOre", Tint(1f, 0.6f, 0.4f) },
+            { "Scot_BogIronOre", Tint(1.35f, 0.72f, 0.35f) },     // limonite: rusty orange
+            { "Scot_Sinter", Tint(0.75f, 0.45f, 0.32f) },        // roasted ore: dark rust clinker
+            // Things lying in the world (Reskin.Prop): the branch and nodules match their items.
+            { "Scot_BogOakPickable", Tint(0.3f, 0.26f, 0.22f) },
+            { "Scot_BogIronNodule", Tint(1.35f, 0.72f, 0.35f) },
+            { "Scot_BogIronDeposit", Tint(1.25f, 0.7f, 0.4f) },
+            { "Scot_BogIronDeposit_frac", Tint(1.25f, 0.7f, 0.4f) },
             { "Scot_Hacksilver", Tint(1.25f, 1.3f, 1.4f) },
             { "Scot_Peat", Tint(0.65f, 0.45f, 0.3f) },            // brown turf, not coal
             { "Scot_UisgeBeatha", Tint(1.25f, 0.85f, 0.45f) },    // amber       // scrap iron's look, made silvery
@@ -113,6 +119,13 @@ namespace Scotheim.Content
                     (skinned != null && skinned.rootBone != null ? " root " + skinned.rootBone.name + ", " + skinned.bones.Length + " bones" : ""));
             }
             Plugin.Log.LogInfo("Parts " + name + ": " + string.Join("; ", parts.ToArray()));
+        }
+
+        /// <summary>Recolours something placed in the world (a pickable or deposit) with the same looks as items.</summary>
+        internal static void Prop(string name, GameObject prefab)
+        {
+            Look look;
+            if (Items.TryGetValue(name, out look)) Apply(name, prefab, look);
         }
 
         /// <summary>Recolours an item, including the skin overlay armour uses, and renders it a new icon.</summary>

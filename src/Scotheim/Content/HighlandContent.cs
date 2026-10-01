@@ -78,6 +78,8 @@ namespace Scotheim.Content
             new ItemSpec { Name = "Scot_TrophyGreyMan", Base = "TrophyMorgen" },
             // Highland raw materials: gear is made from these and the drops above, nothing from other biomes.
             new ItemSpec { Name = "Scot_BogIronOre", Base = "IronOre" },
+            // Bog ore is roasted to sinter in the smelter, and the sinter run down to bars in the blast furnace.
+            new ItemSpec { Name = "Scot_Sinter", Base = "IronScrap" },
             new ItemSpec { Name = "Scot_BogIron", Base = "Iron" },
             // Hacksilver is scrap (like the Swamp's scrap iron); the smelter turns it into Pictish silver bars.
             new ItemSpec { Name = "Scot_Hacksilver", Base = "IronScrap" },
@@ -168,10 +170,15 @@ namespace Scotheim.Content
                 AddCooking(station, "Scot_Beef", "Scot_CookedBeef", 35f);
             }
 
-            // Bog ore smelts like any iron ore, with charcoal from Highland wood.
+            // Bog ore takes two firings: roasted to sinter in the smelter, then the sinter is run down to bars in
+            // the blast furnace.
             ItemManager.Instance.AddItemConversion(new CustomItemConversion(new SmelterConversionConfig
             {
-                Station = "smelter", FromItem = "Scot_BogIronOre", ToItem = "Scot_BogIron",
+                Station = "smelter", FromItem = "Scot_BogIronOre", ToItem = "Scot_Sinter",
+            }));
+            ItemManager.Instance.AddItemConversion(new CustomItemConversion(new SmelterConversionConfig
+            {
+                Station = "blastfurnace", FromItem = "Scot_Sinter", ToItem = "Scot_BogIron",
             }));
             // Hacksilver melts down into bars, as the Picts recast Roman plate into their chains.
             ItemManager.Instance.AddItemConversion(new CustomItemConversion(new SmelterConversionConfig
@@ -192,6 +199,7 @@ namespace Scotheim.Content
             AddPickable(added, "Scot_PeatTurf", "Pickable_Stone", "Scot_Peat");
             AddPickable(added, "Scot_WildBere", "Pickable_Barley_Wild", "Scot_Bere");
             AddPickable(added, "Scot_Pickable_Bere", "Pickable_Barley", "Scot_Bere");
+            Deposits.Add(added);
             Croft.Add(added);
             Midges.Add(added);
             GreyMan.ItemsReady(added);
@@ -224,6 +232,7 @@ namespace Scotheim.Content
                 return;
             }
             pickable.m_itemPrefab = item.ItemPrefab;
+            Reskin.Prop(name, clone);
             PrefabManager.Instance.AddPrefab(clone);
         }
 
