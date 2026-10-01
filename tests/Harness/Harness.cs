@@ -96,12 +96,12 @@ static class Harness
             float expect = (hl.CarveBase(p[0], p[1], hl.LandBase(p[0], p[1], Alt(raw))) + 30f) / 200f;
             maxErr = Math.Max(maxErr, Math.Abs(patched - expect));
             if (patched != raw) raised++;
-            if (Alt(raw) > HighlandsTerrain.VanillaShore && patched != raw) vanillaTouched++;
+            if (Alt(raw) > HighlandsTerrain.VanillaShore && hl.CoreWeight(p[0], p[1]) == 0f && patched != raw) vanillaTouched++;
             if (hl.LandWeight(p[0], p[1]) == 0f && patched != raw) farTouched++;
         }
         Check(raised > 0, "GetBaseHeight raises a landmass (" + raised + "/" + points.Count + " samples)");
         Check(maxErr < 1e-6, "postfix matches LandBase + CarveBase (max err " + maxErr.ToString("E1") + ")");
-        Check(vanillaTouched == 0 && farTouched == 0, "vanilla land and open ocean away from the site untouched");
+        Check(vanillaTouched == 0 && farTouched == 0, "vanilla land near the coast and open ocean away from the site untouched");
         Check(wg.PublicBase(sx, sy, true) == OriginalBaseHeight.Call(wg, sx, sy, true), "menuTerrain=true left alone");
 
         // Summit cairns: dome centres are deterministic, on the islands, and many of them are Munro ground.
@@ -142,6 +142,19 @@ static class Harness
             if (b != HighlandBiome.None && !found.ContainsKey(b)) found[b] = p;
         }
         Check(found.Count == 3, "landmass has Moor, Forest and Munros (" + string.Join(",", found.Keys) + ")");
+
+        // Vanilla land (a 60 m vanilla Mountain islet) well inside an island is absorbed; near the coast it stays vanilla.
+        var core = points.FirstOrDefault(p => hl.CoreWeight(p[0], p[1]) == 1f);
+        var coast = points.FirstOrDefault(p => hl.CoreWeight(p[0], p[1]) == 0f && hl.LandWeight(p[0], p[1]) > 0.6f);
+        Check(core != null && coast != null, "samples found in an island's core and by its coast");
+        if (core != null && coast != null)
+        {
+            float lifted = hl.LandBase(core[0], core[1], 60f);
+            Check(lifted >= 60f && hl.Classify(core[0], core[1], hl.CarveBase(core[0], core[1], lifted), 60f) != HighlandBiome.None,
+                "vanilla land in an island's core takes a Highland biome and is never lowered");
+            Check(hl.LandBase(coast[0], coast[1], 60f) == 60f && hl.Classify(coast[0], coast[1], 60f, 60f) == HighlandBiome.None,
+                "vanilla land by the coast keeps its vanilla biome and height");
+        }
 
         // Without custom biomes: vanilla fallbacks on the island, vanilla strip unchanged.
         var fallback = new Dictionary<HighlandBiome, Heightmap.Biome> {

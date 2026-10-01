@@ -272,6 +272,7 @@ Still unverified:
 - **One water plane.** Valheim has a single sea level, so every loch sits at sea level: moor lochans are hollows carved down from the ~14 m shelf (up to 18 m ground, `LochanMaxHeight`), which gives them steepish banks.
 - **Munros snow.** Mountain ground texture is snow-covered everywhere, not only on the tops.
 - **Steep ground.** 2–3% of Highland land is steeper than 40° in the previews (2.8% on the synthetic preview world with the current lochan settings), mostly lochan banks and where the island meets vanilla islets.
+- **Vanilla land on an island site.** Vanilla land well inside an island (coast distance under ~0.9) is absorbed: it takes Highland biomes and shaping and is only ever raised. Before this, a vanilla Mountain islet kept vanilla's jagged knife-edge ridges among the Munros. Vanilla land near the coast is left as vanilla made it, so coasts can still break up there.
 - **Editing biome YAML.** Restart the world afterwards so biome IDs and terrain agree.
 
 ## Build and install
