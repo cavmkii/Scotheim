@@ -203,26 +203,33 @@ namespace Scotheim.Terrain
             return score;
         }
 
-        /// <summary>Carves the moor lochs into a final moor or forest height (altitude in, altitude out).</summary>
+        /// <summary>
+        /// Carves the moor lochs into a final moor or forest height (altitude in, altitude out). The bank is a slope of
+        /// fixed steepness rising from the strand until it meets the ground, so higher ground gets a wider bank, not a
+        /// steeper one: with a bank of fixed width, a loch reaching into 40 m ground (high vanilla land taken into an
+        /// island) left a cliff, and its ragged shore left spires (seen in game).
+        /// </summary>
         float CarveMoorLochs(float x, float y, float h)
         {
+            const float strand = 1f;
+            const float bankSlope = 0.36f; // tan 20 degrees; the shore noise steepens it in places
             foreach (var loch in lochs)
             {
                 float dx = x - loch.X, dy = y - loch.Y;
-                if (Math.Abs(dx) > loch.Reach || Math.Abs(dy) > loch.Reach) continue; // Reach covers the shore noise too
+                float box = loch.Reach * 1.5f; // past Reach for the widest banks; Reach itself spaces the lochs
+                if (Math.Abs(dx) > box || Math.Abs(dy) > box) continue;
                 float du = (dx * loch.AlongX + dy * loch.AlongY) / loch.HalfLength;
                 float dv = (dx * loch.AcrossX + dy * loch.AcrossY) / loch.HalfWidth;
                 // A ragged shore: bays and points rather than a clean ellipse.
                 float q = (float)Math.Sqrt(du * du + dv * dv)
                     + 0.55f * Noise.Fbm2(x / 220f, y / 220f, seed + 86) + 0.12f * Noise.Perlin(x / 60f, y / 60f, seed + 87);
-                if (q >= 1.3f) continue;
-                // From the outside in: a bank easing down to a strand, a flat margin about a metre above the water
-                // (loch-edge plants and bog ore need nearly flat ground there), then the water, shallow at the
-                // margins and deep in the middle.
-                const float strand = 1f;
-                float shore = Lerp(h, Math.Min(h, strand), SmoothStep(1.3f, 1.05f, q));
+                // From the outside in: the bank, a flat margin about a metre above the water (loch-edge plants and
+                // bog ore need nearly flat ground there) from q 1.05 inwards, then the water, shallow at the margins
+                // and deep in the middle. q counts in half-widths, so the bank rises bankSlope * HalfWidth per unit q.
+                float bank = strand + bankSlope * loch.HalfWidth * Math.Max(0f, q - 1.05f);
+                if (bank >= h && q >= 0.97f) continue; // the bank has met the ground: outside this loch's water and bank
                 float floor = -1.5f - s.MoorLochDepth * SmoothStep(0.85f, 0.2f, q);
-                h = Math.Min(h, Lerp(shore, floor, SmoothStep(0.97f, 0.8f, q)));
+                h = Math.Min(h, Lerp(bank, floor, SmoothStep(0.97f, 0.8f, q)));
             }
             return h;
         }
