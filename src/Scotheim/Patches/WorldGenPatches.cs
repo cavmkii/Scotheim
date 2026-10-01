@@ -30,6 +30,9 @@ namespace Scotheim.Patches
 
         /// <summary>Seed of the last real (non-menu) world generated; used to keep per-world records apart.</summary>
         internal static volatile int CurrentSeed;
+
+        /// <summary>Munro dome centres of the last real world, as (x, z) pairs, or null without Highlands. For summit cairns.</summary>
+        internal static volatile float[] CurrentSummits;
         static readonly object buildLock = new object();
 
         /// <summary>The Highlands for this generator's world, or null to leave vanilla alone.</summary>
@@ -53,6 +56,7 @@ namespace Scotheim.Patches
                 if (!MenuRef(world)) CurrentSeed = SeedRef(world);
                 if (!MenuRef(world) && Plugin.Instance != null && Plugin.Instance.TerrainEnabled.Value)
                     terrain = Build(generator, SeedRef(world));
+                if (!MenuRef(world)) CurrentSummits = terrain != null ? terrain.MunroCentres().ToArray() : null;
                 previous = latest;
                 latest = new Active { World = world, Terrain = terrain };
                 return terrain;

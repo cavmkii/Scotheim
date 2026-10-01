@@ -90,7 +90,25 @@ check("GreyMan.DefeatKey" in raid_src and 'GetPrefab("Scot_Sluagh")' in raid_src
 never = sorted(set(creatures) - {s["prefab"] for s in spawns} - {"Scot_Lamb", "Scot_HighlandCalf", "Scot_GreyMan", "Scot_Sluagh"})  # boss summoned, Sluagh raid only
 check(not never, "every adult creature has a spawn" + (": missing " + ", ".join(never) if never else ""))
 
+# --- clutter: vanilla clutter prefabs, plus the heather Content/Heather.cs makes
+clutter = yaml.safe_load((data / "expand_clutter_scotheim.yaml").read_text(encoding="utf-8"))
+vanilla_clutter = {c["prefab"] for c in yaml.safe_load((ref / "ewd-1.73/expand_clutter.yaml").read_text(encoding="utf-8"))}
+heather_src = (root / "src/Scotheim/Content/Heather.cs").read_text(encoding="utf-8")
+own_clutter = set(re.findall(r'const string Name = "(\w+)"', heather_src))
+heather_base = re.search(r'const string Base = "(\w+)"', heather_src).group(1)
+check(heather_base in vanilla_clutter, "heather copies a vanilla clutter prefab (" + heather_base + ")")
+unknown = sorted({c["prefab"] for c in clutter} - vanilla_clutter - own_clutter)
+check(not unknown, "clutter prefabs are vanilla clutter or Scotheim's heather" + (": unknown " + ", ".join(unknown) if unknown else ""))
+check({"highland_moor", "caledonian_forest", "munros"} <= {b.strip() for c in clutter if c["prefab"] in own_clutter for b in c["biome"].split(",")},
+      "heather grows in all three Highland biomes")
+
 # --- vegetation
+deposits_src = (root / "src/Scotheim/Content/Deposits.cs").read_text(encoding="utf-8")
+deposits = dict(re.findall(r'CreateClonedPrefab\("(Scot_\w+)", "(\w+)"\)', deposits_src))
+check(deposits.get("Scot_BogIronDeposit") == "mudpile" and "Destructible" in prefab_components.get("mudpile", set())
+      and deposits.get("Scot_BogIronDeposit_frac") == "mudpile_frac" and "MineRock5" in prefab_components.get("mudpile_frac", set()),
+      "bog iron deposits copy the Swamp mud pile (Destructible) and its fragments (MineRock5)")
+prefabs |= set(deposits)
 veg_custom = sorted({v["prefab"] for v in vegetation if v["prefab"].startswith("Scot_")} - prefabs)
 check(not veg_custom, "vegetation Scot_ prefabs are defined in Content" + (": " + ", ".join(veg_custom) if veg_custom else ""))
 veg_vanilla = sorted({v["prefab"] for v in vegetation if not v["prefab"].startswith("Scot_")} - vanilla_prefabs)
@@ -98,7 +116,8 @@ check(not veg_vanilla, "vegetation vanilla prefabs exist" + (": " + ", ".join(ve
 
 bad = sorted({b for _, b, _ in pickables} - vanilla_prefabs) + sorted({i for _, _, i in pickables} - set(items))
 check(not bad, "%d pickables copy real prefabs and yield Scotheim items" % len(pickables) + (": " + ", ".join(bad) if bad else ""))
-unplaced = sorted(p for p in prefabs - {v["prefab"] for v in vegetation} if not p.startswith("Scot_Pickable_"))  # crops are planted
+# Crops are planted, and a deposit's _frac only appears when the heap is broken.
+unplaced = sorted(p for p in prefabs - {v["prefab"] for v in vegetation} if not p.startswith("Scot_Pickable_") and not p.endswith("_frac"))
 check(not unplaced, "every pickable is placed in the vegetation file" + (": " + ", ".join(unplaced) if unplaced else ""))
 
 # --- content
@@ -156,10 +175,17 @@ for kind, defined in (("item", items), ("creature", creatures), ("gear piece", g
 check("character.m_name = Localization.CreatureName(spec.Name);" in content,
       "creature names are set after cloning (Jötunn resets them to the prefab name)")
 
-# --- reskins: every recoloured name is a real Scotheim creature, item or gear piece
+# --- bog iron takes two firings: ore -> sinter (smelter), sinter -> bars (blast furnace)
+conv = re.findall(r'Station = "(\w+)", FromItem = "(\w+)", ToItem = "(\w+)"', content)
+check(("smelter", "Scot_BogIronOre", "Scot_Sinter") in conv and ("blastfurnace", "Scot_Sinter", "Scot_BogIron") in conv
+      and not any(f == "Scot_BogIronOre" and t == "Scot_BogIron" for _, f, t in conv),
+      "bog ore smelts to sinter, and sinter to bars only in the blast furnace")
+check("blastfurnace" in vanilla_prefabs and "Smelter" in prefab_components.get("blastfurnace", set()), "the blast furnace is a vanilla smelter")
+
+# --- reskins: every recoloured name is a real Scotheim creature, item, gear piece, pickable or deposit
 reskin = (root / "src/Scotheim/Content/Reskin.cs").read_text(encoding="utf-8")
 names = set(re.findall(r'\{ "(Scot_\w+)", (?:Tint|TartanLook)', reskin))
-unknown = sorted(names - set(creatures) - set(items) - set(gear))
+unknown = sorted(names - set(creatures) - set(items) - set(gear) - prefabs)
 check(not unknown, "%d reskins name real Scotheim things" % len(names) + (": unknown " + ", ".join(unknown) if unknown else ""))
 
 # --- places: EWD location keys (1.73 location/LocationData.cs) and blueprint contents

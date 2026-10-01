@@ -14,9 +14,9 @@ A BepInEx mod for Valheim that adds Scottish Highlands islands: new land raised 
 
 | Biome | Where | Terrain | Vegetation | Weather |
 |---|---|---|---|---|
-| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
-| **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
-| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Crags and scree; a few stunted pines and birches below ~70 m; rare cloudberries on high ground | Freezing snow and storms, with misty breaks |
+| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Purple heather nearly everywhere, heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
+| **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, heather in the clearings, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
+| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Zoned like a real Ben: pine and birch woods on the lower slopes (to ~75–85 m), purple heather, blaeberry and juniper-like scrub above, low montane heath and grass on the tops; crags, scree, rare cloudberries | Freezing snow, often in mist |
 
 Each biome borrows a vanilla height function and ground texture. The moor uses Meadows' grass, plus meadow grass, heath flowers and bracken as ground clutter. EWD's `nature` setting only affects farming, bees and footsteps: the Moor farms like the Plains (barley, flax), the forest like the Black Forest. Vegetation comes entirely from `expand_vegetation_scotheim.yaml`, so no vanilla plants leak in. There are no ores yet.
 
@@ -64,7 +64,7 @@ Items, also Jötunn clones. Each keeps its base item's model and icon for now:
 
 The food values are my estimate of Mistlands-tier food, not copied from the game. Valheim's "blueberries" already look like bilberries (*Vaccinium myrtillus*), which is what a blaeberry is, so the blaeberry bush is a copy of the blueberry bush that yields the Scots-named item.
 
-Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tamed like boars. Being boars underneath, they also charge when provoked.
+Sheep eat blaeberries, blueberries, cloudberries and raspberries, and can be tamed like boars. They keep the boar body for taming and breeding but never attack: they take the deer's neutral faction, have no attack, and run when hurt. Lambs too.
 
 ### Weapons and armour
 
@@ -76,7 +76,7 @@ Everything is made at the black forge except the Sìth set, the Faerie Flag and 
 
 | Material | Where | Use | Basis |
 |---|---|---|---|
-| Bog iron ore → bog iron | Nodules at loch and lochan edges; smelt in the vanilla smelter | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore. |
+| Bog iron ore → sinter → bog iron | Orange nodules at loch and lochan edges, and rusty bog iron deposits (a retinted Swamp mud pile, mined with a pickaxe) in the low, wet moor. Roast the ore to **sinter** in the smelter, then run the sinter down to bars in the **blast furnace** | The metal for all forged gear | Medieval Highland iron was mostly smelted from bog ore (limonite), which forms in wet, peaty ground; it was roasted before smelting. |
 | Hacksilver → Pictish silver | Redcaps (1–3, and a 10 % chance of one bar); rare hoards on moor and in forest; smelt in the vanilla smelter | Pictish gear | Pictish silver was largely cut-up Roman silver (the Traprain Law and Gaulcross hoards), melted and recast. |
 | Bog oak | Pulled from the open moor | Shafts, bows, shields, the caber | Oak preserved black in peat. |
 | Cairngorm | Rare, above 70 m in the Munros | Legendaries, staves, the Sìth crown | Smoky quartz from the Cairngorms, set in dirk hilts and plaid brooches. |
@@ -143,8 +143,9 @@ On the sources:
 ### Crofting, the still and Highland food
 
 - **Bere** is the old barley of the north, still grown in Orkney and the Western Isles. It grows wild in small patches on the moor and by shielings. Like vanilla barley, the grain is its own seed: plant it with the cultivator on the open moor (the moor farms like the Plains).
-- **Peat** turves lie on the open moor.
-- **Uisge-beatha** is brewed like mead: a *whisky wash* at the cauldron (10 bere, 2 peat), then the fermenter, which gives 6. It carries the frost-resistance mead's protection from freezing, which the Munros' weather calls for, plus +15 % stamina regen.
+- **Peat** turves lie on the open moor. Cut peat is wet: dry it in a **peat stack** (built with the hammer near a workbench, 10 stone and 6 wood; a copy of the charcoal kiln that needs no fuel and takes 90 s a peat), as peats were stacked to dry in the wind.
+- **Uisge-beatha** is brewed like mead: a *whisky wash* at the cauldron (10 bere, 2 dried peat, whose smoke is what flavours the malt), then the fermenter, which gives 6.
+- **Moss bandage** (2 per craft at the workbench: 1 dried peat, 2 wool). Dried bog moss was a real wound dressing, gathered in Scotland by the ton in the First World War. Using one heals 30 at once and 30 more over 10 seconds. It shares the healing meads' cooldown slot (so no stacking with them) with a 60 s cooldown of its own: a quick patch-up rather than a big heal. It carries the frost-resistance mead's protection from freezing, which the Munros' weather calls for, plus +15 % stamina regen.
 - **Food**, made at the cauldron. The values are my estimates for late-game food.
 
 | Food | Recipe | Health | Stamina | Regen | Duration |
@@ -164,7 +165,7 @@ EWD places these when a world is generated, from blueprints Scotheim writes into
 | **Shieling** (20) | Forest and lower Munros | A roofless stone hut; sometimes a redcap or a little hacksilver | Summer huts on the hill grazing |
 | **Stone circle** (6) | Moor | Twelve standing stones, some fallen, sometimes a cairngorm in the middle | Circles such as Callanish (Lewis) and those around Clava |
 | **Pictish symbol stone** (24, six texts) | Moor, forest, Munros | A copy of the vanilla lore runestone (glowing runes, easy to spot) with its own text, hinting at brochs, crannogs, the each-uisge, the boss and Munro bagging; stone 4 marks the boss altar on the map, stone 6 ("The eagle") the Grey Man's stone | Class I symbol stones |
-| **Summit cairn** (up to 24) | Munros, above 65 m | A small heap of stones (a copy of the vanilla stone pile) to add a stone to; see Munro bagging below | The custom of adding a stone to a summit cairn |
+| **Summit cairn** (one per Munro top) | The top of each Munro | A small heap of stones (a copy of the vanilla stone pile) to add a stone to; see Munro bagging below | The custom of adding a stone to a summit cairn |
 
 Places only appear in newly generated areas: use a new world, or EWD's `genloc` command for unexplored ground. Crannog floors and posts are ordinary build pieces, so they can be taken apart for wood. The walls of brochs and shielings are ruin pieces that can't.
 
@@ -172,7 +173,7 @@ Places only appear in newly generated areas: use a new world, or EWD's `genloc` 
 
 Use a summit cairn to add a stone and bag that hill. The tally is kept on the character, separately for each world (by world seed), and each cairn counts once. Bagging 12 makes the character a **Compleatist**: +15 Run skill, 15% less stamina for running and jumping, and half fall damage, for as long as the character plays that world. The effect is re-applied every few seconds if it's missing, for example after death.
 
-How many cairns EWD can place depends on the terrain: the first three test worlds got 16, 24 and 10 of the 24 asked for. So the server counts the cairns in its world and shares the number as the global key `scotheim_cairns <n>`, and Compleatist needs 12 or all of them, whichever is fewer. The log says "Summit cairns in this world: n". Running `genloc` later adds cairns and raises the count.
+There's a cairn on top of each Munro. Scotheim's terrain knows where every hill's dome is, so the server finds the highest ground near each one and registers a cairn there (tops closer than 150 m count as one hill). The log says "Summit cairns: n placed on Munro tops". They spawn when that ground is first generated, so explored ground keeps what it had. How many hills there are depends on the terrain, so Compleatist needs 12 or every cairn the world has, whichever is fewer; the server counts them and shares the number as the global key `scotheim_cairns <n>` ("Summit cairns in this world: n" in the log).
 
 The fall-damage field is set by name (`m_fallDamageModifier`); the log says whether it was found.
 
@@ -195,6 +196,10 @@ Not yet: a model of his own (KITBASH later).
 - **Midges**: on the moor and in the forest, when the wind is light at dawn or dusk, you get **Midges** (stamina regenerates 25% slower). Standing by any fire keeps them off (smoke), and so does **bog myrtle salve**: 6 bog myrtle and 1 mutton at the cauldron make 3, and each gives 20 minutes' protection. Bog myrtle grows in clumps at loch and bog edges on the low moor. Midges and bog myrtle as a repellent are both real; the timing (calm air, dawn and dusk) is the midge's actual habit.
 - **The Sluagh**: once Am Fear Liath Mòr is dead, the host of the restless dead can raid bases in the Highlands at night: level 2-3 dark spirits, up to 8 at a time for two minutes, in mist, with the music of the vanilla raid it's copied from. It's added to the game's raid list in code. Don't use EWD's `Event data = true` for it: in EWD 1.73 on this game version that setting fails to patch `RandEventSystem.Awake`, the error stops the rest of EWD's startup, and the Highland biomes (and all their vegetation) go missing.
 
+### Heather
+
+Vanilla has no heather; its nearest clutter is the red heath flowers of the Plains. Scotheim copies those as `Scot_Heather` and repaints the petals heather purple (the texture's red-to-orange pixels are moved to a pinkish purple, about 288°, keeping their shading; stems stay green). It's added to the game's clutter list just before EWD reads it, so the clutter file can use it by name. It grows thickly on the moor, up the Munros (thinning towards the tops) and in the forest clearings. The log says "Heather: n materials made purple".
+
 ### Looks
 
 Until there are proper models, the clones are recoloured at load time (`Content/Reskin.cs`). Only colour and texture change, and vanilla creatures and items keep their own look.
@@ -204,7 +209,7 @@ Until there are proper models, the clones are recoloured at load time (`Content/
   - Highland cattle ginger; sheep get a generated cream fleece texture in place of the boar's (a tint couldn't lighten it);
   - red deer redder, pine martens dark brown;
   - hill giants mossy, the fuath blue-green, redcaps red, the each-uisge kelp-dark.
-- **Materials:** bog iron dark, bog oak black, cairngorm smoky, the heartstone ember-red, Highland hide ginger, the Sìth pelt green.
+- **Materials:** bog ore and its nodules and deposits rusty orange, sinter dark rust, bog iron dark, bog oak black (the branches on the ground too), cairngorm smoky, the heartstone ember-red, Highland hide ginger, the Sìth pelt green.
 - **Armour:** blue bonnet blue, léine saffron, Sìth robe green, Pictish chain silver.
 - **Tartan:** the belted plaid and tartan cloth carry a generated Black Watch–style sett, woven as a 2/2 twill (below; brightened here).
 - **Icons:** every recoloured item gets a freshly rendered icon.

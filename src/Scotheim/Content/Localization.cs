@@ -24,18 +24,21 @@ namespace Scotheim.Content
             { "Scot_KelpieMane", new[] { "Kelpie mane", "Wet weed and horsehair. It never dries." } },
             { "Scot_WashersShroud", new[] { "Washer's shroud", "Linen she was washing at the ford. You don't ask whose." } },
             { "Scot_GiantHeartstone", new[] { "Giant's heartstone", "Warm, and heavier than its size." } },
+            { "Scot_Sinter", new[] { "Bog iron sinter", "Bog ore roasted in the smelter. Run it down to bars in a blast furnace." } },
             { "Scot_TrophyGreyMan", new[] { "Grey Man trophy", "Proof that something did walk the high plateau." } },
             { "Scot_BogMyrtle", new[] { "Bog myrtle", "Sweet gale from the loch edges. Midges hate the smell." } },
             { "Scot_MyrtleSalve", new[] { "Bog myrtle salve", "Rub it on and the midges leave you be for twenty minutes." } },
-            { "Scot_BogIronOre", new[] { "Bog iron ore", "Rusty lumps from the edge of a loch. Smelt it." } },
-            { "Scot_BogIron", new[] { "Bog iron", "Soft, honest iron. Most Highland blades began as this." } },
+            { "Scot_BogIronOre", new[] { "Bog iron ore", "Rusty lumps of limonite from the bog. Roast it to sinter in a smelter." } },
+            { "Scot_BogIron", new[] { "Bog iron", "Soft, honest iron, run down from sinter in a blast furnace. Most Highland blades began as this." } },
             { "Scot_Hacksilver", new[] { "Hacksilver", "Cut-up silver plate, probably Roman once. Smelt it down." } },
             { "Scot_PictishSilver", new[] { "Pictish silver", "Hacksilver melted and recast, as the Picts did for their great chains." } },
             { "Scot_BogOak", new[] { "Bog oak", "Oak that lay in the peat for thousands of years. Black, and hard as iron." } },
             { "Scot_Cairngorm", new[] { "Cairngorm", "Smoky quartz from the high tops. It goes on a dirk hilt or a plaid brooch." } },
             { "Scot_RowanWood", new[] { "Rowan wood", "Rowan keeps witches and the Sìth at bay. Usually." } },
             { "Scot_Bere", new[] { "Bere", "The old barley of the north: short, hardy and quick to ripen. Plant it with the cultivator." } },
-            { "Scot_Peat", new[] { "Peat", "Cut from the moor and dried. It gives the whisky its smoke." } },
+            { "Scot_Peat", new[] { "Peat", "Wet turf cut from the moor. Stack it to dry before it'll burn." } },
+            { "Scot_DriedPeat", new[] { "Dried peat", "Wind-dried peat. Its smoke flavours the malt for whisky, and the dry moss makes a clean dressing." } },
+            { "Scot_MossBandage", new[] { "Moss bandage", "Dried bog moss in a wool pad. Heals 30 at once and 30 more over 10 seconds; shares a cooldown with healing meads." } },
             { "Scot_WhiskyWash", new[] { "Whisky wash", "Malted bere and peat smoke in water. Leave it in the fermenter." } },
             { "Scot_UisgeBeatha", new[] { "Uisge-beatha", "The water of life. Keeps the cold out on the high tops." } },
             { "Scot_Haggis", new[] { "Haggis", "Mutton, bere and suet, boiled in a bag. Better than it sounds." } },
@@ -110,6 +113,11 @@ namespace Scotheim.Content
             english["se_scot_myrtleward_tooltip"] = "The midges keep away.";
             english["se_scot_dread"] = "Dread";
             english["se_scot_dread_tooltip"] = "Something tall is near. Your breath comes short and your legs feel heavy.";
+            english["piece_scot_bogirondeposit"] = "Bog iron deposit";
+            english["piece_scot_peatstack"] = "Peat stack";
+            english["piece_scot_peatstack_desc"] = "Stack cut peat here to dry in the wind. Slow, and needs no fuel.";
+            english["se_scot_bandaged"] = "Bandaged";
+            english["se_scot_bandaged_tooltip"] = "Healing under a moss dressing.";
             english["piece_scot_greymanstone"] = "The Grey Man's stone";
             english["se_scot_greymanpower"] = "Am Fear Liath Mòr";
             english["se_scot_greymanpower_tooltip"] = "Walk the high tops as he did: no freezing, half the stamina for running and jumping, " +

@@ -88,6 +88,23 @@ static class Harness
         Check(vanillaTouched == 0 && farTouched == 0, "vanilla land and open ocean away from the site untouched");
         Check(wg.PublicBase(sx, sy, true) == OriginalBaseHeight.Call(wg, sx, sy, true), "menuTerrain=true left alone");
 
+        // Summit cairns: dome centres are deterministic, on the islands, and many of them are Munro ground.
+        var centres = hl.MunroCentres();
+        var again = new HighlandsTerrain(settings, 12345, sites).MunroCentres();
+        bool same = centres.Count == again.Count;
+        for (int i = 0; same && i < centres.Count; i++) same = centres[i] == again[i];
+        int onIsland = 0, munroTops = 0;
+        for (int i = 0; i + 1 < centres.Count; i += 2)
+        {
+            float cx = centres[i], cy = centres[i + 1];
+            if (hl.LandWeight(cx, cy) > 0f) onIsland++;
+            var carved = Alt(wg.PublicBase(cx, cy, false));
+            if (hl.Classify(cx, cy, carved, Alt(OriginalBaseHeight.Call(wg, cx, cy, false))) == HighlandBiome.Munros) munroTops++;
+        }
+        int domes = centres.Count / 2;
+        Check(domes > 0 && same && onIsland == domes, "Munro dome centres are deterministic and on the islands (" + domes + " domes)");
+        Check(munroTops > 0, "some dome centres are Munro ground (" + munroTops + " of " + domes + "), so summit cairns have tops to go on");
+
         // Find one sample of each Highland biome.
         var found = new Dictionary<HighlandBiome, float[]>();
         foreach (var p in points)
