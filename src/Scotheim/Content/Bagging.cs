@@ -126,6 +126,82 @@ namespace Scotheim.Content
             return (bool)method.Invoke(zones, args) && int.TryParse(args[1] as string, out count) ? count : 0;
         }
 
+        static int summitsPlacedFor = int.MinValue;
+        const float SummitMinAltitude = 55f;   // m above sea; the Munros start around 32-50 m
+        const float SummitSearch = 96f;        // how far from a dome's centre to look for its real top
+        const float SummitStep = 12f;
+        const float SummitSpacing = 150f;      // tops closer than this are the same hill
+
+        /// <summary>
+        /// Server only, once per world: puts a summit cairn on top of each Munro. The terrain knows where every
+        /// dome is (WorldGen.CurrentSummits); each is moved to the highest ground nearby and, if that's Munro
+        /// ground high enough, registered as a scotheim_cairn location there, the way the game registers any
+        /// location. It spawns when that ground is first generated, so explored areas keep what they have.
+        /// A zone that already holds a location (one per zone) or is already generated is skipped.
+        /// </summary>
+        static void PlaceSummitCairns(object zones, System.Collections.IDictionary instances)
+        {
+            var summits = Patches.WorldGen.CurrentSummits;
+            if (summits == null || summitsPlacedFor == Patches.WorldGen.CurrentSeed) return;
+            summitsPlacedFor = Patches.WorldGen.CurrentSeed;
+            var generator = Instance("WorldGenerator");
+            object cairn = null;
+            var locations = GameFields.Get(zones, "m_locations") as System.Collections.IList;
+            if (locations != null)
+                foreach (var location in locations)
+                    if (LocationName(location) == "scotheim_cairn") { cairn = location; break; }
+            if (generator == null || cairn == null)
+            {
+                Plugin.Log.LogWarning("Summit cairns not placed on the tops: " + (cairn == null ? "the scotheim_cairn location" : "WorldGenerator") + " wasn't found.");
+                return;
+            }
+            var getHeight = generator.GetType().GetMethod("GetHeight", new[] { typeof(float), typeof(float) });
+            if (getHeight == null)
+            {
+                Plugin.Log.LogWarning("Summit cairns not placed on the tops: WorldGenerator.GetHeight(float, float) wasn't found.");
+                return;
+            }
+            var args = new object[2];
+            var water = GameFields.Get(zones, "m_waterLevel") as float? ?? 30f;
+            int placed = 0, low = 0, taken = 0, same = 0;
+            var tops = new List<Vector3>();
+            for (int i = 0; i + 1 < summits.Length; i += 2)
+            {
+                // The real top: the highest ground within reach of the dome's centre.
+                float bestX = summits[i], bestZ = summits[i + 1], bestH = float.MinValue;
+                for (float dz = -SummitSearch; dz <= SummitSearch; dz += SummitStep)
+                    for (float dx = -SummitSearch; dx <= SummitSearch; dx += SummitStep)
+                    {
+                        args[0] = summits[i] + dx;
+                        args[1] = summits[i + 1] + dz;
+                        var h = (float)getHeight.Invoke(generator, args);
+                        if (h > bestH) { bestH = h; bestX = (float)args[0]; bestZ = (float)args[1]; }
+                    }
+                var top = new Vector3(bestX, bestH, bestZ);
+                bool near = false;
+                foreach (var other in tops) if ((other - top).sqrMagnitude < SummitSpacing * SummitSpacing) { near = true; break; }
+                if (near) { same++; continue; }
+                var biome = GameFields.Call(generator, "GetBiome", top);
+                bool custom;
+                if (bestH - water < SummitMinAltitude || !(biome is Heightmap.Biome) ||
+                    Patches.ExpandWorld.FromGame((Heightmap.Biome)biome, out custom) != Scotheim.Terrain.HighlandBiome.Munros) { low++; continue; }
+                var zone = GameFields.Call(zones, "GetZone", top);
+                if (zone == null || instances.Contains(zone) || (GameFields.Call(zones, "IsZoneGenerated", zone) as bool? ?? true)) { taken++; continue; }
+                tops.Add(top);
+                GameFields.Call(zones, "RegisterLocation", cairn, top, false);
+                placed++;
+            }
+            Plugin.Log.LogInfo("Summit cairns: " + placed + " placed on Munro tops; " + taken + " tops were already generated or held another location, " +
+                same + " were the same hill as another, " + low + " domes weren't high Munro ground.");
+        }
+
+        static string LocationName(object location)
+        {
+            var prefab = location != null ? GameFields.Get(location, "m_prefab") : null;
+            var name = prefab != null ? prefab.GetType().GetProperty("Name")?.GetValue(prefab, null) as string : null;
+            return name ?? (location != null ? GameFields.Get(location, "m_prefabName") as string : null);
+        }
+
         // Server only: count this world's cairns and publish the number if it changed (genloc can add more).
         static void CountCairns()
         {
@@ -134,13 +210,11 @@ namespace Scotheim.Content
             if (net == null || zones == null || !(GameFields.Call(net, "IsServer") as bool? ?? false)) return;
             var instances = GameFields.Get(zones, "m_locationInstances") as System.Collections.IDictionary;
             if (instances == null || instances.Count == 0) return;
+            PlaceSummitCairns(zones, instances);
             int count = 0, altars = 0, stones = 0;
             foreach (var instance in instances.Values)
             {
-                var location = GameFields.Get(instance, "m_location");
-                var prefab = location != null ? GameFields.Get(location, "m_prefab") : null;
-                var name = prefab != null ? prefab.GetType().GetProperty("Name")?.GetValue(prefab, null) as string : null;
-                if (name == null && location != null) name = GameFields.Get(location, "m_prefabName") as string;
+                var name = LocationName(GameFields.Get(instance, "m_location"));
                 if (name == "scotheim_cairn") count++;
                 else if (name == GreyMan.Location)
                 {

@@ -595,6 +595,39 @@ namespace Scotheim.Terrain
             return Carve(x, y, h, rawBaseAltitude, true);
         }
 
+        /// <summary>
+        /// The centre of every Munro dome on the islands, as (x, y) pairs in world coordinates: where each hill
+        /// tops out before crags, corries and neighbouring domes nudge it (see <see cref="Munros"/>, which uses the
+        /// same seeded positions). Includes domes that end up below the Munros or in glens; callers check the
+        /// real ground. Used to put a summit cairn on each top.
+        /// </summary>
+        public List<float> MunroCentres()
+        {
+            var centres = new List<float>();
+            var seen = new HashSet<long>();
+            float cell = s.MunroSpacing;
+            foreach (var island in islands)
+            {
+                float reach = Math.Max(island.Length, island.Width) * island.Reach;
+                int x0 = Noise.FastFloor((island.X - reach) / cell), x1 = Noise.FastFloor((island.X + reach) / cell);
+                int y0 = Noise.FastFloor((island.Y - reach) / cell), y1 = Noise.FastFloor((island.Y + reach) / cell);
+                for (int gy = y0; gy <= y1; gy++)
+                {
+                    for (int gx = x0; gx <= x1; gx++)
+                    {
+                        if (!seen.Add(((long)gx << 32) ^ (uint)gy)) continue;
+                        float sx = (gx + 0.2f + 0.6f * Noise.Hash01(gx, gy, seed + 21)) * cell;
+                        float sy = (gy + 0.2f + 0.6f * Noise.Hash01(gx, gy, seed + 22)) * cell;
+                        float d;
+                        if (Dominant(sx, sy, out d) == null || d >= 1f) continue; // off the island
+                        centres.Add(sx);
+                        centres.Add(sy);
+                    }
+                }
+            }
+            return centres;
+        }
+
         float Munros(float x, float y)
         {
             float cell = s.MunroSpacing;

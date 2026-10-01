@@ -164,7 +164,7 @@ EWD places these when a world is generated, from blueprints Scotheim writes into
 | **Shieling** (20) | Forest and lower Munros | A roofless stone hut; sometimes a redcap or a little hacksilver | Summer huts on the hill grazing |
 | **Stone circle** (6) | Moor | Twelve standing stones, some fallen, sometimes a cairngorm in the middle | Circles such as Callanish (Lewis) and those around Clava |
 | **Pictish symbol stone** (24, six texts) | Moor, forest, Munros | A copy of the vanilla lore runestone (glowing runes, easy to spot) with its own text, hinting at brochs, crannogs, the each-uisge, the boss and Munro bagging; stone 4 marks the boss altar on the map, stone 6 ("The eagle") the Grey Man's stone | Class I symbol stones |
-| **Summit cairn** (up to 24) | Munros, above 65 m | A small heap of stones (a copy of the vanilla stone pile) to add a stone to; see Munro bagging below | The custom of adding a stone to a summit cairn |
+| **Summit cairn** (one per Munro top) | The top of each Munro | A small heap of stones (a copy of the vanilla stone pile) to add a stone to; see Munro bagging below | The custom of adding a stone to a summit cairn |
 
 Places only appear in newly generated areas: use a new world, or EWD's `genloc` command for unexplored ground. Crannog floors and posts are ordinary build pieces, so they can be taken apart for wood. The walls of brochs and shielings are ruin pieces that can't.
 
@@ -172,7 +172,7 @@ Places only appear in newly generated areas: use a new world, or EWD's `genloc` 
 
 Use a summit cairn to add a stone and bag that hill. The tally is kept on the character, separately for each world (by world seed), and each cairn counts once. Bagging 12 makes the character a **Compleatist**: +15 Run skill, 15% less stamina for running and jumping, and half fall damage, for as long as the character plays that world. The effect is re-applied every few seconds if it's missing, for example after death.
 
-How many cairns EWD can place depends on the terrain: the first three test worlds got 16, 24 and 10 of the 24 asked for. So the server counts the cairns in its world and shares the number as the global key `scotheim_cairns <n>`, and Compleatist needs 12 or all of them, whichever is fewer. The log says "Summit cairns in this world: n". Running `genloc` later adds cairns and raises the count.
+There's a cairn on top of each Munro. Scotheim's terrain knows where every hill's dome is, so the server finds the highest ground near each one and registers a cairn there (tops closer than 150 m count as one hill). The log says "Summit cairns: n placed on Munro tops". They spawn when that ground is first generated, so explored ground keeps what it had. How many hills there are depends on the terrain, so Compleatist needs 12 or every cairn the world has, whichever is fewer; the server counts them and shares the number as the global key `scotheim_cairns <n>` ("Summit cairns in this world: n" in the log).
 
 The fall-damage field is set by name (`m_fallDamageModifier`); the log says whether it was found.
 

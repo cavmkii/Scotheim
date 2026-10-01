@@ -121,13 +121,12 @@
   groups: scotheim_stone
   awayFrom:
   - scotheim_stone, 300
-# Summit cairns: Munro bagging. How many fit depends on the terrain (16, 24 and 10 in the first three test
-# worlds), so Compleatist needs 12 or every cairn the world has, whichever is fewer (the server counts them).
-# A cairn needs only ~3 m of ground, so steep tops are allowed (EWD levels the small site). Not prioritized:
-# when fewer fit than asked for, EWD gives up after half the attempts, which saves world generation time.
+# Summit cairns: Munro bagging. Scotheim puts one on top of each Munro itself (it knows where the terrain's domes
+# are), so EWD places none at random: quantity 0. The entry has to stay, because it's what makes scotheim_cairn
+# a location Scotheim can register. Compleatist needs 12, or every cairn the world has if that's fewer.
 - prefab: scotheim_cairn
   biome: munros
-  quantity: 24
+  quantity: 0
   minAltitude: 65
   maxTerrainDelta: 12
   randomRotation: true
