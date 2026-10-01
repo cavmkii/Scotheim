@@ -26,15 +26,17 @@
   fractalScale: 5
   fractalThresholdMin: 1
   fractalThresholdMax: 3
-- prefab: instanced_heathflowers
-  amount: 50
+# Heather (Scot_Heather: the Plains heath flowers repainted purple in Content/Heather.cs). The moor is heather
+# moorland, so it's everywhere here, thinning only in the wettest, lowest ground.
+- prefab: Scot_Heather
+  amount: 160
   biome: highland_moor
   instanced: true
-  maxTilt: 30
-  minAltitude: 1
+  maxTilt: 35
+  minAltitude: 0.5
   maxAltitude: 1000
-  fractalScale: 5
-  fractalThresholdMax: 0.6
+  fractalScale: 4
+  fractalThresholdMax: 0.8
 - prefab: instanced_ormbunke
   amount: 12
   biome: highland_moor
@@ -46,6 +48,16 @@
   fractalThresholdMin: 0.6
 
 # ------------------------------------------------------------------ Caledonian Forest
+# Heather in the open pinewood and its clearings, as in the old Caledonian forest.
+- prefab: Scot_Heather
+  amount: 70
+  biome: caledonian_forest
+  instanced: true
+  maxTilt: 35
+  minAltitude: 0.5
+  maxAltitude: 1000
+  fractalScale: 4
+  fractalThresholdMax: 0.7
 - prefab: instanced_forest_groundcover_brown
   amount: 80
   biome: caledonian_forest
@@ -99,17 +111,27 @@
   maxAltitude: 1000
   terrainTilt: true
   fractalThresholdMax: 0.6
-# Heather in flower on the mid slopes, in patches.
-- prefab: instanced_heathflowers
-  amount: 50
+# Heather up the slopes, thinning towards the tops.
+- prefab: Scot_Heather
+  amount: 120
   biome: munros
   instanced: true
-  maxTilt: 35
-  minAltitude: 30
+  maxTilt: 40
+  minAltitude: 0.5
   maxAltitude: 130
   terrainTilt: true
-  fractalScale: 5
-  fractalThresholdMax: 0.7
+  fractalScale: 4
+  fractalThresholdMax: 0.8
+- prefab: Scot_Heather
+  amount: 40
+  biome: munros
+  instanced: true
+  maxTilt: 40
+  minAltitude: 130
+  maxAltitude: 1000
+  terrainTilt: true
+  fractalScale: 4
+  fractalThresholdMax: 0.6
 
 # ------------------------------------------------------------------ Loch edges
 - prefab: instanced_vass

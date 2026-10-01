@@ -90,6 +90,18 @@ check("GreyMan.DefeatKey" in raid_src and 'GetPrefab("Scot_Sluagh")' in raid_src
 never = sorted(set(creatures) - {s["prefab"] for s in spawns} - {"Scot_Lamb", "Scot_HighlandCalf", "Scot_GreyMan", "Scot_Sluagh"})  # boss summoned, Sluagh raid only
 check(not never, "every adult creature has a spawn" + (": missing " + ", ".join(never) if never else ""))
 
+# --- clutter: vanilla clutter prefabs, plus the heather Content/Heather.cs makes
+clutter = yaml.safe_load((data / "expand_clutter_scotheim.yaml").read_text(encoding="utf-8"))
+vanilla_clutter = {c["prefab"] for c in yaml.safe_load((ref / "ewd-1.73/expand_clutter.yaml").read_text(encoding="utf-8"))}
+heather_src = (root / "src/Scotheim/Content/Heather.cs").read_text(encoding="utf-8")
+own_clutter = set(re.findall(r'const string Name = "(\w+)"', heather_src))
+heather_base = re.search(r'const string Base = "(\w+)"', heather_src).group(1)
+check(heather_base in vanilla_clutter, "heather copies a vanilla clutter prefab (" + heather_base + ")")
+unknown = sorted({c["prefab"] for c in clutter} - vanilla_clutter - own_clutter)
+check(not unknown, "clutter prefabs are vanilla clutter or Scotheim's heather" + (": unknown " + ", ".join(unknown) if unknown else ""))
+check({"highland_moor", "caledonian_forest", "munros"} <= {b.strip() for c in clutter if c["prefab"] in own_clutter for b in c["biome"].split(",")},
+      "heather grows in all three Highland biomes")
+
 # --- vegetation
 veg_custom = sorted({v["prefab"] for v in vegetation if v["prefab"].startswith("Scot_")} - prefabs)
 check(not veg_custom, "vegetation Scot_ prefabs are defined in Content" + (": " + ", ".join(veg_custom) if veg_custom else ""))

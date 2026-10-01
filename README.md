@@ -14,9 +14,9 @@ A BepInEx mod for Valheim that adds Scottish Highlands islands: new land raised 
 
 | Biome | Where | Terrain | Vegetation | Weather |
 |---|---|---|---|---|
-| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
-| **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
-| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Zoned like a real Ben: pine and birch woods on the lower slopes (to ~75–85 m), heather, blaeberry and juniper-like scrub above, low montane heath and grass on the tops; crags, scree, rare cloudberries | Freezing snow, often in mist |
+| **Highland Moor** | The open lowland shelf (median slope ~4°) | Rolling relief, hummocks, lochans | Purple heather nearly everywhere, heath shrubs, blaeberries, birch copses, erratic boulders, rare standing stones | Mostly heath-clear and mist, some drizzle |
+| **Caledonian Forest** | A fringe around the hills, glens through them, a few patches on the moor | Drumlins aligned NE–SW, hummocky moraine | Open Scots pine with birch, heather in the clearings, blaeberry and raspberry; no spruce; rare ruined shielings | Forest mist, some rain |
+| **Munros** | The hill massifs, above ~32 m of base height | Rounded domes, NE-facing corries, soft-capped summits | Zoned like a real Ben: pine and birch woods on the lower slopes (to ~75–85 m), purple heather, blaeberry and juniper-like scrub above, low montane heath and grass on the tops; crags, scree, rare cloudberries | Freezing snow, often in mist |
 
 Each biome borrows a vanilla height function and ground texture. The moor uses Meadows' grass, plus meadow grass, heath flowers and bracken as ground clutter. EWD's `nature` setting only affects farming, bees and footsteps: the Moor farms like the Plains (barley, flax), the forest like the Black Forest. Vegetation comes entirely from `expand_vegetation_scotheim.yaml`, so no vanilla plants leak in. There are no ores yet.
 
@@ -194,6 +194,10 @@ Not yet: a model of his own (KITBASH later).
 - **Wool**: a tamed sheep that isn't hungry sheds one wool every 15 minutes (half an in-game day) at its feet. Lambs still come from breeding as before; wool is a separate timer saved on the sheep, and only the client simulating the sheep drops it, so it isn't doubled in multiplayer.
 - **Midges**: on the moor and in the forest, when the wind is light at dawn or dusk, you get **Midges** (stamina regenerates 25% slower). Standing by any fire keeps them off (smoke), and so does **bog myrtle salve**: 6 bog myrtle and 1 mutton at the cauldron make 3, and each gives 20 minutes' protection. Bog myrtle grows in clumps at loch and bog edges on the low moor. Midges and bog myrtle as a repellent are both real; the timing (calm air, dawn and dusk) is the midge's actual habit.
 - **The Sluagh**: once Am Fear Liath Mòr is dead, the host of the restless dead can raid bases in the Highlands at night: level 2-3 dark spirits, up to 8 at a time for two minutes, in mist, with the music of the vanilla raid it's copied from. It's added to the game's raid list in code. Don't use EWD's `Event data = true` for it: in EWD 1.73 on this game version that setting fails to patch `RandEventSystem.Awake`, the error stops the rest of EWD's startup, and the Highland biomes (and all their vegetation) go missing.
+
+### Heather
+
+Vanilla has no heather; its nearest clutter is the red heath flowers of the Plains. Scotheim copies those as `Scot_Heather` and repaints the petals heather purple (the texture's red-to-orange pixels are moved to a pinkish purple, about 288°, keeping their shading; stems stay green). It's added to the game's clutter list just before EWD reads it, so the clutter file can use it by name. It grows thickly on the moor, up the Munros (thinning towards the tops) and in the forest clearings. The log says "Heather: n materials made purple".
 
 ### Looks
 
